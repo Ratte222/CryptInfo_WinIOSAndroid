@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptWinIOSAndroid.Android"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptWinIOSAndroid.iOS", "CryptWinIOSAndroid\CryptWinIOSAndroid.iOS\CryptWinIOSAndroid.iOS.csproj", "{BB9CE9BD-2A26-489A-99F6-2FB1F1066B76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptWinIOSAndroid", "CryptWinIOSAndroid\CryptWinIOSAndroid\CryptWinIOSAndroid.csproj", "{00BB2931-2F07-4CC4-B8D0-724655495BB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptWinIOSAndroid", "CryptWinIOSAndroid\CryptWinIOSAndroid\CryptWinIOSAndroid.csproj", "{00BB2931-2F07-4CC4-B8D0-724655495BB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleCrypt", "ConsoleCrypt\ConsoleCrypt.csproj", "{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,18 @@ Global
 		{00BB2931-2F07-4CC4-B8D0-724655495BB6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{00BB2931-2F07-4CC4-B8D0-724655495BB6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{00BB2931-2F07-4CC4-B8D0-724655495BB6}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|iPhone.Build.0 = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{CE68DAAC-68AC-46F3-9C45-8E81E5546DC7}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
