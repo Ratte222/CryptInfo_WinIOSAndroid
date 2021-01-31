@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AppSettings>
-  <DirCryptFile>E:\ProjectGit\CryptF</DirCryptFile>
-  <DirDecryptFile>E:\txtFiles\ЛогиныипаролиUTF8.txt</DirDecryptFile>
+  <DirCryptFile>E:\ProjectGit\Crypt.txt</DirCryptFile>
+  <DirDecryptFile>E:\ProjectGit\DeCrypt.txt</DirDecryptFile>
   <SeparateBlock>***************************************************</SeparateBlock>
   <CharStartAttributes>#^</CharStartAttributes>
   <CharStopAttributes>^#</CharStopAttributes>
