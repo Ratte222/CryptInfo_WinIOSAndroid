@@ -17,6 +17,8 @@ namespace ConsoleCrypt
             while (true)
             {
                 string command = InputOutputFile.ReadFromPersone();
+                string[] splitCommand = command.Split(' ');
+                splitCommand[0] = splitCommand[0].ToLower();
                 if(!String.IsNullOrWhiteSpace(command)&&!String.IsNullOrEmpty(command))
                 {
                     if(String.Equals(command.ToLower(), "exit"))
@@ -24,9 +26,20 @@ namespace ConsoleCrypt
                         HandleCallIntergaceMethods(InputOutputFile.SaveSetting());
                         break;
                     }
-                    else if (command.IndexOf("set") > -1)
+                    else if (String.Equals(splitCommand[0], "help"))
                     {
-                        string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        InputOutputFile.ShowAPersone("set -c pathCryptFile");
+                        InputOutputFile.ShowAPersone("set -d pathDecryptFile");
+                        InputOutputFile.ShowAPersone("decrypt -f password");
+                        InputOutputFile.ShowAPersone("crypt -f password");
+                        InputOutputFile.ShowAPersone("search -cs password searchWord");
+                        InputOutputFile.ShowAPersone("-cs  (optional) case sensetive");
+                        InputOutputFile.ShowAPersone("viewSetting");
+                    }
+
+                    else if (String.Equals(splitCommand[0], "set"))
+                    {
+                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if (splitCommand.Length < 3)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
@@ -47,9 +60,9 @@ namespace ConsoleCrypt
                             InputOutputFile.ShowAPersone("set. Unknown parameter. Use help");
                         }
                     }
-                    else if(command.IndexOf("decrypt")> -1)
+                    else if(String.Equals(splitCommand[0], "decrypt"))
                     {
-                        string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if (splitCommand.Length < 3)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
@@ -67,9 +80,9 @@ namespace ConsoleCrypt
                         }
                         
                     }
-                    else if (command.IndexOf("crypt") > -1)
+                    else if (String.Equals(splitCommand[0], "crypt"))
                     {
-                        string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if(splitCommand.Length < 3)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
@@ -86,9 +99,9 @@ namespace ConsoleCrypt
                             }
                         }
                     }
-                    else if (command.IndexOf("search") > -1)
+                    else if (String.Equals(splitCommand[0], "search"))
                     {
-                        string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if(splitCommand.Length < 3)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
@@ -103,6 +116,11 @@ namespace ConsoleCrypt
                         HandleCallIntergaceMethods(InputOutputFile.SearchBlockFromCryptRepositoriesUseKeyWord(splitCommand[splitCommand.Length - 2],
                             splitCommand[splitCommand.Length - 1], caseSensitive));
                         
+                    }
+                    else if(String.Equals(splitCommand[0], "viewsetting"))
+                    {
+                        InputOutputFile.ShowAPersone($"DirCryptFile {InputOutputFile.GetDirCryptFile()}");
+                        InputOutputFile.ShowAPersone($"DirDecryptFile {InputOutputFile.GetDirDecryptFile()}");
                     }
                     else
                     {
