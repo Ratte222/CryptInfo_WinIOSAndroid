@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CryptWinIOSAndroid\CryptWinIOSAndroid\CryptWinIOSAndroid.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="AppSettings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using CryptWinIOSAndroid;
 
 namespace ConsoleCrypt
 {
@@ -10,8 +11,24 @@ namespace ConsoleCrypt
     {
         public AppSettings appSettings { get; set; }
         XmlSerializer formatter = new XmlSerializer(typeof(AppSettings));
-        string _pathAppSetting = Environment.CurrentDirectory + "\\AppSettings.xml";
-        public I_INPUTOUTPUTMESSAGE LoadSetting()
+        string _pathAppSetting = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "AppSettings.xml");
+        private bool caseSensitive = false,
+            searchInTegs = false,
+            searchInHeader = false,
+            searchUntilFirstMatch = false,
+            viewServiceInformation = false,
+            showAllFromCryptFile = false;
+        public E_INPUTOUTPUTMESSAGE LoadDefaultParams()
+        {
+            caseSensitive = Get_caseSensitive();
+            searchInTegs = Get_searchInTegs();
+            searchInHeader = Get_searchInHeader();
+            searchUntilFirstMatch = Get_searchUntilFirstMatch();
+            viewServiceInformation = Get_viewServiceInformation();
+            return E_INPUTOUTPUTMESSAGE.Ok;
+        }
+
+        public E_INPUTOUTPUTMESSAGE LoadSetting()
         {
             try
             {
@@ -22,8 +39,9 @@ namespace ConsoleCrypt
                 {
                     appSettings = (AppSettings)formatter.Deserialize(fs);
                 }
+                LoadDefaultParams();
                 #endregion
-                return I_INPUTOUTPUTMESSAGE.Ok;
+                return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch (Exception ex)
             {
@@ -36,15 +54,15 @@ namespace ConsoleCrypt
                 ShowAPersone(message);
 #endif
             }
-            return I_INPUTOUTPUTMESSAGE.ExceptionLoadSetting;
+            return E_INPUTOUTPUTMESSAGE.ExceptionLoadSetting;
         }
-        public I_INPUTOUTPUTMESSAGE SaveSetting()
+        public E_INPUTOUTPUTMESSAGE SaveSetting()
         {
             try
             {
                 if (appSettings == null)
                 {
-                    return I_INPUTOUTPUTMESSAGE.NoLinkToSettings;
+                    return E_INPUTOUTPUTMESSAGE.NoLinkToSettings;
                 }
                 else
                 {
@@ -52,7 +70,7 @@ namespace ConsoleCrypt
                     {
                         formatter.Serialize(fs, appSettings);
                     }
-                    return I_INPUTOUTPUTMESSAGE.Ok;
+                    return E_INPUTOUTPUTMESSAGE.Ok;
                 }
             }
             catch (Exception ex)
@@ -66,46 +84,46 @@ namespace ConsoleCrypt
                 ShowAPersone(message);
 #endif
             }
-            return I_INPUTOUTPUTMESSAGE.ExceptionSaveSetting;
+            return E_INPUTOUTPUTMESSAGE.ExceptionSaveSetting;
         }
-        public I_INPUTOUTPUTMESSAGE ResetSetting()
+        public E_INPUTOUTPUTMESSAGE ResetSetting()
         {
-            I_INPUTOUTPUTMESSAGE i_ = SaveSetting();
-            if(i_ != I_INPUTOUTPUTMESSAGE.Ok)
+            E_INPUTOUTPUTMESSAGE i_ = SaveSetting();
+            if(i_ != E_INPUTOUTPUTMESSAGE.Ok)
             {
                 return i_;
             }
             return LoadSetting();
         }
-        public I_INPUTOUTPUTMESSAGE SetDirCryptFile(string val)
+        public E_INPUTOUTPUTMESSAGE SetDirCryptFile(string val)
         {
             if(appSettings == null)
             {
-                I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                     return i_;
             }
             appSettings.DirCryptFile = val;
-            return I_INPUTOUTPUTMESSAGE.Ok;
+            return E_INPUTOUTPUTMESSAGE.Ok;
         }
-        public I_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val)
+        public E_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val)
         {
             if (appSettings == null)
             {
-                I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                     return i_;
             }
             appSettings.DirDecryptFile = val;
-            return I_INPUTOUTPUTMESSAGE.Ok;
+            return E_INPUTOUTPUTMESSAGE.Ok;
         }
 
         public string GetDirCryptFile()
         {
             if (appSettings == null)
             {
-                I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                     return null;
             }
             return appSettings.DirCryptFile;
@@ -114,13 +132,83 @@ namespace ConsoleCrypt
         {
             if (appSettings == null)
             {
-                I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                     return null;
             }
             return appSettings.DirDecryptFile;
         }
-        public I_INPUTOUTPUTMESSAGE CryptFile(string key)
+        public bool Get_caseSensitive()
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return false;
+            }
+            return appSettings.SearchSettingDefault.caseSensitive;
+        }
+        public bool Get_searchInTegs()
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return false;
+            }
+            return appSettings.SearchSettingDefault.searchInTegs;
+        }
+        public bool Get_searchInHeader()
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return false;
+            }
+            return appSettings.SearchSettingDefault.searchInHeader;
+        }
+        public bool Get_searchUntilFirstMatch()
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return false;
+            }
+            return appSettings.SearchSettingDefault.searchUntilFirstMatch;
+        }
+        public bool Get_viewServiceInformation()
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return false;
+            }
+            return appSettings.SearchSettingDefault.viewServiceInformation;
+        }
+        public void Toggle_caseSensitive()
+        {
+            caseSensitive = !caseSensitive;
+        }
+        public void Toggle_searchInTegs()
+        {
+            searchInTegs = !searchInTegs;
+        }
+        public void Toggle_searchInHeader()
+        {
+            searchInHeader = !searchInHeader;
+        }
+        public void Toggle_searchUntilFirstMatch()
+        {
+            searchUntilFirstMatch = !searchUntilFirstMatch;
+        }
+        public void Toggle_viewServiceInformation()
+        {
+            viewServiceInformation = !viewServiceInformation;
+        }
+        public E_INPUTOUTPUTMESSAGE CryptFile(string key)
         {
             StreamReader srDecrypt = null;
             StreamWriter swCrypt = null;
@@ -128,14 +216,14 @@ namespace ConsoleCrypt
             {
                 if (appSettings == null)
                 {
-                    I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                    if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                         return i_;
                 }
                 if (!File.Exists(appSettings.DirDecryptFile))
-                    return I_INPUTOUTPUTMESSAGE.DecryptFileNotExist;
+                    return E_INPUTOUTPUTMESSAGE.DecryptFileNotExist;
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
-                    return I_INPUTOUTPUTMESSAGE.KeyIsNull;
+                    return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content;
                 srDecrypt = new StreamReader(appSettings.DirDecryptFile, Encoding.UTF8);
                 swCrypt = new StreamWriter(appSettings.DirCryptFile, false, Encoding.UTF8);
@@ -151,7 +239,7 @@ namespace ConsoleCrypt
                         break;
                     }
                 }
-                return I_INPUTOUTPUTMESSAGE.Ok;
+                return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch(Exception ex)
             {
@@ -170,10 +258,10 @@ namespace ConsoleCrypt
                 swCrypt?.Flush();
                 swCrypt?.Close();
             }
-            return I_INPUTOUTPUTMESSAGE.ExceprionCryptFile;
+            return E_INPUTOUTPUTMESSAGE.ExceprionCryptFile;
         }
 
-        public I_INPUTOUTPUTMESSAGE DecryptFile(string key)
+        public E_INPUTOUTPUTMESSAGE DecryptFile(string key)
         {
             StreamReader srCrypt = null;
             StreamWriter swDecrypt = null;
@@ -181,14 +269,14 @@ namespace ConsoleCrypt
             {
                 if (appSettings == null)
                 {
-                    I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                    if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                         return i_;
                 }
                 if (!File.Exists(appSettings.DirCryptFile))
-                    return I_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                    return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
-                    return I_INPUTOUTPUTMESSAGE.KeyIsNull;
+                    return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content;
 
                 srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
@@ -205,7 +293,7 @@ namespace ConsoleCrypt
                         break;
                     }
                 }                 
-                return I_INPUTOUTPUTMESSAGE.Ok;
+                return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch (Exception ex)
             {
@@ -224,27 +312,29 @@ namespace ConsoleCrypt
                 swDecrypt?.Flush();
                 swDecrypt?.Close();
             }
-            return I_INPUTOUTPUTMESSAGE.ExceprionDecryptFile;
+            return E_INPUTOUTPUTMESSAGE.ExceprionDecryptFile;
         }
 
-        public I_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord, bool caseSensitive)
+        public E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord)
         {
             StreamReader srCrypt = null;
+            
             try
             {
                 if (appSettings == null)
                 {
-                    I_INPUTOUTPUTMESSAGE i_ = LoadSetting();
-                    if (i_ != I_INPUTOUTPUTMESSAGE.Ok)
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
                         return i_;
                 }
                 if (!File.Exists(appSettings.DirCryptFile))
-                    return I_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                    return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
-                    return I_INPUTOUTPUTMESSAGE.KeyIsNull;
+                    return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content, block="";
                 srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
-                bool flagTargetBlock = false;
+                bool flagTargetBlock = false, stringIsHeader = false, header=false, tegs=false;
+                int lineBlock = 0, intBlock = -1;
                 if (!caseSensitive)
                     keyWord = keyWord.ToLower();
                 while (true)
@@ -253,51 +343,137 @@ namespace ConsoleCrypt
                     if (content != null)
                     {
                         content = (CryptoWithoutTry.Decrypt(content, key));
-                        block += $"{content}\r\n";
+                        if(viewServiceInformation)
+                            block += $"lb{lineBlock}# {content}\r\n";
+                        else
+                            block += $"{content}\r\n";
+                        if ((lineBlock == 0) && content.IndexOf(appSettings.CharStartAttributes) > -1)
+                        { 
+                            tegs = true;
+                            header = false;
+                        }
+                        else if ((lineBlock == 0) && content.IndexOf(appSettings.CharStartAttributes) == -1)
+                        {
+                            tegs = false;
+                            header = true;
+                        }
+                        else if ((lineBlock == 1) && content.IndexOf(appSettings.CharStartAttributes) == -1)
+                        {
+                            tegs = false;
+                            header = true;
+                        }
+                        else
+                        {
+                            tegs = false;
+                            header = false;
+                        }
+                        lineBlock++;
                         if (!caseSensitive)
                             content = content.ToLower();
                         if(String.Equals(content, appSettings.SeparateBlock))
                         {
-                            if(flagTargetBlock)
+                            if(flagTargetBlock || showAllFromCryptFile)
                             {
                                 block = block.Replace(appSettings.SeparateBlock, "");
+                                block = block.TrimEnd(new char[] { '\r', '\n' });
                                 ShowAPersone(block);
+                                if(searchUntilFirstMatch && !showAllFromCryptFile)
+                                    break;
                                 
-                                break;
-                            }
-                            block = "";
+                            }                            
+                            intBlock++;
+                            lineBlock = 0;
+                            if (viewServiceInformation)
+                                block = $"Block №{intBlock}\r\n";
+                            else
+                                block = "";
                         }
-                        else if(content.IndexOf(keyWord) > -1)
+                        else 
                         {
-                            flagTargetBlock = true;
+                            if (!searchInHeader && !searchInTegs)
+                                if (content.IndexOf(keyWord) > -1)
+                                    flagTargetBlock = true;
+                            else if(searchInHeader&&header)
+                                    if (content.IndexOf(keyWord) > -1)
+                                        flagTargetBlock = true;
+                            else if (searchInTegs && tegs)
+                                if (content.IndexOf(keyWord) > -1)
+                                    flagTargetBlock = true;
                         }
+
                     }
                     else
                     {
-                        ShowAPersone("found nothing");
+                        if(searchUntilFirstMatch && !showAllFromCryptFile)
+                            ShowAPersone("found nothing");
                         break;
                     }
                 }                   
                 
-                return I_INPUTOUTPUTMESSAGE.Ok;
+                return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch (Exception ex)
             {
-                string message = $"InnerException = {ex?.InnerException?.ToString()} \r\n" +
-                            $"Message = {ex?.Message?.ToString()} \r\n" +
-                            $"Source = {ex?.Source?.ToString()} \r\n" +
-                            $"StackTrace = {ex?.StackTrace?.ToString()} \r\n" +
-                            $"TargetSite = {ex?.TargetSite?.ToString()}";
-#if DEBUG
-                ShowAPersone(message);
-#endif
+                Program.HandleMessage("", ex);
             }
             finally
             {
                 srCrypt?.Close();
             }
-            return I_INPUTOUTPUTMESSAGE.SearchBlockFromCryptRepositoriesUseKeyWord;
-        }        
+            return E_INPUTOUTPUTMESSAGE.SearchBlockFromCryptRepositoriesUseKeyWord;
+        }
+
+        public E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data)
+        {
+            StreamWriter sw = null;
+            E_INPUTOUTPUTMESSAGE res = E_INPUTOUTPUTMESSAGE.Ok;
+            try
+            {
+                if (appSettings == null)
+                {
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                        return i_;
+                }
+                if (!File.Exists(appSettings.DirCryptFile))
+                    return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
+                    return E_INPUTOUTPUTMESSAGE.KeyIsNull;
+                sw = new StreamWriter(appSettings.DirCryptFile, true, Encoding.UTF8);
+                data = $"{data}{appSettings.SeparateBlock}";
+                string[] splitData = data.Split("\r\n");
+                foreach(string s in splitData)
+                {
+                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key));
+                }                
+                sw.Flush();
+            }
+            catch (Exception ex)
+            {
+                Program.HandleMessage("", ex);
+                res = E_INPUTOUTPUTMESSAGE.WriteToEndCryptFile;
+            }
+            finally
+            {
+                sw?.Close();
+                sw?.Dispose();
+            }
+            return res;
+        }
+
+        public E_INPUTOUTPUTMESSAGE ShowAllFromCryptFile(string key)
+        {
+            if (appSettings == null)
+            {
+                E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    return i_;
+            }
+            showAllFromCryptFile = true;
+            E_INPUTOUTPUTMESSAGE vs = SearchBlockFromCryptRepositoriesUseKeyWord(key, "");
+            showAllFromCryptFile = false;
+            return vs;
+        }
 
         public void ShowAPersone(string message)
         {

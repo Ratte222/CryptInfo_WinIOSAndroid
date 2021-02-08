@@ -1,8 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AppSettings>
-  <DirCryptFile>E:\ProjectGit\Crypt.txt</DirCryptFile>
-  <DirDecryptFile>E:\ProjectGit\DeCrypt.txt</DirDecryptFile>
+  <DirCryptFile>E:\txtFiles\Crypt.txt</DirCryptFile>
+  <DirDecryptFile>E:\txtFiles\ЛогиныипаролиUTF8.txt</DirDecryptFile>
   <SeparateBlock>***************************************************</SeparateBlock>
   <CharStartAttributes>#^</CharStartAttributes>
   <CharStopAttributes>^#</CharStopAttributes>
+<SearchSettingDefault>
+  <caseSensitive>false</caseSensitive>
+  <searchInTegs>false</searchInTegs>
+  <searchInHeader>false</searchInHeader>
+  <searchUntilFirstMatch>true</searchUntilFirstMatch>
+  <viewServiceInformation>false</viewServiceInformation>
+</SearchSettingDefault>
 </AppSettings>

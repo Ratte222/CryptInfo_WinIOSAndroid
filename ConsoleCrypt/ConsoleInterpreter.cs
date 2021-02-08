@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CryptWinIOSAndroid;
 
 namespace ConsoleCrypt
 {
     class ConsoleInterpreter
     {
+        private string password;
         C_InputOutputFile InputOutputFile;
         public ConsoleInterpreter(C_InputOutputFile _InputOutputFile)
         {
@@ -28,15 +30,103 @@ namespace ConsoleCrypt
                     }
                     else if (String.Equals(splitCommand[0], "help"))
                     {
-                        InputOutputFile.ShowAPersone("set -c pathCryptFile");
-                        InputOutputFile.ShowAPersone("set -d pathDecryptFile");
-                        InputOutputFile.ShowAPersone("decrypt -f password");
-                        InputOutputFile.ShowAPersone("crypt -f password");
-                        InputOutputFile.ShowAPersone("search -cs password searchWord");
-                        InputOutputFile.ShowAPersone("-cs  (optional) case sensetive");
-                        InputOutputFile.ShowAPersone("viewSetting");
+                        if(splitCommand.Length > 1)
+                        {
+                            splitCommand[1] = splitCommand[1].ToLower();
+                            if (String.Equals(splitCommand[1], "set"))
+                            {
+                                InputOutputFile.ShowAPersone("-c - set in setting path crypt file. Example: set -c E:\\Crypr.txt");
+                                InputOutputFile.ShowAPersone("-d - set in setting path decrypt file. Example: set -d E:\\Decrypr.txt");
+                            }
+                            else if (String.Equals(splitCommand[1], "decrypt"))
+                            {
+                                InputOutputFile.ShowAPersone("-f - decrypt file. Example: decrypt -f");
+                            }
+                            else if (String.Equals(splitCommand[1], "crypt"))
+                            {
+                                InputOutputFile.ShowAPersone("-f - crypt file. Example: crypt -f ");
+                            }
+                            else if (String.Equals(splitCommand[1], "search"))
+                            {
+                                InputOutputFile.ShowAPersone("search -cs -sh -st -sufm -vsi searchWord");
+                                InputOutputFile.ShowAPersone("-cs  (optional, toggle default param) case sensetive");
+                                InputOutputFile.ShowAPersone("-sh  (optional, toggle default param) search in header");
+                                InputOutputFile.ShowAPersone("-st  (optional, , toggle default param) search in tegs");
+                                InputOutputFile.ShowAPersone("-sufm  (optional, toggle default param) search until first math");
+                                InputOutputFile.ShowAPersone("-vsi  (optional, toggle default param) view setting information");
+                            }
+                            else if (String.Equals(splitCommand[1], "reenter"))
+                            {
+                                InputOutputFile.ShowAPersone("-p - re-enter password. Example: reenter -p");
+                            }
+                            else if (String.Equals(splitCommand[1], "show"))
+                            {
+                                InputOutputFile.ShowAPersone("-b - show block in crypt file. Example: show -b 5 -vsi ");
+                                InputOutputFile.ShowAPersone("-all - show all data in crypt file. Example: show -all -vsi");
+                                InputOutputFile.ShowAPersone("-vsi  (optional, toggle default param) view setting information");
+                            }
+                            else if (String.Equals(splitCommand[1], "generatepassword"))
+                            {
+                                InputOutputFile.ShowAPersone("Example: generatePassword 10");
+                            }
+                            else if (String.Equals(splitCommand[1], "add"))
+                            {
+                                InputOutputFile.ShowAPersone("-toend - add string to end crypt file as block Example: add -toend");
+                                InputOutputFile.ShowAPersone("-inblock - coming soon");
+                            }
+                            else
+                            {
+                                InputOutputFile.ShowAPersone("set - set something params");
+                                InputOutputFile.ShowAPersone("decrypt - decrypt something");
+                                InputOutputFile.ShowAPersone("crypt - crypt something");
+                                InputOutputFile.ShowAPersone("search - search in crypt file ");
+                                InputOutputFile.ShowAPersone("viewSetting - view path program setting ");
+                                InputOutputFile.ShowAPersone("generatePassword - generate random string desired length");
+                                InputOutputFile.ShowAPersone("reEnter - allows you to re-enter the parameter");
+                                InputOutputFile.ShowAPersone("show - show something");
+                                InputOutputFile.ShowAPersone("add - add string in crypt file");
+                            }
+                        }
+                        else
+                        {
+                            InputOutputFile.ShowAPersone("set - set something params");
+                            InputOutputFile.ShowAPersone("decrypt - decrypt something");
+                            InputOutputFile.ShowAPersone("crypt - crypt something");
+                            InputOutputFile.ShowAPersone("search - search in crypt file ");
+                            InputOutputFile.ShowAPersone("viewSetting - view path program setting ");
+                            InputOutputFile.ShowAPersone("generatePassword - generate random string desired length");
+                            InputOutputFile.ShowAPersone("reEnter - allows you to re-enter the parameter");
+                            InputOutputFile.ShowAPersone("show - show something");
+                            InputOutputFile.ShowAPersone("add - add string in crypt file");
+                        }
                     }
-
+                    else if (String.Equals(splitCommand[0], "reenter"))
+                    {
+                        if (splitCommand.Length < 2)
+                        {
+                            InputOutputFile.ShowAPersone("too few parameters");
+                            //InputOutputFile.ShowAPersone("expected \"generatePassword lengthPassword\"");
+                        }
+                        if(String.Equals(splitCommand[1], "-p"))
+                        {
+                            InputOutputFile.ShowAPersone("Enter password");
+                            password = GetHiddenConsoleInput();
+                            InputOutputFile.ShowAPersone("Ok");
+                        }
+                        else
+                        {
+                            InputOutputFile.ShowAPersone("uncknow command");
+                        }
+                    }
+                    else if (String.Equals(splitCommand[0], "generatepassword"))
+                    {
+                        if (splitCommand.Length < 2)
+                        {
+                            InputOutputFile.ShowAPersone("too few parameters");
+                            InputOutputFile.ShowAPersone("expected \"generatePassword lengthPassword\"");
+                        }
+                        InputOutputFile.ShowAPersone($"password: {CryptoWithoutTry.GeneratePassword(Convert.ToInt32(splitCommand[1]))}");
+                    }
                     else if (String.Equals(splitCommand[0], "set"))
                     {
                         //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -63,15 +153,17 @@ namespace ConsoleCrypt
                     else if(String.Equals(splitCommand[0], "decrypt"))
                     {
                         //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (splitCommand.Length < 3)
+                        if (splitCommand.Length < 2)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
                         }
                         else
                         {
+
                             if (String.Equals(splitCommand[1], "-f"))
                             {
-                                HandleCallIntergaceMethods(InputOutputFile.DecryptFile(splitCommand[splitCommand.Length - 1]));
+                                CheckPassword();
+                                HandleCallIntergaceMethods(InputOutputFile.DecryptFile(password));
                             }
                             else
                             {
@@ -83,7 +175,7 @@ namespace ConsoleCrypt
                     else if (String.Equals(splitCommand[0], "crypt"))
                     {
                         //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        if(splitCommand.Length < 3)
+                        if(splitCommand.Length < 2)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
                         }
@@ -91,7 +183,8 @@ namespace ConsoleCrypt
                         {
                             if (String.Equals(splitCommand[1], "-f"))
                             {
-                                HandleCallIntergaceMethods(InputOutputFile.CryptFile(splitCommand[splitCommand.Length - 1]));
+                                CheckPassword();
+                                HandleCallIntergaceMethods(InputOutputFile.CryptFile(password));
                             }
                             else
                             {
@@ -101,26 +194,87 @@ namespace ConsoleCrypt
                     }
                     else if (String.Equals(splitCommand[0], "search"))
                     {
-                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        if(splitCommand.Length < 3)
+                        //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);                        
+                        InputOutputFile.LoadDefaultParams();
+                        if (splitCommand.Length < 2)
                         {
                             InputOutputFile.ShowAPersone("too few parameters");
-                            InputOutputFile.ShowAPersone("expected \"search keyCrypt keyWord\"");
-                        }
-                        bool caseSensitive = false;
-                        if (command.IndexOf("-cs")> -1)
+                            //InputOutputFile.ShowAPersone("expected \"search keyWord\"");
+                        }                        
+                        if (command.IndexOf("-cs")> -1)//case sensetive
                         {
-                            caseSensitive = true;
-                            
+                            InputOutputFile.Toggle_caseSensitive();                            
                         }
-                        HandleCallIntergaceMethods(InputOutputFile.SearchBlockFromCryptRepositoriesUseKeyWord(splitCommand[splitCommand.Length - 2],
-                            splitCommand[splitCommand.Length - 1], caseSensitive));
+                        if (command.IndexOf("-sh") > -1)// search In Header 
+                        {
+                            InputOutputFile.Toggle_searchInHeader();
+                        }
+                        if (command.IndexOf("-st") > -1)//search in tegs
+                        {
+                            InputOutputFile.Toggle_searchInTegs();
+                        }
+                        if (command.IndexOf("-sufm") > -1)//search until first match
+                        {
+                            InputOutputFile.Toggle_searchUntilFirstMatch();
+                        }
+                        if (command.IndexOf("-vsi") > -1)//view service information
+                        {
+                            InputOutputFile.Toggle_viewServiceInformation();
+                        }
+                        CheckPassword();
+                        HandleCallIntergaceMethods(InputOutputFile.SearchBlockFromCryptRepositoriesUseKeyWord(password,
+                            splitCommand[splitCommand.Length - 1]));
                         
+                    }
+                    else if (String.Equals(splitCommand[0], "show"))
+                    {
+                        InputOutputFile.LoadDefaultParams();
+                        if (splitCommand.Length < 2)
+                        {
+                            InputOutputFile.ShowAPersone("too few parameters");
+                            //InputOutputFile.ShowAPersone("expected \"search keyWord\"");
+                        }
+                        if (command.IndexOf("-vsi") > -1)//view service information
+                        {
+                            InputOutputFile.Toggle_viewServiceInformation();
+                        }
+                        if (command.IndexOf("-all") > -1)
+                        {
+                            CheckPassword();
+                            HandleCallIntergaceMethods(InputOutputFile.ShowAllFromCryptFile(password));
+                        }
+                        else if (command.IndexOf("-b") > -1)
+                        {
+                            InputOutputFile.ShowAPersone($"Coming soon");
+                        }
                     }
                     else if(String.Equals(splitCommand[0], "viewsetting"))
                     {
+                        InputOutputFile.ShowAPersone($"Path {System.Reflection.Assembly.GetEntryAssembly().Location}"); 
                         InputOutputFile.ShowAPersone($"DirCryptFile {InputOutputFile.GetDirCryptFile()}");
                         InputOutputFile.ShowAPersone($"DirDecryptFile {InputOutputFile.GetDirDecryptFile()}");
+                        InputOutputFile.ShowAPersone($"caseSensitive {InputOutputFile.Get_caseSensitive()}");
+                        InputOutputFile.ShowAPersone($"searchInTegs {InputOutputFile.Get_searchInTegs()}");                        
+                        InputOutputFile.ShowAPersone($"searchInHeader {InputOutputFile.Get_searchInHeader()}");
+                        InputOutputFile.ShowAPersone($"searchUntilFirstMatch {InputOutputFile.Get_searchUntilFirstMatch()}");
+                        InputOutputFile.ShowAPersone($"viewServiceInformation {InputOutputFile.Get_viewServiceInformation()}");
+                    }
+                    else if (String.Equals(splitCommand[0], "add"))
+                    {
+                        if (splitCommand.Length < 2)
+                        {
+                            InputOutputFile.ShowAPersone("too few parameters");
+                            //InputOutputFile.ShowAPersone("expected \"search keyWord\"");
+                        }
+                        if (command.IndexOf("-toend") > -1)
+                        {
+                            CheckPassword();
+                            HandleCallIntergaceMethods(InputOutputFile.WriteToEndCryptFile(password, ConsoleReadMultiline()));
+                        }
+                        else if (command.IndexOf("-inblock") > -1)
+                        {
+                            InputOutputFile.ShowAPersone($"Coming soon");
+                        }
                     }
                     else
                     {
@@ -135,9 +289,46 @@ namespace ConsoleCrypt
             
         }
 
-        protected bool HandleCallIntergaceMethods(I_INPUTOUTPUTMESSAGE i_)
+        private void CheckPassword()
         {
-            if(i_ != I_INPUTOUTPUTMESSAGE.Ok)
+            if(String.IsNullOrEmpty(password))
+            {
+                InputOutputFile.ShowAPersone("Enter password");
+                password = GetHiddenConsoleInput();
+                InputOutputFile.ShowAPersone("Ok");
+            }
+        }
+
+        private string ConsoleReadMultiline()
+        {
+            InputOutputFile.ShowAPersone("When you end - write \"end\"");
+            string line="", result="";
+            do
+            {
+                //input code
+                result += $"{line}\r\n";
+                //Check for exit conditions
+                line = $"{Console.ReadLine()}";
+            } while (/*!String.IsNullOrWhiteSpace(line) && */!String.Equals(line.ToLower(), "end"));
+            return result.TrimStart(new char[] { '\r', '\n' });
+        }
+
+        private static string GetHiddenConsoleInput()
+        {
+            StringBuilder input = new StringBuilder();
+            while (true)
+            {
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter) break;
+                if (key.Key == ConsoleKey.Backspace && input.Length > 0) input.Remove(input.Length - 1, 1);
+                else if (key.Key != ConsoleKey.Backspace) input.Append(key.KeyChar);
+            }
+            return input.ToString();
+        }
+
+        protected bool HandleCallIntergaceMethods(E_INPUTOUTPUTMESSAGE i_)
+        {
+            if(i_ != E_INPUTOUTPUTMESSAGE.Ok)
             {
                 InputOutputFile.ShowAPersone($"errore {i_.ToString()}");
                 return false;

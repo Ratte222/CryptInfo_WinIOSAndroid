@@ -19,5 +19,26 @@ namespace ConsoleCrypt
         {
             InputOutputFile.LoadSetting();
         }
+
+        public static void HandleMessage(string _msg, Exception ex)
+        {
+            string message = "";
+            if (ex != null)
+            {
+                message = $"{_msg} \r\n" +
+                    $"InnerException = {ex?.InnerException?.ToString()} \r\n" +
+                    $"Message = {ex?.Message?.ToString()} \r\n" +
+                    $"Source = {ex?.Source?.ToString()} \r\n" +
+                    $"StackTrace = {ex?.StackTrace?.ToString()} \r\n" +
+                    $"TargetSite = {ex?.TargetSite?.ToString()}";
+            }
+            else
+            {
+               message = $"{_msg}";
+            }
+#if DEBUG
+            InputOutputFile.ShowAPersone(message);
+#endif
+        }
     }
 }

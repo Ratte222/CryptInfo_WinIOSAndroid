@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleCrypt
 {
-    enum I_INPUTOUTPUTMESSAGE
+    enum E_INPUTOUTPUTMESSAGE
     {
         Ok = 0,
         False,
@@ -16,7 +16,8 @@ namespace ConsoleCrypt
         ExceptionLoadSetting,
         ExceptionSaveSetting,
         ExceprionDecryptFile,
-        SearchBlockFromCryptRepositoriesUseKeyWord
+        SearchBlockFromCryptRepositoriesUseKeyWord,
+        WriteToEndCryptFile
     };
     interface I_InputOutput
     {
@@ -25,16 +26,30 @@ namespace ConsoleCrypt
         //{
         //    appSettings = _appSettings;
         //}
-        I_INPUTOUTPUTMESSAGE LoadSetting();
-        I_INPUTOUTPUTMESSAGE SaveSetting();
-        I_INPUTOUTPUTMESSAGE ResetSetting();
-        I_INPUTOUTPUTMESSAGE SetDirCryptFile(string val);
-        I_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val);
+        
+        E_INPUTOUTPUTMESSAGE LoadSetting();
+        E_INPUTOUTPUTMESSAGE LoadDefaultParams();
+        E_INPUTOUTPUTMESSAGE SaveSetting();
+        E_INPUTOUTPUTMESSAGE ResetSetting();
+        E_INPUTOUTPUTMESSAGE SetDirCryptFile(string val);
+        E_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val);
         string GetDirDecryptFile();
         string GetDirCryptFile();
-        I_INPUTOUTPUTMESSAGE CryptFile(string key);
-        I_INPUTOUTPUTMESSAGE DecryptFile(string key);
-        I_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord, bool caseSensitive);
+        bool Get_caseSensitive();
+        bool Get_searchInTegs();
+        bool Get_searchInHeader();
+        bool Get_searchUntilFirstMatch();
+        bool Get_viewServiceInformation();
+        void Toggle_caseSensitive();
+        void Toggle_searchInTegs();
+        void Toggle_searchInHeader();
+        void Toggle_searchUntilFirstMatch();
+        void Toggle_viewServiceInformation();        
+        E_INPUTOUTPUTMESSAGE CryptFile(string key);
+        E_INPUTOUTPUTMESSAGE DecryptFile(string key);
+        E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord);
+        E_INPUTOUTPUTMESSAGE ShowAllFromCryptFile(string key);
+        E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
         void ShowAPersone(string message);
         string ReadFromPersone();
     }

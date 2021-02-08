@@ -518,7 +518,7 @@ namespace CryptWinIOSAndroid
         }
     }
 
-    static class CryptoWithoutTry
+    public static class CryptoWithoutTry
     {
         //public bool HasProblem { get; private set; } = false;
         //public string ProblemMessage { get; private set; } = null;
@@ -734,6 +734,17 @@ namespace CryptWinIOSAndroid
 
             MemoryStream ms = new MemoryStream(key);
             return new CryptoStream(ms, ct, CryptoStreamMode.Read);
+        }
+
+        public static string GeneratePassword(int length)
+        {
+            Random random = new Random();
+            string result = "";
+            for (int i = 0; i < length; i++)
+            {
+                result += Encoding.UTF8.GetString(new byte[] { Convert.ToByte(random.Next(48, 122)) });
+            }
+            return result;
         }
     }
 }
