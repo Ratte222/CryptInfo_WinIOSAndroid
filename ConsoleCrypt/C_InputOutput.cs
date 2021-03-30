@@ -10,6 +10,7 @@ namespace ConsoleCrypt
     class C_InputOutputFile:I_InputOutput
     {
         public AppSettings appSettings { get; set; }
+        public E_INPUTOUTPUTMESSAGE lastProblem { get; protected set; } = E_INPUTOUTPUTMESSAGE.Ok;
         XmlSerializer formatter = new XmlSerializer(typeof(AppSettings));
         string _pathAppSetting = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "AppSettings.xml");
         private bool caseSensitive = false,
@@ -478,6 +479,146 @@ namespace ConsoleCrypt
             E_INPUTOUTPUTMESSAGE vs = SearchBlockFromCryptRepositoriesUseKeyWord(key, "");
             showAllFromCryptFile = false;
             return vs;
+        }
+        public string GetBlockData(string key, int targetBlock, int targetLine = -1)
+        {
+            StreamReader srCrypt = null;
+            string result = "";
+            try
+            {
+                if (appSettings == null)
+                {
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                    {
+                        lastProblem = i_;
+                        return result;
+                    }
+                }
+                if (!File.Exists(appSettings.DirCryptFile))
+                {
+                    lastProblem = E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                    return result;
+                }
+                if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
+                {
+                    lastProblem = E_INPUTOUTPUTMESSAGE.KeyIsNull;
+                    return result;
+                }
+                string content, block_str = "";
+                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
+                int lineBlock = 0, intBlock = -1;
+                while (true)
+                {
+                    content = srCrypt.ReadLine();
+                    if (content != null)
+                    {
+                        content = (CryptoWithoutTry.Decrypt(content, key));
+                        if (viewServiceInformation)
+                            block_str += $"lb{lineBlock}# {content}\r\n";
+                        else
+                            block_str += $"{content}\r\n";
+                        lineBlock++;
+                        if (String.Equals(content, appSettings.SeparateBlock))
+                        {                                                         
+                            if (targetBlock == intBlock)
+                            {
+                                if(targetLine < 0)
+                                {
+                                    block_str = block_str.Replace(appSettings.SeparateBlock, "");
+                                    block_str = block_str.TrimEnd(new char[] { '\r', '\n' });
+                                    result = block_str;
+                                }
+                                else
+                                {
+                                    if (lineBlock-1 >= targetLine)
+                                        result = block_str.Split('\n')[targetLine].TrimEnd(new char[] { '\r', '\n' });
+                                    else
+                                        result = "target line more then line in block";
+                                }                                
+                                break;
+                            }
+                            intBlock++;
+                            lineBlock = 0;
+                            if (viewServiceInformation)
+                                block_str = $"Block №{intBlock}\r\n";
+                            else
+                                block_str = "";
+                        }                        
+                    }
+                    else
+                    {
+                        if (intBlock < targetBlock)
+                            result = "target block more then block in file";
+                        break;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Program.HandleMessage("", ex);
+            }
+            finally
+            {
+                srCrypt?.Close();
+            }
+            return result;
+        }
+        public E_INPUTOUTPUTMESSAGE Insert(string key, string data, int block, int targetLine = -1)//do not work
+        {
+            StreamReader srCrypt = null;
+            try
+            {
+                if (appSettings == null)
+                {
+                    E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
+                    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
+                        return i_;
+                }
+                if (!File.Exists(appSettings.DirCryptFile))
+                    return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
+                    return E_INPUTOUTPUTMESSAGE.KeyIsNull;
+                string content;
+                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
+                bool flagTargetBlock = false;
+                int lineBlock = 0, intBlock = -1;
+                while (true)
+                {
+                    content = srCrypt.ReadLine();
+                    if (content != null)
+                    {
+                        content = (CryptoWithoutTry.Decrypt(content, key));
+                        lineBlock++;
+                        if (String.Equals(content, appSettings.SeparateBlock))
+                        {                            
+                            intBlock++;
+                            lineBlock = 0;                            
+                        }
+                        else
+                        {
+                            
+                        }
+
+                    }
+                    else
+                    {                        
+                        break;
+                    }
+                }
+
+                return E_INPUTOUTPUTMESSAGE.Ok;
+            }
+            catch (Exception ex)
+            {
+                Program.HandleMessage("", ex);
+            }
+            finally
+            {
+                srCrypt?.Close();
+            }
+            return E_INPUTOUTPUTMESSAGE.Insert;
         }
 
         public void ShowAPersone(string message)

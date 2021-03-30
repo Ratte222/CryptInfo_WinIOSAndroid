@@ -62,6 +62,7 @@ namespace ConsoleCrypt
                             else if (String.Equals(splitCommand[1], "show"))
                             {
                                 InputOutputFile.ShowAPersone("-b - show block in crypt file. Example: show -b 5 -vsi ");
+                                InputOutputFile.ShowAPersone("-ln - show line in block in crypt file. Example: show -b 5 -ln 4 ");
                                 InputOutputFile.ShowAPersone("-all - show all data in crypt file. Example: show -all -vsi");
                                 InputOutputFile.ShowAPersone("-vsi  (optional, toggle default param) view setting information");
                             }
@@ -234,19 +235,41 @@ namespace ConsoleCrypt
                             InputOutputFile.ShowAPersone("too few parameters");
                             //InputOutputFile.ShowAPersone("expected \"search keyWord\"");
                         }
-                        if (command.IndexOf("-vsi") > -1)//view service information
+                        else
                         {
-                            InputOutputFile.Toggle_viewServiceInformation();
+                            if (command.IndexOf("-vsi") > -1)//view service information
+                            {
+                                InputOutputFile.Toggle_viewServiceInformation();
+                            }
+                            if (command.IndexOf("-all") > -1)
+                            {
+                                CheckPassword();
+                                HandleCallIntergaceMethods(InputOutputFile.ShowAllFromCryptFile(password));
+                            }
+                            else if (command.IndexOf("-b") > -1)
+                            {
+                                if (splitCommand.Length < 3)
+                                {
+                                    InputOutputFile.ShowAPersone("too few parameters");                                    
+                                }
+                                else if ((command.IndexOf("-ln") > -1) && (splitCommand.Length < 3))
+                                {
+                                    InputOutputFile.ShowAPersone("too few parameters");
+                                }
+                                else
+                                {
+                                    CheckPassword();
+                                    if (command.IndexOf("-ln") > -1)
+                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(password,
+                                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b")+1]),
+                                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])));
+                                    else
+                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(password,
+                                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
+                                }
+                            }
                         }
-                        if (command.IndexOf("-all") > -1)
-                        {
-                            CheckPassword();
-                            HandleCallIntergaceMethods(InputOutputFile.ShowAllFromCryptFile(password));
-                        }
-                        else if (command.IndexOf("-b") > -1)
-                        {
-                            InputOutputFile.ShowAPersone($"Coming soon");
-                        }
+                        
                     }
                     else if(String.Equals(splitCommand[0], "viewsetting"))
                     {
@@ -266,16 +289,19 @@ namespace ConsoleCrypt
                             InputOutputFile.ShowAPersone("too few parameters");
                             //InputOutputFile.ShowAPersone("expected \"search keyWord\"");
                         }
-                        if (command.IndexOf("-toend") > -1)
+                        else
                         {
-                            CheckPassword();
-                            HandleCallIntergaceMethods(InputOutputFile.WriteToEndCryptFile(password, ConsoleReadMultiline()));
-                        }
-                        else if (command.IndexOf("-inblock") > -1)
-                        {
-                            InputOutputFile.ShowAPersone($"Coming soon");
-                        }
-                    }
+                            if (command.IndexOf("-toend") > -1)
+                            {
+                                CheckPassword();
+                                HandleCallIntergaceMethods(InputOutputFile.WriteToEndCryptFile(password, ConsoleReadMultiline()));
+                            }
+                            else if (command.IndexOf("-inblock") > -1)
+                            {
+                                InputOutputFile.ShowAPersone($"Coming soon");
+                            }
+                        }                        
+                    }                    
                     else
                     {
                         InputOutputFile.ShowAPersone("Unknown command. Use help");
@@ -287,6 +313,20 @@ namespace ConsoleCrypt
                 }
             }
             
+        }
+
+        protected int GetIndexInArray(ref string[] vs, string keyWord)
+        {
+            int i = 0;
+            foreach(string s in vs)
+            {
+                if(String.Equals(s, keyWord))
+                {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
         }
 
         private void CheckPassword()
