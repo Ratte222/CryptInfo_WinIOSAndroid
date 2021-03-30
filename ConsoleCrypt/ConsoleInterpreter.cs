@@ -301,7 +301,7 @@ namespace ConsoleCrypt
 
         private string ConsoleReadMultiline()
         {
-            InputOutputFile.ShowAPersone("When you end - write \"end\"");
+            InputOutputFile.ShowAPersone("When you end - write \"end\". If you want to undo the input - write \"cancel\"");
             string line="", result="";
             do
             {
@@ -309,7 +309,10 @@ namespace ConsoleCrypt
                 result += $"{line}\r\n";
                 //Check for exit conditions
                 line = $"{Console.ReadLine()}";
-            } while (/*!String.IsNullOrWhiteSpace(line) && */!String.Equals(line.ToLower(), "end"));
+            } while (/*!String.IsNullOrWhiteSpace(line) && */!String.Equals(line.ToLower(), "end")
+            && !String.Equals(line.ToLower(), "cancel"));
+            if (String.Equals(line.ToLower(), "cancel"))
+                return "";
             return result.TrimStart(new char[] { '\r', '\n' });
         }
 

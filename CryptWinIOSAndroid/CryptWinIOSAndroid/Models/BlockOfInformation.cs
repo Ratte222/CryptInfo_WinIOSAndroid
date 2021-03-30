@@ -57,7 +57,7 @@ namespace CryptWinIOSAndroid.Models
             string key = GenerateAKey();
             for (int i = 0; i < content.Length; i++)
             {
-                temp += $"{CryptoWithoutTry.Encrypt(content[i], key)}\r\n";
+                temp += $"{CryptoWithoutTry.Encrypt(content[i], key, Encoding.UTF8)}\r\n";
                 if(i == 0) { Description = temp; }
             }
             Text = temp.Substring(Description.Length);

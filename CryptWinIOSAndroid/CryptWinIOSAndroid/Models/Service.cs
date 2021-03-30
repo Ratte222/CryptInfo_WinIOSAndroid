@@ -122,7 +122,7 @@ namespace CryptWinIOSAndroid.Models
             string key = MainKey.Insert(MainKey.Length / 2, MainImportantKey);
             for (int i = 0; i < 4; i++)
             {
-                fileContentCryptSplit[i] = CryptoWithoutTry.Encrypt(fileContentCryptSplit[i], key);
+                fileContentCryptSplit[i] = CryptoWithoutTry.Encrypt(fileContentCryptSplit[i], key, Encoding.UTF8);
             }
         }
 

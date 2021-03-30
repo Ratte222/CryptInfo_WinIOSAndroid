@@ -644,9 +644,9 @@ namespace CryptWinIOSAndroid
         ///
         /// Строка которую необходимо зашифровать
         /// Ключ шифрования
-        public static string Encrypt(string str, string keyCrypt)
+        public static string Encrypt(string str, string keyCrypt, Encoding encoding)
         {
-            return Convert.ToBase64String(Encrypt(Encoding.UTF8.GetBytes(str), keyCrypt));
+            return Convert.ToBase64String(Encrypt(encoding.GetBytes(str), keyCrypt));
         }
         
         /// /// Расшифроывает данные из строки value
@@ -673,13 +673,13 @@ namespace CryptWinIOSAndroid
         
         
        
-        public static string GetHashSHA256(string value)
+        public static string GetHashSHA256(ref string value, ref Encoding encoding)
         {
-            byte[] val = Encoding.ASCII.GetBytes(value);
-            return Encoding.ASCII.GetString(InternalGetHashSHA256(val));
+            byte[] val = encoding.GetBytes(value);
+            return encoding.GetString(InternalGetHashSHA256(ref val));
 
         }
-        private static byte[] InternalGetHashSHA256(byte[] value)
+        private static byte[] InternalGetHashSHA256(ref byte[] value)
         {
             byte[] hashValue = new byte[256];
             using (SHA256 mySHA256 = SHA256.Create())
@@ -688,13 +688,13 @@ namespace CryptWinIOSAndroid
             }
             return hashValue;
         }
-        public static string GetHashSHA512(string value)
+        public static string GetHashSHA512(ref string value, ref Encoding encoding)
         {
-            byte[] val = Encoding.ASCII.GetBytes(value);
-            return Encoding.ASCII.GetString(InternalGetHashSHA512(val));
+            byte[] val = encoding.GetBytes(value);
+            return encoding.GetString(InternalGetHashSHA512(ref val));
 
         }
-        private static byte[] InternalGetHashSHA512(byte[] value)
+        private static byte[] InternalGetHashSHA512(ref byte[] value)
         {
             byte[] hashValue = new byte[512];
             using (SHA512 mySHA512 = SHA512.Create())

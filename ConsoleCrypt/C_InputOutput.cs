@@ -232,7 +232,7 @@ namespace ConsoleCrypt
                     content = srDecrypt.ReadLine();
                     if (content != null)
                     {
-                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key));
+                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key, Encoding.UTF8));
                     }
                     else
                     {                                
@@ -377,9 +377,10 @@ namespace ConsoleCrypt
                                 block = block.Replace(appSettings.SeparateBlock, "");
                                 block = block.TrimEnd(new char[] { '\r', '\n' });
                                 ShowAPersone(block);
-                                if(searchUntilFirstMatch && !showAllFromCryptFile)
+                                if (searchUntilFirstMatch && !showAllFromCryptFile)
                                     break;
-                                
+                                else if (!searchUntilFirstMatch && !showAllFromCryptFile)
+                                    flagTargetBlock = false;
                             }                            
                             intBlock++;
                             lineBlock = 0;
@@ -429,6 +430,10 @@ namespace ConsoleCrypt
             E_INPUTOUTPUTMESSAGE res = E_INPUTOUTPUTMESSAGE.Ok;
             try
             {
+                if(String.IsNullOrWhiteSpace(data)||String.IsNullOrEmpty(data))
+                {
+                    return E_INPUTOUTPUTMESSAGE.False;
+                }
                 if (appSettings == null)
                 {
                     E_INPUTOUTPUTMESSAGE i_ = LoadSetting();
@@ -444,7 +449,7 @@ namespace ConsoleCrypt
                 string[] splitData = data.Split("\r\n");
                 foreach(string s in splitData)
                 {
-                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key));
+                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key, Encoding.UTF8));
                 }                
                 sw.Flush();
             }
