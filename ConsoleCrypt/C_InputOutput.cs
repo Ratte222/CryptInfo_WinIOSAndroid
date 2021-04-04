@@ -9,6 +9,7 @@ namespace ConsoleCrypt
 {
     class C_InputOutputFile:I_InputOutput
     {
+        Encoding _encoding = Encoding.UTF8;
         public AppSettings appSettings { get; set; }
         public E_INPUTOUTPUTMESSAGE lastProblem { get; protected set; } = E_INPUTOUTPUTMESSAGE.Ok;
         XmlSerializer formatter = new XmlSerializer(typeof(AppSettings));
@@ -226,14 +227,14 @@ namespace ConsoleCrypt
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
                     return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content;
-                srDecrypt = new StreamReader(appSettings.DirDecryptFile, Encoding.UTF8);
-                swCrypt = new StreamWriter(appSettings.DirCryptFile, false, Encoding.UTF8);
+                srDecrypt = new StreamReader(appSettings.DirDecryptFile, _encoding);
+                swCrypt = new StreamWriter(appSettings.DirCryptFile, false, _encoding);
                 while (true)
                 {
                     content = srDecrypt.ReadLine();
                     if (content != null)
                     {
-                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key, Encoding.UTF8));
+                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key, _encoding));
                     }
                     else
                     {                                
@@ -280,8 +281,8 @@ namespace ConsoleCrypt
                     return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content;
 
-                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
-                swDecrypt = new StreamWriter(appSettings.DirDecryptFile, false, Encoding.UTF8);
+                srCrypt = new StreamReader(appSettings.DirCryptFile, _encoding);
+                swDecrypt = new StreamWriter(appSettings.DirDecryptFile, false, _encoding);
                 while (true)
                 {
                     content = srCrypt.ReadLine();
@@ -333,7 +334,7 @@ namespace ConsoleCrypt
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
                     return E_INPUTOUTPUTMESSAGE.KeyIsNull;
                 string content, block="";
-                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
+                srCrypt = new StreamReader(appSettings.DirCryptFile, _encoding);
                 bool flagTargetBlock = false, stringIsHeader = false, header=false, tegs=false;
                 int lineBlock = 0, intBlock = -1;
                 if (!caseSensitive)
@@ -445,12 +446,12 @@ namespace ConsoleCrypt
                     return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
                     return E_INPUTOUTPUTMESSAGE.KeyIsNull;
-                sw = new StreamWriter(appSettings.DirCryptFile, true, Encoding.UTF8);
+                sw = new StreamWriter(appSettings.DirCryptFile, true, _encoding);
                 data = $"{data}{appSettings.SeparateBlock}";
                 string[] splitData = data.Split("\r\n");
                 foreach(string s in splitData)
                 {
-                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key, Encoding.UTF8));
+                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key, _encoding));
                 }                
                 sw.Flush();
             }
@@ -480,10 +481,18 @@ namespace ConsoleCrypt
             showAllFromCryptFile = false;
             return vs;
         }
-        public string GetBlockData(string key, int targetBlock, int targetLine = -1)
+        enum EBLOCKDATA
         {
+            stringBlockStartInFile = 0,
+            blockLength
+        }
+        public string GetBlockData(out int[] blockData, string key, int targetBlock, int targetLine = -1)
+        {
+            blockData = new int[] { -1, -1 };
             StreamReader srCrypt = null;
             string result = "";
+            if (viewServiceInformation && (targetLine >= 0))
+                targetLine++;
             try
             {
                 if (appSettings == null)
@@ -506,8 +515,8 @@ namespace ConsoleCrypt
                     return result;
                 }
                 string content, block_str = "";
-                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
-                int lineBlock = 0, intBlock = -1;
+                srCrypt = new StreamReader(appSettings.DirCryptFile, _encoding);
+                int lineBlock = 0, intBlock = -1, currentLineInFile = 0; ;
                 while (true)
                 {
                     content = srCrypt.ReadLine();
@@ -518,7 +527,7 @@ namespace ConsoleCrypt
                             block_str += $"lb{lineBlock}# {content}\r\n";
                         else
                             block_str += $"{content}\r\n";
-                        lineBlock++;
+                        lineBlock++; currentLineInFile++;
                         if (String.Equals(content, appSettings.SeparateBlock))
                         {                                                         
                             if (targetBlock == intBlock)
@@ -528,11 +537,19 @@ namespace ConsoleCrypt
                                     block_str = block_str.Replace(appSettings.SeparateBlock, "");
                                     block_str = block_str.TrimEnd(new char[] { '\r', '\n' });
                                     result = block_str;
+                                    blockData[(int)EBLOCKDATA.blockLength] = lineBlock - 1;
+                                    blockData[(int)EBLOCKDATA.stringBlockStartInFile] = currentLineInFile - lineBlock - 2;
                                 }
                                 else
                                 {
                                     if (lineBlock-1 >= targetLine)
+                                    {
                                         result = block_str.Split('\n')[targetLine].TrimEnd(new char[] { '\r', '\n' });
+                                        if(viewServiceInformation)
+                                            blockData[(int)EBLOCKDATA.stringBlockStartInFile] = currentLineInFile+(targetLine - lineBlock);
+                                        else
+                                            blockData[(int)EBLOCKDATA.stringBlockStartInFile] = currentLineInFile+(targetLine - lineBlock)+1;
+                                    }                                        
                                     else
                                         result = "target line more then line in block";
                                 }                                
@@ -565,9 +582,8 @@ namespace ConsoleCrypt
             }
             return result;
         }
-        public E_INPUTOUTPUTMESSAGE Insert(string key, string data, int block, int targetLine = -1)//do not work
-        {
-            StreamReader srCrypt = null;
+        public E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData)
+        {            
             try
             {
                 if (appSettings == null)
@@ -580,45 +596,125 @@ namespace ConsoleCrypt
                     return E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
                 if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
                     return E_INPUTOUTPUTMESSAGE.KeyIsNull;
-                string content;
-                srCrypt = new StreamReader(appSettings.DirCryptFile, Encoding.UTF8);
-                bool flagTargetBlock = false;
-                int lineBlock = 0, intBlock = -1;
-                while (true)
+                if(blockData[(int)EBLOCKDATA.blockLength] == -1)//update one line
                 {
-                    content = srCrypt.ReadLine();
-                    if (content != null)
+                    if (rewriteLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile], appSettings.DirCryptFile,
+                        CryptoWithoutTry.Encrypt(data, key, _encoding), _encoding))
                     {
-                        content = (CryptoWithoutTry.Decrypt(content, key));
-                        lineBlock++;
-                        if (String.Equals(content, appSettings.SeparateBlock))
-                        {                            
-                            intBlock++;
-                            lineBlock = 0;                            
-                        }
-                        else
-                        {
-                            
-                        }
-
-                    }
-                    else
-                    {                        
-                        break;
+                        return E_INPUTOUTPUTMESSAGE.Ok;
                     }
                 }
-
-                return E_INPUTOUTPUTMESSAGE.Ok;
+                //else//update block
+                //{
+                //    if (rewriteMultiLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile], 
+                //        data.Split('n').Length, appSettings.DirCryptFile,
+                //        CryptoWithoutTry.Encrypt(data, key, _encoding), _encoding))
+                //    {
+                //        return E_INPUTOUTPUTMESSAGE.Ok;
+                //    }
+                //}
             }
             catch (Exception ex)
             {
                 Program.HandleMessage("", ex);
+            }            
+            return E_INPUTOUTPUTMESSAGE.Insert;
+        }
+
+        protected bool rewriteLineText(int rewriteLine, string path, string str, Encoding encoding)
+        {
+            int countBytes = encoding.GetBytes("r").Length;
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Open);
+                var buff = new byte[countBytes];
+                int byteStart = rewriteLine == 1 ? 0 : -1, byteEnd = -1;
+
+                for (int i = 0, line = 1; i < fs.Length; i += countBytes)
+                {
+                    fs.Read(buff, 0, countBytes);
+                    if (encoding.GetString(buff) == "\n")
+                    {//"\n" - перенос строки
+                        if (line == rewriteLine)
+                        {
+                            byteEnd = i;
+                            break;
+                        }
+                        line++;
+                        if (line == rewriteLine)
+                            byteStart = i + countBytes;
+                    }
+                    if (i == fs.Length - 1)
+                        byteEnd = i;
+                }
+                if (byteStart == -1 || byteEnd == -1)
+                    return false;
+                var strByte = encoding.GetBytes(str);
+                fs.Position = byteEnd;
+                var tailBuff = new byte[fs.Length - byteEnd];
+                fs.Read(tailBuff, 0, (int)(fs.Length - byteEnd));
+                fs.Position = byteStart;
+                fs.Write(strByte, 0, strByte.Length);
+                fs.Write(tailBuff, 0, tailBuff.Length);
+                fs.SetLength(byteStart + strByte.Length + tailBuff.Length);
+                return true;
             }
+            catch { }
             finally
             {
-                srCrypt?.Close();
+                fs?.Close();
+                fs?.Dispose();
             }
-            return E_INPUTOUTPUTMESSAGE.Insert;
+            return false;
+        }
+
+        protected bool rewriteMultiLineText(int rewriteLineStart, int countRewriteLine, string path, string str, Encoding encoding)
+        {
+            int countBytes = encoding.GetBytes("r").Length;
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Open);
+                var buff = new byte[countBytes];
+                int byteStart = rewriteLineStart == 1 ? 0 : -1, byteEnd = -1;
+
+                for (int i = 0, line = 1; i < fs.Length; i += countBytes)
+                {
+                    fs.Read(buff, 0, countBytes);
+                    if (encoding.GetString(buff) == "\n")
+                    {//"\n" - перенос строки
+                        if (line == rewriteLineStart + countRewriteLine)
+                        {
+                            byteEnd = i;
+                            break;
+                        }
+                        line++;
+                        if (line == rewriteLineStart)
+                            byteStart = i + countBytes;
+                    }
+                    if (i == fs.Length - 1)
+                        byteEnd = i;
+                }
+                if (byteStart == -1 || byteEnd == -1)
+                    return false;
+                var strByte = encoding.GetBytes(str);
+                fs.Position = byteEnd;
+                var tailBuff = new byte[fs.Length - byteEnd];
+                fs.Read(tailBuff, 0, (int)(fs.Length - byteEnd));
+                fs.Position = byteStart;
+                fs.Write(strByte, 0, strByte.Length);
+                fs.Write(tailBuff, 0, tailBuff.Length);
+                fs.SetLength(byteStart + strByte.Length + tailBuff.Length);
+                return true;
+            }
+            catch { }
+            finally
+            {
+                fs?.Close();
+                fs?.Dispose();
+            }
+            return false;
         }
 
         public void ShowAPersone(string message)

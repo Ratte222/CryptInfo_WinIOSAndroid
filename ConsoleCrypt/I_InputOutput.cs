@@ -51,8 +51,8 @@ namespace ConsoleCrypt
         E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord);
         E_INPUTOUTPUTMESSAGE ShowAllFromCryptFile(string key);
         E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
-        E_INPUTOUTPUTMESSAGE Insert(string key, string data, int block, int targetLine = - 1);
-        string GetBlockData(string key, int block, int targetLine = -1);
+        E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData);
+        string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1);
         void ShowAPersone(string message);
         string ReadFromPersone();
 

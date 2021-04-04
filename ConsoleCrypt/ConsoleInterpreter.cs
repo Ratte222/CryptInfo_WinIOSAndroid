@@ -66,6 +66,11 @@ namespace ConsoleCrypt
                                 InputOutputFile.ShowAPersone("-all - show all data in crypt file. Example: show -all -vsi");
                                 InputOutputFile.ShowAPersone("-vsi  (optional, toggle default param) view setting information");
                             }
+                            else if (String.Equals(splitCommand[1], "update"))
+                            {
+                                InputOutputFile.ShowAPersone("-b - update (rewrite) block in crypt file. Example: update -b 5");
+                                InputOutputFile.ShowAPersone("-ln - update (rewrite) line in block in crypt file. Example: update -b 5 -ln 4 ");                                
+                            }
                             else if (String.Equals(splitCommand[1], "generatepassword"))
                             {
                                 InputOutputFile.ShowAPersone("Example: generatePassword 10");
@@ -85,6 +90,7 @@ namespace ConsoleCrypt
                                 InputOutputFile.ShowAPersone("generatePassword - generate random string desired length");
                                 InputOutputFile.ShowAPersone("reEnter - allows you to re-enter the parameter");
                                 InputOutputFile.ShowAPersone("show - show something");
+                                InputOutputFile.ShowAPersone("update - update (rewrite) data in crypt file");
                                 InputOutputFile.ShowAPersone("add - add string in crypt file");
                             }
                         }
@@ -98,6 +104,7 @@ namespace ConsoleCrypt
                             InputOutputFile.ShowAPersone("generatePassword - generate random string desired length");
                             InputOutputFile.ShowAPersone("reEnter - allows you to re-enter the parameter");
                             InputOutputFile.ShowAPersone("show - show something");
+                            InputOutputFile.ShowAPersone("update - update (rewrite) data in crypt file");
                             InputOutputFile.ShowAPersone("add - add string in crypt file");
                         }
                     }
@@ -108,15 +115,18 @@ namespace ConsoleCrypt
                             InputOutputFile.ShowAPersone("too few parameters");
                             //InputOutputFile.ShowAPersone("expected \"generatePassword lengthPassword\"");
                         }
-                        if(String.Equals(splitCommand[1], "-p"))
-                        {
-                            InputOutputFile.ShowAPersone("Enter password");
-                            password = GetHiddenConsoleInput();
-                            InputOutputFile.ShowAPersone("Ok");
-                        }
                         else
                         {
-                            InputOutputFile.ShowAPersone("uncknow command");
+                            if (String.Equals(splitCommand[1], "-p"))
+                            {
+                                InputOutputFile.ShowAPersone("Enter password");
+                                password = GetHiddenConsoleInput();
+                                InputOutputFile.ShowAPersone("Ok");
+                            }
+                            else
+                            {
+                                InputOutputFile.ShowAPersone("uncknow command");
+                            }
                         }
                     }
                     else if (String.Equals(splitCommand[0], "generatepassword"))
@@ -258,18 +268,61 @@ namespace ConsoleCrypt
                                 }
                                 else
                                 {
+                                    int[] vs;
                                     CheckPassword();
                                     if (command.IndexOf("-ln") > -1)
-                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(password,
+                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(out vs, password,
                                             Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b")+1]),
                                             Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])));
                                     else
-                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(password,
+                                        InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(out vs, password,
                                             Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
                                 }
                             }
                         }
                         
+                    }
+                    else if (String.Equals(splitCommand[0], "update"))
+                    {
+                        if (splitCommand.Length < 3)
+                        {
+                            InputOutputFile.ShowAPersone("too few parameters");                            
+                        }
+                        else
+                        {
+                            InputOutputFile.LoadDefaultParams();
+                            if (InputOutputFile.Get_viewServiceInformation())
+                                InputOutputFile.Toggle_viewServiceInformation();
+                            if ((command.IndexOf("-ln") > -1) && (splitCommand.Length < 3))
+                            {
+                                InputOutputFile.ShowAPersone("too few parameters");
+                            }
+                            else
+                            {
+                                int[] vs;
+                                CheckPassword();
+                                if (command.IndexOf("-ln") > -1)
+                                {
+                                    InputOutputFile.ShowAPersone("Please, edit line and press \"Enter\"");
+                                    InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(out vs, password,
+                                        Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]),
+                                        Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])).TrimEnd(
+                                        new char[] { '\r', '\n' }));
+                                    string content = Console.ReadLine();
+                                    if (QuestionAgreeOrDissagry("Save this line? "))
+                                        HandleCallIntergaceMethods(InputOutputFile.Update(password, content, vs));
+                                }                                    
+                                else
+                                {
+                                    InputOutputFile.ShowAPersone(InputOutputFile.GetBlockData(out vs, password,
+                                        Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
+                                    string content = ConsoleReadMultiline();
+                                    if (QuestionAgreeOrDissagry("Save this line? "))
+                                        HandleCallIntergaceMethods(InputOutputFile.Update(password, content, vs));
+                                }
+                                    
+                            }
+                        }
                     }
                     else if(String.Equals(splitCommand[0], "viewsetting"))
                     {
@@ -313,6 +366,23 @@ namespace ConsoleCrypt
                 }
             }
             
+        }
+
+        public bool QuestionAgreeOrDissagry(string question)
+        {
+            while(true)
+            {
+                Console.WriteLine($"{question} [y/n]");
+                string answer = Console.ReadLine().ToLower();
+                if (String.Equals(answer, "y"))
+                {
+                    return true;
+                }
+                else if (String.Equals(answer, "n"))
+                {
+                    return false;
+                }
+            }            
         }
 
         protected int GetIndexInArray(ref string[] vs, string keyWord)
