@@ -26,7 +26,7 @@ namespace CommonForCryptPasswordLibrary
             }
             return input.ToString();
         }
-        public void HandleMessage(string _msg, Exception ex)
+        public virtual void HandleMessage(string _msg, Exception ex)
         {
             string message = "";
             if (ex != null)

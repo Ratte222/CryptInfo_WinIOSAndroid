@@ -11,7 +11,7 @@ namespace ConsoleCrypt
         static Settings settings;
         static void Main(string[] args)
         {            
-            settings = new Settings(console_IO);            
+            settings = new Settings(console_IO, false);            
             InputOutputFile = new C_InputOutputFile(console_IO, settings);            
             CommandInterpreter consoleInterpreter = new CommandInterpreter(InputOutputFile, console_IO, settings);
             if(args.Length > 0)

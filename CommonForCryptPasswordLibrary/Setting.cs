@@ -7,12 +7,27 @@ namespace CommonForCryptPasswordLibrary
     public class Settings
     {
         AppSettings appSettings;
-        XmlSerializer formatter = new XmlSerializer(typeof(AppSettings));
-        string _pathAppSetting = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "AppSettings.xml");
+        XmlSerializer formatter;
+        string _pathAppSetting;  
         MyIO myIO;
-        public Settings(MyIO myIO)
+        public bool isAndroid;
+        public Settings(MyIO myIO, bool isAndroid)
         {
             this.myIO = myIO;
+            this.isAndroid = isAndroid;
+            if(isAndroid)
+            {
+                _pathAppSetting = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "AppSettings.xml");
+                string[] vs = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+            }
+            else
+            {
+                _pathAppSetting = Path.Combine(Path.GetDirectoryName(
+                    System.Reflection.Assembly.GetEntryAssembly().Location), "AppSettings.xml");
+                formatter = new XmlSerializer(typeof(AppSettings));
+            }
+            
             myIO.WriteLine($"LoadSetting {LoadSetting()}");
         }
         public E_INPUTOUTPUTMESSAGE LoadSetting()
@@ -20,13 +35,24 @@ namespace CommonForCryptPasswordLibrary
             try
             {
                 #region SerializableSetting
-
-
-                using (FileStream fs = new FileStream(_pathAppSetting, FileMode.OpenOrCreate))
+                if(isAndroid)
                 {
-                    appSettings = (AppSettings)formatter.Deserialize(fs);
+                    appSettings = new AppSettings();
+                    appSettings.CharStartAttributes = "#^";
+                    appSettings.CharStopAttributes = "#";
+                    appSettings.SeparateBlock = "***************************************************";
+                    appSettings.SearchSettingDefault = new SearchSettingDefault();
+                    appSettings.SearchSettingDefault.caseSensitive = false;
+                    appSettings.SearchSettingDefault.searchInHeader = false;
+                    appSettings.SearchSettingDefault.searchInTegs = false;
+                    appSettings.SearchSettingDefault.searchUntilFirstMatch = true;
+                    appSettings.SearchSettingDefault.viewServiceInformation = false;
                 }
-                //LoadDefaultParams();
+                else
+                    using (FileStream fs = new FileStream(_pathAppSetting, FileMode.OpenOrCreate))
+                    {
+                        appSettings = (AppSettings)formatter.Deserialize(fs);
+                    }                
                 #endregion
                 return E_INPUTOUTPUTMESSAGE.Ok;
             }
