@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleCrypt": {
+      "commandName": "Project",
+      "commandLineArgs": "while"
+    }
+  }
+}

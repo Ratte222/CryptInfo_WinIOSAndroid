@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CryptWinIOSAndroid\CryptWinIOSAndroid\CryptWinIOSAndroid.csproj" />
+    <ProjectReference Include="..\CommonForCryptPasswordLibrary\CommonForCryptPasswordLibrary.csproj" />
+    <ProjectReference Include="..\WorkWithFileLibrary\WorkWithFileLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
