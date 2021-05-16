@@ -6,54 +6,48 @@ namespace CommonForCryptPasswordLibrary
 {    
     public class Settings
     {
-        AppSettings appSettings;
-        XmlSerializer formatter;
-        string _pathAppSetting;  
-        MyIO myIO;
-        public bool isAndroid;
-        public Settings(MyIO myIO, bool isAndroid)
-        {
+        protected AppSettings appSettings;
+        protected XmlSerializer formatter;
+        protected string _pathAppSetting;
+        protected MyIO myIO;
+        //public bool isAndroid;
+        public Settings() { }
+
+        public Settings(MyIO myIO)
+        {   
             this.myIO = myIO;
-            this.isAndroid = isAndroid;
-            if(isAndroid)
-            {
+            //this.isAndroid = isAndroid;
+#if ANDROID
+            
                 _pathAppSetting = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "AppSettings.xml");
                 string[] vs = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-            }
-            else
-            {
+            
+#else
+            
                 _pathAppSetting = Path.Combine(Path.GetDirectoryName(
                     System.Reflection.Assembly.GetEntryAssembly().Location), "AppSettings.xml");
                 formatter = new XmlSerializer(typeof(AppSettings));
-            }
             
+#endif            
             myIO.WriteLine($"LoadSetting {LoadSetting()}");
         }
-        public E_INPUTOUTPUTMESSAGE LoadSetting()
+        public virtual E_INPUTOUTPUTMESSAGE LoadSetting()
         {
             try
             {
                 #region SerializableSetting
-                if(isAndroid)
-                {
-                    appSettings = new AppSettings();
-                    appSettings.CharStartAttributes = "#^";
-                    appSettings.CharStopAttributes = "#";
-                    appSettings.SeparateBlock = "***************************************************";
-                    appSettings.SearchSettingDefault = new SearchSettingDefault();
-                    appSettings.SearchSettingDefault.caseSensitive = false;
-                    appSettings.SearchSettingDefault.searchInHeader = false;
-                    appSettings.SearchSettingDefault.searchInTegs = false;
-                    appSettings.SearchSettingDefault.searchUntilFirstMatch = true;
-                    appSettings.SearchSettingDefault.viewServiceInformation = false;
-                }
-                else
-                    using (FileStream fs = new FileStream(_pathAppSetting, FileMode.OpenOrCreate))
+#if ANDROID
+                
+                    
+                
+#else
+                using (FileStream fs = new FileStream(_pathAppSetting, FileMode.OpenOrCreate))
                     {
                         appSettings = (AppSettings)formatter.Deserialize(fs);
-                    }                
-                #endregion
+                    }
+#endif
+#endregion
                 return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch (Exception ex)

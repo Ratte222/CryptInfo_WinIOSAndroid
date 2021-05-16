@@ -5,20 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommonForCryptPasswordLibrary;
 using System.IO;
-
 namespace CryptApp.Services
 {
     public class DataStore : IDataStore<Item>
     {
         readonly List<Item> items;
-        protected Settings settings;
+        protected SettingAndroid settings;
         protected MyIOAndroid myIOAndroid;
         C_InputOutputFile inputOutputFile;
         string key = "12345678";
         public DataStore()
         {
             myIOAndroid = new MyIOAndroid();
-            settings = new Settings(myIOAndroid, true);
+            settings = new SettingAndroid(myIOAndroid);
             settings.SetDirCryptFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Crypt.txt"));
             
             inputOutputFile = new C_InputOutputFile(myIOAndroid, settings);

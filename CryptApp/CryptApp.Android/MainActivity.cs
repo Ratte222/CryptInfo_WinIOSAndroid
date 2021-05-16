@@ -1,9 +1,12 @@
-﻿using System;
+﻿#define ANDROID
+using System;
 
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+
+using CryptApp.Services;
 
 namespace CryptApp.Droid
 {
