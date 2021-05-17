@@ -16,7 +16,7 @@ namespace ConsoleCrypt
             CommandInterpreter consoleInterpreter = new CommandInterpreter(InputOutputFile, console_IO, settings);
             if(args.Length > 0)
             {
-                if (args[0].ToLower() == "while")
+                if (args[0].ToLower() == "loop")
                 {
                     consoleInterpreter.Start();
                 }

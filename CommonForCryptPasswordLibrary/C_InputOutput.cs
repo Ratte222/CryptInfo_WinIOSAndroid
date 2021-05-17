@@ -410,22 +410,30 @@ namespace CommonForCryptPasswordLibrary
                     {
                         return E_INPUTOUTPUTMESSAGE.Ok;
                     }
+                    else return E_INPUTOUTPUTMESSAGE.Update;
                 }
-                //else//update block
-                //{
-                //    if (rewriteMultiLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile], 
-                //        data.Split('n').Length, appSettings.DirCryptFile,
-                //        CryptoWithoutTry.Encrypt(data, key, _encoding), _encoding))
-                //    {
-                //        return E_INPUTOUTPUTMESSAGE.Ok;
-                //    }
-                //}
+                else//update block
+                {
+                    string[] vs = data.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    string cryptContent = "";
+                    foreach(string s in vs)
+                    {
+                        cryptContent += CryptoWithoutTry.Encrypt(s.Trim(), key, _encoding) + "\r\n";
+                    }    
+                    if (CWorkWithFileLibrary.rewriteMultiLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile] + 3,
+                        blockData[(int)EBLOCKDATA.blockLength], settings.GetDirCryptFile(),
+                        cryptContent, _encoding))
+                    {
+                        return E_INPUTOUTPUTMESSAGE.Ok;
+                    }
+                    else return E_INPUTOUTPUTMESSAGE.Update;
+                }
             }
             catch (Exception ex)
             {
                 console_IO.HandleMessage("", ex);
             }            
-            return E_INPUTOUTPUTMESSAGE.Insert;
+            return E_INPUTOUTPUTMESSAGE.Update;
         }
 
         

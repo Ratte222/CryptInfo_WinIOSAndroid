@@ -18,6 +18,7 @@ namespace CommonForCryptPasswordLibrary
         ExceprionDecryptFile,
         SearchBlockFromCryptRepositoriesUseKeyWord,
         WriteToEndCryptFile,
+        Update,
         Insert
     };
     public interface I_InputOutput
