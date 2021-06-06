@@ -30,7 +30,7 @@ namespace CommonForCryptPasswordLibrary
         //}
         
         //E_INPUTOUTPUTMESSAGE LoadSetting();
-        //E_INPUTOUTPUTMESSAGE LoadDefaultParams();
+        E_INPUTOUTPUTMESSAGE LoadDefaultParams();
         //E_INPUTOUTPUTMESSAGE SaveSetting();
         //E_INPUTOUTPUTMESSAGE ResetSetting();
         //E_INPUTOUTPUTMESSAGE SetDirCryptFile(string val);

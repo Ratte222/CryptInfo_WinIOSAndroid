@@ -9,10 +9,8 @@ namespace WorkWithFileLibrary
         public static bool rewriteLineText(int rewriteLine, string path, string content, Encoding encoding)
         {
             int countBytes = encoding.GetBytes("r").Length;
-            FileStream fs = null;
-            try
+            using (FileStream fs = new FileStream(path, FileMode.Open))
             {
-                fs = new FileStream(path, FileMode.Open);
                 var buff = new byte[countBytes];
                 int byteStart = rewriteLine == 1 ? 0 : -1, byteEnd = -1;
 
@@ -43,27 +41,19 @@ namespace WorkWithFileLibrary
                 fs.Write(strByte, 0, strByte.Length);
                 fs.Write(tailBuff, 0, tailBuff.Length);
                 fs.SetLength(byteStart + strByte.Length + tailBuff.Length);
+                fs.Flush();
                 return true;
-            }
-            //catch { }
-            finally
-            {
-                fs?.Close();
-                fs?.Dispose();
-            }
+            }           
             return false;
         }
 
         public static bool rewriteMultiLineText(int rewriteLineStart, int countRewriteLine, string path, string content, Encoding encoding)// do not work
         {
             int countBytes = encoding.GetBytes("r").Length;
-            FileStream fs = null;
-            try
-            {
-                fs = new FileStream(path, FileMode.Open);
-                var buff = new byte[countBytes];
+            using (FileStream fs = new FileStream(path, FileMode.Open))
+            { var buff = new byte[countBytes];
                 int byteStart = rewriteLineStart == 1 ? 0 : -1, byteEnd = -1;
-                
+
                 for (int i = 0, line = 1; i < fs.Length; i += countBytes)
                 {
                     fs.Read(buff, 0, countBytes);
@@ -91,15 +81,9 @@ namespace WorkWithFileLibrary
                 fs.Write(strByte, 0, strByte.Length);
                 fs.Write(tailBuff, 0, tailBuff.Length);
                 fs.SetLength(byteStart + strByte.Length + tailBuff.Length);
+                fs.Flush();
                 return true;
-            }
-            //catch { }
-            finally
-            {
-                fs?.Flush();
-                fs?.Close();
-                fs?.Dispose();
-            }
+            }           
             return false;
         }
     }

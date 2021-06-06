@@ -12,7 +12,7 @@ namespace CryptApp.Services
         readonly List<Item> items;
         protected SettingAndroid settings;
         protected MyIOAndroid myIOAndroid;
-        C_InputOutputFile inputOutputFile;
+        InputOutputFile inputOutputFile;
         string key = "12345678";
         public DataStore()
         {
@@ -20,7 +20,7 @@ namespace CryptApp.Services
             settings = new SettingAndroid(myIOAndroid);
             settings.SetDirCryptFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Crypt.txt"));
             
-            inputOutputFile = new C_InputOutputFile(myIOAndroid, settings);
+            inputOutputFile = new InputOutputFile(myIOAndroid, settings);
             if (!File.Exists(settings.GetDirCryptFile()))
             {
                 File.Create(settings.GetDirCryptFile());

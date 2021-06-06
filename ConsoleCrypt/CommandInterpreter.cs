@@ -6,13 +6,13 @@ using CommonForCryptPasswordLibrary;
 //using System.Void;
 namespace ConsoleCrypt
 {
-    class CommandInterpreter
+    public class CommandInterpreter
     {
         private string password;
-        C_InputOutputFile InputOutputFile;
-        MyIO_Console console_IO;
-        Settings settings;
-        public CommandInterpreter(C_InputOutputFile _InputOutputFile, MyIO_Console _console_IO, Settings settings)
+        I_InputOutput InputOutputFile;
+        ImyIO_Console console_IO;
+        ISettings settings;
+        public CommandInterpreter(I_InputOutput _InputOutputFile, ImyIO_Console _console_IO, ISettings settings)
         {
             InputOutputFile = _InputOutputFile;
             console_IO = _console_IO;
@@ -286,14 +286,14 @@ namespace ConsoleCrypt
                         }
                         else
                         {
-                            int[] vs;
+                            //int[] vs;
                             CheckPassword();
                             if (_IndexOfInArray(splitCommand, "-ln") > -1)
-                                console_IO.WriteLine(InputOutputFile.GetBlockData(out vs, password,
+                                console_IO.WriteLine(InputOutputFile.GetBlockData(out _, password,
                                     Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]),
                                     Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])));
                             else
-                                console_IO.WriteLine(InputOutputFile.GetBlockData(out vs, password,
+                                console_IO.WriteLine(InputOutputFile.GetBlockData(out _, password,
                                     Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
                         }
                     }

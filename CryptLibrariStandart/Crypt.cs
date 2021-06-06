@@ -5,9 +5,10 @@ using System.IO;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
-
+[assembly: CLSCompliant(true)]//compiler must check compatible with CLS. 
 namespace CryptLibrary
 {
+    
     class Crypto
     {
         public bool HasProblem { get; protected set; } = false;

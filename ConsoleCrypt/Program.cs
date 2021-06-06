@@ -6,13 +6,13 @@ namespace ConsoleCrypt
 {
     class Program
     {
-        static C_InputOutputFile InputOutputFile;
+        static InputOutputFile InputOutputFile;
         static MyIO_Console console_IO = new MyIO_Console();
         static Settings settings;
         static void Main(string[] args)
         {            
             settings = new Settings(console_IO);            
-            InputOutputFile = new C_InputOutputFile(console_IO, settings);            
+            InputOutputFile = new InputOutputFile(console_IO, settings);            
             CommandInterpreter consoleInterpreter = new CommandInterpreter(InputOutputFile, console_IO, settings);
             if(args.Length > 0)
             {

@@ -4,19 +4,20 @@ using System.Xml.Serialization;
 
 namespace CommonForCryptPasswordLibrary
 {    
-    public class Settings
+    public class Settings:ISettings
     {
         protected AppSettings appSettings;
         protected XmlSerializer formatter;
         protected string _pathAppSetting;
-        protected MyIO myIO;
+        protected IMyIO myIO;
         //public bool isAndroid;
         public Settings() { }
 
-        public Settings(MyIO myIO)
-        {   
-            this.myIO = myIO;
+        public Settings(IMyIO myIO)
+        {
+            this.myIO = myIO; 
             //this.isAndroid = isAndroid;
+            //string vs = Environment.OSVersion.VersionString;//должно работать. проверь!
 #if ANDROID
             
                 _pathAppSetting = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

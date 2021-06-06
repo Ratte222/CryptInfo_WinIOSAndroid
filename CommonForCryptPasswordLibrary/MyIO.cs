@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static System.Console;
 
 namespace CommonForCryptPasswordLibrary
 {
-    public class MyIO
+    public class MyIO:IMyIO
     {
         public virtual void WriteLine(string content)
         {
-            Console.WriteLine(content);
+            WriteLine(content);
         }
         public virtual string ReadLine()
         {
-            return Console.ReadLine();
+            return ReadLine();
         }
         public virtual string GetHiddenInput()
         {
             StringBuilder input = new StringBuilder();
             while (true)
             {
-                var key = Console.ReadKey(true);
+                var key = ReadKey(true);
                 if (key.Key == ConsoleKey.Enter) break;
                 if (key.Key == ConsoleKey.Backspace && input.Length > 0) input.Remove(input.Length - 1, 1);
+                else if (key.Key == ConsoleKey.Backspace && input.Length == 0) /*Console.Write("\a");*/Console.Beep();
                 else if (key.Key != ConsoleKey.Backspace) input.Append(key.KeyChar);
             }
             return input.ToString();
@@ -43,7 +45,7 @@ namespace CommonForCryptPasswordLibrary
                 message = $"{_msg}";
             }
 #if DEBUG
-            Console.WriteLine(message);
+            WriteLine(message);
 #endif
         }
     }

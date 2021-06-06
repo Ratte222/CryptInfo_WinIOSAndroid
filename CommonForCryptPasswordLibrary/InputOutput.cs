@@ -9,11 +9,11 @@ using CryptLibrary;
 namespace CommonForCryptPasswordLibrary
 {
     
-    public class C_InputOutputFile:I_InputOutput
+    public class InputOutputFile:I_InputOutput
     {
-        MyIO console_IO;
+        IMyIO console_IO;
         Encoding _encoding = Encoding.UTF8;
-        Settings settings;
+        ISettings settings;
         public E_INPUTOUTPUTMESSAGE lastProblem { get; protected set; } = E_INPUTOUTPUTMESSAGE.Ok;
         
         
@@ -24,7 +24,7 @@ namespace CommonForCryptPasswordLibrary
             viewServiceInformation = false,
             showAllFromCryptFile = false;
 
-        public C_InputOutputFile(MyIO _console_IO, Settings settings)
+        public InputOutputFile(IMyIO _console_IO, ISettings settings)
         {
             console_IO = _console_IO;
             this.settings = settings;
@@ -134,7 +134,8 @@ namespace CommonForCryptPasswordLibrary
                     {                        
                         break;
                     }
-                }                 
+                }
+                swDecrypt.Flush();
                 return E_INPUTOUTPUTMESSAGE.Ok;
             }
             catch (Exception ex)
@@ -150,9 +151,8 @@ namespace CommonForCryptPasswordLibrary
             }
             finally
             {
-                srCrypt?.Close();
-                swDecrypt?.Flush();
-                swDecrypt?.Close();
+                srCrypt?.Dispose();                
+                swDecrypt?.Dispose();                
             }
             return E_INPUTOUTPUTMESSAGE.ExceprionDecryptFile;
         }
@@ -255,7 +255,7 @@ namespace CommonForCryptPasswordLibrary
             }
             finally
             {
-                srCrypt?.Close();
+                srCrypt?.Dispose();
             }
             return E_INPUTOUTPUTMESSAGE.SearchBlockFromCryptRepositoriesUseKeyWord;
         }
@@ -289,8 +289,7 @@ namespace CommonForCryptPasswordLibrary
                 res = E_INPUTOUTPUTMESSAGE.WriteToEndCryptFile;
             }
             finally
-            {
-                sw?.Close();
+            {               
                 sw?.Dispose();
             }
             return res;
@@ -391,7 +390,7 @@ namespace CommonForCryptPasswordLibrary
             }
             finally
             {
-                srCrypt?.Close();
+                srCrypt?.Dispose();
             }
             return result;
         }

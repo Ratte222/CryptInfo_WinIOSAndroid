@@ -2,7 +2,7 @@
   "profiles": {
     "ConsoleCrypt": {
       "commandName": "Project",
-      "commandLineArgs": "while"
+      "commandLineArgs": "loop"
     }
   }
 }

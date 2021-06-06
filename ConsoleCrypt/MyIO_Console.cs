@@ -4,7 +4,11 @@ using System.Text;
 using CommonForCryptPasswordLibrary;
 namespace ConsoleCrypt
 {
-    class MyIO_Console:MyIO
+    public interface ImyIO_Console: IMyIO
+    {
+        string ConsoleReadMultiline();
+    }
+    public class MyIO_Console:MyIO, ImyIO_Console
     {
         public string ConsoleReadMultiline()
         {
