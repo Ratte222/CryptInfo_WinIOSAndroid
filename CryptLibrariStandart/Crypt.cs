@@ -480,44 +480,7 @@ namespace CryptLibrary
             arrbyts = _arrbyts;
         }
     }
-    class Crypt : Crypto
-    {
-        public string EncryptBlock(string str)
-        {            
-            string result = null;
-            if(str.IndexOf("official") > -1)//уже есть служебная часть
-            {
-
-            }
-            return result;
-        }
-        public string DecryptBlock(string str)
-        {                        
-            //string token = null, decryptToken = Decrypt(str);
-            //string[] decryptTokenSplit = decryptToken.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            //for (int i = 0; i < decryptTokenSplit.Length - 1; i++)
-            //{
-            //    token += decryptTokenSplit[i] + " ";
-            //}
-            //string tokenCS = decryptToken.Substring(token.Length, decryptToken.Length - token.Length);
-            //byte[] CS_ = CalculateCSByte(Encoding.UTF8.GetBytes(token));
-            //string CS = Encoding.UTF8.GetString(CS_);
-            //if (tokenCS == CS)//check check summ decryptTokenSplit[decryptTokenSplit.Length - 1]
-            //{
-            //    return decryptTokenSplit;
-            //}
-            //else
-            //{
-            //    this.ProblemMessage = $"E 46. token = {token}, " +
-            //        $"tokenCS = {tokenCS}, CS = {CS} \r\n" +
-            //        $"decriptToken = {decryptToken}\r\n";
-            //    //Info?.Invoke(message);
-            //    this.HasProblem = true;
-            //    //Logger.Log.Info(ProblemMessage);
-            //}
-            return null;
-        }
-    }
+    
 
     public static class CryptoWithoutTry
     {
@@ -639,38 +602,7 @@ namespace CryptLibrary
                 //j++;
             }
             return result;
-        }
-
-        /// /// Шифрует строку value
-        ///
-        /// Строка которую необходимо зашифровать
-        /// Ключ шифрования
-        public static string Encrypt(string str, string keyCrypt, Encoding encoding)
-        {
-            return Convert.ToBase64String(Encrypt(encoding.GetBytes(str), keyCrypt));
-        }
-        
-        /// /// Расшифроывает данные из строки value
-        ///
-        /// Зашифрованая строка
-        /// Ключ шифрования
-        /// Возвращает null, если прочесть данные не удалось
-        [DebuggerNonUserCodeAttribute]
-        public static string Decrypt(string str, string keyCrypt)
-        {
-            string Result;
-            CryptoStream Cs = InternalDecrypt(Convert.FromBase64String(str), keyCrypt);
-            StreamReader Sr = new StreamReader(Cs);
-
-            Result = Sr.ReadToEnd();
-
-            Cs.Close();
-            Cs.Dispose();
-
-            Sr.Close();
-            Sr.Dispose();
-            return Result;
-        }
+        }     
         
         
        
@@ -689,13 +621,22 @@ namespace CryptLibrary
             }
             return hashValue;
         }
-        public static string GetHashSHA512(ref string value, ref Encoding encoding)
+
+        /// <summary>
+        /// получить хэш  из строки
+        /// </summary>
+        /// <param name="value">сгенерировать хеш для этого значения</param>
+        /// <returns>hash for message in Base64String</returns>
+        public static string GetHashSHA512(string value)
         {
-            byte[] val = encoding.GetBytes(value);
-            return encoding.GetString(InternalGetHashSHA512(ref val));
+            byte[] val = Encoding.Default.GetBytes(value);
+            return Convert.ToBase64String(InternalGetHashSHA512(val));
 
         }
-        private static byte[] InternalGetHashSHA512(ref byte[] value)
+
+        [SecuritySafeCritical]
+        [DebuggerNonUserCode]
+        private static byte[] InternalGetHashSHA512(byte[] value)
         {
             byte[] hashValue = new byte[512];
             using (SHA512 mySHA512 = SHA512.Create())
@@ -704,6 +645,21 @@ namespace CryptLibrary
             }
             return hashValue;
         }
+
+
+        /// <summary>
+        /// шифрует строку
+        /// </summary>
+        /// <param name="str">строка, которую нужно зашифровать</param>
+        /// <param name="keyCrypt">ключ шифрования</param>        
+        /// <returns>зашифрованная строка в Base64</returns>
+        public static string Encrypt(string str, string keyCrypt)
+        {
+            return Convert.ToBase64String(Encrypt(Encoding.Default.GetBytes(str), keyCrypt));
+        }
+
+        [SecuritySafeCritical]
+        [DebuggerNonUserCode]
         private static byte[] Encrypt(byte[] key, string value)
         {
             SymmetricAlgorithm Sa = Rijndael.Create();
@@ -717,17 +673,35 @@ namespace CryptLibrary
 
             byte[] Result = Ms.ToArray();
 
-            Ms.Close();
             Ms.Dispose();
-
-            Cs.Close();
             Cs.Dispose();
-
             Ct.Dispose();
 
             return Result;
         }
 
+        /// <summary>
+        /// дешифрует строку
+        /// </summary>
+        /// <param name="str">зашифрованная строка в Base64</param>
+        /// <param name="keyCrypt">ключ шифрования</param>
+        /// <returns>Возвращает null, если прочесть данные не удалось</returns>
+        [SecuritySafeCritical]
+        public static string Decrypt(string str, string keyCrypt)
+        {
+            string Result;
+            CryptoStream Cs = InternalDecrypt(Convert.FromBase64String(str), keyCrypt);
+            StreamReader Sr = new StreamReader(Cs);
+
+            Result = Sr.ReadToEnd();
+
+            Cs.Dispose();
+            Sr.Dispose();
+            return Result;
+        }
+
+        [SecuritySafeCritical]
+        [DebuggerNonUserCode]
         private static CryptoStream InternalDecrypt(byte[] key, string value)
         {
             SymmetricAlgorithm sa = Rijndael.Create();

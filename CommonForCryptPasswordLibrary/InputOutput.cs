@@ -80,7 +80,7 @@ namespace CommonForCryptPasswordLibrary
                     content = srDecrypt.ReadLine();
                     if (content != null)
                     {
-                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key, _encoding));
+                        swCrypt.WriteLine(CryptoWithoutTry.Encrypt(content, key));
                     }
                     else
                     {                                
@@ -279,7 +279,7 @@ namespace CommonForCryptPasswordLibrary
                 string[] splitData = data.Split("\r\n");
                 foreach(string s in splitData)
                 {
-                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key, _encoding));
+                    sw.WriteLine(CryptoWithoutTry.Encrypt(s, key));
                 }                
                 sw.Flush();
             }
@@ -405,7 +405,7 @@ namespace CommonForCryptPasswordLibrary
                 if(blockData[(int)EBLOCKDATA.blockLength] == -1)//update one line
                 {
                     if (CWorkWithFileLibrary.rewriteLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile], 
-                        settings.GetDirCryptFile(), CryptoWithoutTry.Encrypt(data, key, _encoding), _encoding))
+                        settings.GetDirCryptFile(), CryptoWithoutTry.Encrypt(data, key), _encoding))
                     {
                         return E_INPUTOUTPUTMESSAGE.Ok;
                     }
@@ -417,7 +417,7 @@ namespace CommonForCryptPasswordLibrary
                     string cryptContent = "";
                     foreach(string s in vs)
                     {
-                        cryptContent += CryptoWithoutTry.Encrypt(s.Trim(), key, _encoding) + "\r\n";
+                        cryptContent += CryptoWithoutTry.Encrypt(s.Trim(), key) + "\r\n";
                     }    
                     if (CWorkWithFileLibrary.rewriteMultiLineText(blockData[(int)EBLOCKDATA.stringBlockStartInFile] + 3,
                         blockData[(int)EBLOCKDATA.blockLength], settings.GetDirCryptFile(),
