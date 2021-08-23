@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static System.Console;
+
 
 namespace CommonForCryptPasswordLibrary
 {
@@ -9,18 +9,26 @@ namespace CommonForCryptPasswordLibrary
     {
         public virtual void WriteLine(string content)
         {
-            WriteLine(content);
+            Console.WriteLine(content);
+        }
+        public virtual void WriteLineUnknownCommand(string command)
+        {
+            Console.WriteLine($"->Unknown command. Use \"help {command}\" for give additional info");
+        }
+        public virtual void WriteLineTooFewParameters()
+        {
+            Console.WriteLine("->Too few parameters");
         }
         public virtual string ReadLine()
         {
-            return ReadLine();
+            return Console.ReadLine();
         }
         public virtual string GetHiddenInput()
         {
             StringBuilder input = new StringBuilder();
             while (true)
             {
-                var key = ReadKey(true);
+                var key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.Enter) break;
                 if (key.Key == ConsoleKey.Backspace && input.Length > 0) input.Remove(input.Length - 1, 1);
                 else if (key.Key == ConsoleKey.Backspace && input.Length == 0) /*Console.Write("\a");*/Console.Beep();

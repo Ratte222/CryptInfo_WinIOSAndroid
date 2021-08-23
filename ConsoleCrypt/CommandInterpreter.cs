@@ -48,6 +48,7 @@ namespace ConsoleCrypt
             }
             else if (String.Equals(splitCommand[0], "help"))
             {
+                console_IO.WriteLine("");
                 if (splitCommand.Length > 1)
                 {
                     splitCommand[1] = splitCommand[1].ToLower();
@@ -100,7 +101,7 @@ namespace ConsoleCrypt
                     }
                     else
                     {
-                        console_IO.WriteLine("set - set something params");
+                        console_IO.WriteLine("set - set some params");
                         console_IO.WriteLine("decrypt - decrypt something");
                         console_IO.WriteLine("crypt - crypt something");
                         console_IO.WriteLine("search - search in crypt file ");
@@ -114,7 +115,7 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    console_IO.WriteLine("set - set something params");
+                    console_IO.WriteLine("set - set some params");
                     console_IO.WriteLine("decrypt - decrypt something");
                     console_IO.WriteLine("crypt - crypt something");
                     console_IO.WriteLine("search - search in crypt file ");
@@ -125,12 +126,13 @@ namespace ConsoleCrypt
                     console_IO.WriteLine("update - update (rewrite) data in crypt file");
                     console_IO.WriteLine("add - add string in crypt file");
                 }
+                console_IO.WriteLine("");
             }
             else if (String.Equals(splitCommand[0], "reenter"))
             {
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                     //console_IO.WriteLine("expected \"generatePassword lengthPassword\"");
                 }
                 else
@@ -143,7 +145,7 @@ namespace ConsoleCrypt
                     }
                     else
                     {
-                        console_IO.WriteLine("uncknow command");
+                        console_IO.WriteLineUnknownCommand("reenter");
                     }
                 }
             }
@@ -151,17 +153,22 @@ namespace ConsoleCrypt
             {
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                     console_IO.WriteLine("expected \"generatePassword lengthPassword\"");
                 }
-                console_IO.WriteLine($"password: {CryptoWithoutTry.GeneratePassword(Convert.ToInt32(splitCommand[1]))}");
+                int passwordLength;
+                if(!Int32.TryParse(splitCommand[1], out passwordLength))
+                {
+                    console_IO.WriteLine("parameter expected number");
+                }
+                console_IO.WriteLine($"password: {CryptoWithoutTry.GeneratePassword(passwordLength)}");
             }
             else if (String.Equals(splitCommand[0], "set"))
             {
                 //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitCommand.Length < 3)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                     //console_IO.WriteLine("expected \"search keyCrypt keyWord\"");
                 }
                 if (String.Equals(splitCommand[1], "-c"))
@@ -176,7 +183,7 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    console_IO.WriteLine("set. Unknown parameter. Use help");
+                    console_IO.WriteLineUnknownCommand("set");
                 }
             }
             else if (String.Equals(splitCommand[0], "decrypt"))
@@ -184,7 +191,7 @@ namespace ConsoleCrypt
                 //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                 }
                 else
                 {
@@ -196,7 +203,7 @@ namespace ConsoleCrypt
                     }
                     else
                     {
-                        console_IO.WriteLine("decrypt. Unknown command. Use help");
+                        console_IO.WriteLineUnknownCommand("dectypt");
                     }
                 }
 
@@ -206,7 +213,7 @@ namespace ConsoleCrypt
                 //string[] splitCommand = command.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                 }
                 else
                 {
@@ -217,7 +224,7 @@ namespace ConsoleCrypt
                     }
                     else
                     {
-                        console_IO.WriteLine("crypt. Unknown command. Use help");
+                        console_IO.WriteLineUnknownCommand("ctypt");
                     }
                 }
             }
@@ -227,8 +234,8 @@ namespace ConsoleCrypt
                 InputOutputFile.LoadDefaultParams();
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
-                    //console_IO.WriteLine("expected \"search keyWord\"");
+                    console_IO.WriteLineTooFewParameters();
+                    console_IO.WriteLine("expected \"search keyWord\"");
                 }
                 if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
                 {
@@ -253,14 +260,14 @@ namespace ConsoleCrypt
                 CheckPassword();
                 HandleCallIntergaceMethods(InputOutputFile.SearchBlockFromCryptRepositoriesUseKeyWord(password,
                     splitCommand[splitCommand.Length - 1]));
-
+                console_IO.WriteLine("");
             }
             else if (String.Equals(splitCommand[0], "show"))
             {
                 InputOutputFile.LoadDefaultParams();
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                     //console_IO.WriteLine("expected \"search keyWord\"");
                 }
                 else
@@ -278,11 +285,11 @@ namespace ConsoleCrypt
                     {
                         if (splitCommand.Length < 3)
                         {
-                            console_IO.WriteLine("too few parameters");
+                            console_IO.WriteLineTooFewParameters();
                         }
                         else if ((_IndexOfInArray(splitCommand, "-ln") > -1) && (splitCommand.Length < 3))
                         {
-                            console_IO.WriteLine("too few parameters");
+                            console_IO.WriteLineTooFewParameters();
                         }
                         else
                         {
@@ -298,13 +305,13 @@ namespace ConsoleCrypt
                         }
                     }
                 }
-
+                console_IO.WriteLine("");
             }
             else if (String.Equals(splitCommand[0], "update"))
             {
                 if (splitCommand.Length < 3)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                 }
                 else
                 {
@@ -313,7 +320,7 @@ namespace ConsoleCrypt
                         InputOutputFile.Toggle_viewServiceInformation();
                     if ((_IndexOfInArray(splitCommand, "-ln") > -1) && (splitCommand.Length < 3))
                     {
-                        console_IO.WriteLine("too few parameters");
+                        console_IO.WriteLineTooFewParameters();
                     }
                     else
                     {
@@ -326,14 +333,17 @@ namespace ConsoleCrypt
                                 Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]),
                                 Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])).TrimEnd(
                                 new char[] { '\r', '\n' }));
+                            console_IO.WriteLine("");
                             string content = Console.ReadLine();
                             if (QuestionAgreeOrDissagry("Save this line? "))
                                 HandleCallIntergaceMethods(InputOutputFile.Update(password, content, vs));
                         }
                         else
                         {
+                            console_IO.WriteLine("");
                             console_IO.WriteLine(InputOutputFile.GetBlockData(out vs, password,
                                 Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
+                            console_IO.WriteLine("");
                             string content = console_IO.ConsoleReadMultiline();
                             if (QuestionAgreeOrDissagry("Save this line? "))
                                 HandleCallIntergaceMethods(InputOutputFile.Update(password, content, vs));
@@ -352,12 +362,13 @@ namespace ConsoleCrypt
                 console_IO.WriteLine($"searchInHeader {settings.Get_searchInHeader()}");
                 console_IO.WriteLine($"searchUntilFirstMatch {settings.Get_searchUntilFirstMatch()}");
                 console_IO.WriteLine($"viewServiceInformation {settings.Get_viewServiceInformation()}");
+                console_IO.WriteLine("");
             }
             else if (String.Equals(splitCommand[0], "add"))
             {
                 if (splitCommand.Length < 2)
                 {
-                    console_IO.WriteLine("too few parameters");
+                    console_IO.WriteLineTooFewParameters();
                     //console_IO.WriteLine("expected \"search keyWord\"");
                 }
                 else
@@ -370,13 +381,13 @@ namespace ConsoleCrypt
                     }
                     else if (_IndexOfInArray(splitCommand, "-inblock") > -1)
                     {
-                        console_IO.WriteLine($"Coming soon");
+                        console_IO.WriteLine($"->Coming soon");
                     }
                 }
             }
             else
             {
-                console_IO.WriteLine("Unknown command. Use help");
+                console_IO.WriteLine("->Unknown command");
             }
             return true;
         }

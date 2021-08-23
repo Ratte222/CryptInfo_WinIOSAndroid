@@ -8,6 +8,8 @@ namespace CommonForCryptPasswordLibrary
     {
         string ReadLine();
         void WriteLine(string content);
+        void WriteLineUnknownCommand(string command);
+        void WriteLineTooFewParameters();
         string GetHiddenInput();
         void HandleMessage(string _msg, Exception ex);
 
