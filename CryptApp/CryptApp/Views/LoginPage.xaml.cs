@@ -17,5 +17,16 @@ namespace CryptApp.Views
             InitializeComponent();
             this.BindingContext = new LoginViewModel();
         }
+
+        private void CB_ViewPassword_CheckedChange(object sender, CheckedChangedEventArgs e)
+        {
+            PasswordEntry.IsPassword = !e.Value;
+        }
+
+        //private void BT_Login_Click(object sender, EventArgs e)
+        //{
+        //    LoginViewModel loginViewModel = new LoginViewModel();
+        //    loginViewModel.PasswordFromEntry = PasswordEntry.Text;
+        //}
     }
 }
