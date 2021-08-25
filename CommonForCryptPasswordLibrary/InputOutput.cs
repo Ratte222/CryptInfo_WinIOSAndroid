@@ -439,7 +439,7 @@ namespace CommonForCryptPasswordLibrary
         {
             StreamReader srCrypt = null;
             int result = -1;
-            
+            int contentString = 0;
             try
             {
                 if (!File.Exists(settings.GetDirCryptFile()))
@@ -454,9 +454,11 @@ namespace CommonForCryptPasswordLibrary
                 }
                 string content;
                 srCrypt = new StreamReader(settings.GetDirCryptFile(), _encoding);
+                
                 while (true)
                 {
                     content = srCrypt.ReadLine();
+                    contentString++;
                     if (content != null)
                     {
                         content = CryptoWithoutTry.Decrypt(content, key);

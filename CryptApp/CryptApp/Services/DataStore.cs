@@ -15,14 +15,19 @@ namespace CryptApp.Services
         protected SettingAndroid settings;
         protected MyIOAndroid myIOAndroid;
         InputOutputFile inputOutputFile;
-        string key = "12345678";
+        string key = "";
         public DataStore()
         {
             myIOAndroid = new MyIOAndroid();
             settings = new SettingAndroid(myIOAndroid);
+            CryptApp.Helpers.AppSettings appSettings =  DependencyService.Get
+                <CryptApp.Helpers.AppSettings>(DependencyFetchTarget.GlobalInstance);
+            key = appSettings.Password;
             IGetPathToFile getPathToFile = DependencyService.Get<IGetPathToFile>();
-            settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt.txt"));
-            
+            if(appSettings.TestMode)
+                settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "CryptTest.txt"));
+            else
+                settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt.txt"));
             inputOutputFile = new InputOutputFile(myIOAndroid, settings);
             if (!File.Exists(settings.GetDirCryptFile()))
             {
@@ -44,20 +49,45 @@ namespace CryptApp.Services
             //new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." }               
             //};
             myIOAndroid.Output = "";
-            int[] vs;
-            int blockCount = inputOutputFile.GetCountBlock(key);
-            if(blockCount >= 1)
-            for(int i = 0; i< blockCount; i++)
+            try
             {
-                string content = inputOutputFile.GetBlockData(out vs, key, i);
-                string[] splitContent = content.Split('\n');
-                items.Add(new Item
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
-                    Description = content.Substring(splitContent[0].Length + 1)
-                });                    
-            }    
+                int[] vs;
+                int blockCount = inputOutputFile.GetCountBlock(key);
+                if (blockCount >= 1)
+                    for (int i = 0; i < blockCount; i++)
+                    {
+                        try
+                        {
+                            string content = inputOutputFile.GetBlockData(out vs, key, i);
+                            string[] splitContent = content.Split('\n');
+                            items.Add(new Item
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                StartBlockLine = vs[0],
+                                EndBlockLine = vs[1],
+                                Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
+                                Description = content.Substring(splitContent[0].Length + 1)
+                            });
+                        }
+                        catch(Exception ex)
+                        {
+                            items.Add(new Item
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Text = $"Block number {i}",
+                                Description = $"message: {ex.Message}\r\n" +
+                                $"InnerException: {ex?.InnerException}" +
+                                $"StackTrace: {ex?.StackTrace}" +
+                                $"HResult: {ex?.HResult}"
+                            });
+                        }
+                        
+                    }
+            }
+            catch(Exception ex)
+            {
+
+            }
             
             
 
