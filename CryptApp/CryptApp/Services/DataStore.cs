@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommonForCryptPasswordLibrary;
 using System.IO;
+using Xamarin.Forms;
+
 namespace CryptApp.Services
 {
     public class DataStore : IDataStore<Item>
@@ -18,19 +20,20 @@ namespace CryptApp.Services
         {
             myIOAndroid = new MyIOAndroid();
             settings = new SettingAndroid(myIOAndroid);
-            settings.SetDirCryptFile(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Crypt.txt"));
+            IGetPathToFile getPathToFile = DependencyService.Get<IGetPathToFile>();
+            settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt.txt"));
             
             inputOutputFile = new InputOutputFile(myIOAndroid, settings);
             if (!File.Exists(settings.GetDirCryptFile()))
             {
                 File.Create(settings.GetDirCryptFile());
-                
-            }
-            inputOutputFile.WriteToEndCryptFile(key,
+                inputOutputFile.WriteToEndCryptFile(key,
                     "Example 1 \r\n" +
                     "tegs\r\n" +
-                    "e - mail:12345678\r\n" +
-                    "password: password1\r\n");
+                    "e - mail:nik@gmail.com\r\n" +
+                    "password: secretPassword\r\n");
+            }
+            
             items = new List<Item>();
             //{
             //new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
@@ -42,25 +45,21 @@ namespace CryptApp.Services
             //};
             myIOAndroid.Output = "";
             int[] vs;
-            //string blockData = inputOutputFile.GetBlockData(out vs, "12345678", 0);
-            items.Add(new Item
+            int blockCount = inputOutputFile.GetCountBlock(key);
+            if(blockCount >= 1)
+            for(int i = 0; i< blockCount; i++)
             {
-                Id = Guid.NewGuid().ToString(),
-                Text = "First item",
-                Description = inputOutputFile.GetBlockData(out vs, key, 0)
-            });
-            items.Add(new Item
-            {
-                Id = Guid.NewGuid().ToString(),
-                Text = "Second item",
-                Description = inputOutputFile.GetBlockData(out vs, key, 1)
-            });
-            items.Add(new Item
-            {
-                Id = Guid.NewGuid().ToString(),
-                Text = "Third item",
-                Description = inputOutputFile.GetBlockData(out vs, key, 2)
-            });
+                string content = inputOutputFile.GetBlockData(out vs, key, i);
+                string[] splitContent = content.Split('\n');
+                items.Add(new Item
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
+                    Description = content.Substring(splitContent[0].Length + 1)
+                });                    
+            }    
+            
+            
 
         }
 
@@ -82,8 +81,8 @@ namespace CryptApp.Services
 
         public async Task<bool> DeleteItemAsync(string id)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == id).FirstOrDefault();
-            items.Remove(oldItem);
+            //var oldItem = items.Where((Item arg) => arg.Id == id).FirstOrDefault();
+            //items.Remove(oldItem);
 
             return await Task.FromResult(true);
         }

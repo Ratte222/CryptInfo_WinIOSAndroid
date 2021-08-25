@@ -435,7 +435,53 @@ namespace CommonForCryptPasswordLibrary
             return E_INPUTOUTPUTMESSAGE.Update;
         }
 
-        
-       
+        public int GetCountBlock(string key)
+        {
+            StreamReader srCrypt = null;
+            int result = -1;
+            
+            try
+            {
+                if (!File.Exists(settings.GetDirCryptFile()))
+                {
+                    lastProblem = E_INPUTOUTPUTMESSAGE.CryptFileNotExist;
+                    return result;
+                }
+                if (String.IsNullOrWhiteSpace(key) || String.IsNullOrEmpty(key))
+                {
+                    lastProblem = E_INPUTOUTPUTMESSAGE.KeyIsNull;
+                    return result;
+                }
+                string content;
+                srCrypt = new StreamReader(settings.GetDirCryptFile(), _encoding);
+                while (true)
+                {
+                    content = srCrypt.ReadLine();
+                    if (content != null)
+                    {
+                        content = CryptoWithoutTry.Decrypt(content, key);
+                       if (String.Equals(content, settings.Get_separateBlock()))
+                       {
+                            result++;
+                       }
+                    }
+                    else
+                    {                        
+                        break;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                console_IO.HandleMessage("", ex);
+            }
+            finally
+            {
+                srCrypt?.Dispose();
+            }
+            return result;
+        }
+
     }
 }
