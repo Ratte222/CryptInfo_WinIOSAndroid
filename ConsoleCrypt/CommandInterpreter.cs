@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CryptLibrary;
 using CommonForCryptPasswordLibrary;
+using CommonForCryptPasswordLibrary.Interfaces;
 //using System.Void;
 namespace ConsoleCrypt
 {
@@ -174,12 +175,12 @@ namespace ConsoleCrypt
                 if (String.Equals(splitCommand[1], "-c"))
                 {
                     HandleCallIntergaceMethods(settings.SetDirCryptFile(splitCommand[splitCommand.Length - 1]));
-                    HandleCallIntergaceMethods(settings.ResetSetting());
+                    HandleCallIntergaceMethods(settings.SaveSetting());
                 }
                 else if (String.Equals(splitCommand[1], "-d"))
                 {
                     HandleCallIntergaceMethods(settings.SetDirDecryptFile(splitCommand[splitCommand.Length - 1]));
-                    HandleCallIntergaceMethods(settings.ResetSetting());
+                    HandleCallIntergaceMethods(settings.SaveSetting());
                 }
                 else
                 {

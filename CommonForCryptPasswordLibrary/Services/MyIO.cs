@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CommonForCryptPasswordLibrary.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 
-namespace CommonForCryptPasswordLibrary
+namespace CommonForCryptPasswordLibrary.Services
 {
     public class MyIO:IMyIO
     {

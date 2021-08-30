@@ -11,12 +11,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonForCryptPasswordLibrary\CommonForCryptPasswordLibrary.csproj" />
     <ProjectReference Include="..\WorkWithFileLibrary\WorkWithFileLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="AppSettings.xml">
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="JSON\AppSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="JSON\SearchSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

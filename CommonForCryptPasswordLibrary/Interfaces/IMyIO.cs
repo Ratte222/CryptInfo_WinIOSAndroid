@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonForCryptPasswordLibrary
+namespace CommonForCryptPasswordLibrary.Interfaces
 {
     public interface IMyIO
     {

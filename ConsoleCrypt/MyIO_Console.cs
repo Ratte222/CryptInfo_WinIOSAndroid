@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using CommonForCryptPasswordLibrary;
+using CommonForCryptPasswordLibrary.Interfaces;
+using CommonForCryptPasswordLibrary.Services;
+
 namespace ConsoleCrypt
 {
     public interface ImyIO_Console: IMyIO
