@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Interfaces
@@ -54,6 +55,9 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
         E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData);
         string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1);
+        void InitCryptFiles(string key);
+        void InitDecryptFiles(string key);
+
         //void ShowAPersone(string message);
         //string ReadFromPersone();
 

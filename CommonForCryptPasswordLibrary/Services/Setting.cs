@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Runtime.InteropServices;
+using System.Linq;
 using CommonForCryptPasswordLibrary.Interfaces;
 
 namespace CommonForCryptPasswordLibrary.Services
-{    
+{
+    [StructLayout(LayoutKind.Auto)]//default StructLayout = LayoutKind.Auto. This added for example
     public class Settings:ISettings
     {
         protected IAppSettings _appSettings;
@@ -88,7 +90,7 @@ namespace CommonForCryptPasswordLibrary.Services
             //    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
             //        return i_;
             //}
-            _appSettings.DirCryptFile.Add(Path.GetFileName(val), val);
+            //_appSettings.DirCryptFile.Add(Path.GetFileName(val), val);
             return E_INPUTOUTPUTMESSAGE.Ok;
         }
         public E_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val)
@@ -99,17 +101,17 @@ namespace CommonForCryptPasswordLibrary.Services
             //    if (i_ != E_INPUTOUTPUTMESSAGE.Ok)
             //        return i_;
             //}
-            _appSettings.DirDecryptFile.Add(Path.GetFileName(val), val);
+            //_appSettings.DirDecryptFile.Add(Path.GetFileName(val), val);
             return E_INPUTOUTPUTMESSAGE.Ok;
         }
 
         public string GetDirCryptFile()
         {            
-            return _appSettings.DirCryptFile["CryptTest"];
+            return _appSettings.DirCryptFile.FirstOrDefault().Path;
         }
         public string GetDirDecryptFile()
         {
-            return _appSettings.DirDecryptFile["DecryptTest"];
+            return _appSettings.DirDecryptFile.FirstOrDefault().Path;
         }
         //public string Get_separateBlock()
         //{

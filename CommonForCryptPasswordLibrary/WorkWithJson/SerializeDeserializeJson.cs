@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ConsoleCrypt.WorkWithJson
+namespace CommonForCryptPasswordLibrary.WorkWithJson
 {
     public class SerializeDeserializeJson<T>
     {
-        public T Deserialize(string path)
+        public T DeserializeFromFile(string path)
         {
             JsonSerializer serializer = new JsonSerializer();
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
@@ -21,7 +21,7 @@ namespace ConsoleCrypt.WorkWithJson
             }
         }
 
-        public void Serialize(T jsonData, string path)
+        public void SerializeToFile(T jsonData, string path)
         {
             JsonSerializer serializer = new JsonSerializer();
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
@@ -34,6 +34,24 @@ namespace ConsoleCrypt.WorkWithJson
                 writer.IndentChar = ' ';
                 serializer.Serialize(writer, jsonData);
             }
+        }
+
+        public T Deserialize(string jsonData)
+        {
+            JsonSerializerSettings jsonSetting = new JsonSerializerSettings();
+            jsonSetting.NullValueHandling = NullValueHandling.Ignore;
+            jsonSetting.Formatting = Formatting.Indented;
+            jsonSetting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            return (T)JsonConvert.DeserializeObject(jsonData, typeof(T), jsonSetting);
+        }
+
+        public string Serialize(T jsonData)
+        {
+            JsonSerializerSettings jsonSetting = new JsonSerializerSettings();
+            jsonSetting.NullValueHandling = NullValueHandling.Ignore;
+            jsonSetting.Formatting = Formatting.Indented;
+            jsonSetting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            return JsonConvert.SerializeObject(jsonData, jsonSetting);
         }
     }
 }

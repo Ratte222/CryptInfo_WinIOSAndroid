@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using CommonForCryptPasswordLibrary.Interfaces;
-using ConsoleCrypt.WorkWithJson;
+using CommonForCryptPasswordLibrary.Model;
+using CommonForCryptPasswordLibrary.WorkWithJson;
 using Newtonsoft.Json;
 
 namespace ConsoleCrypt.Helpers
@@ -14,15 +15,28 @@ namespace ConsoleCrypt.Helpers
         [JsonIgnore]
         public readonly string pathToSettings = System.IO.Path.Combine("JSON", "AppSettings.json");
         [JsonProperty(PropertyName = "dir_crypt_files")]
-        public Dictionary<string, string> DirCryptFile { get; set; }
+        public List<FileModelInSettings> DirCryptFile { get; set; }
         [JsonProperty(PropertyName = "dir_decrypt_files")]
-        public Dictionary<string, string> DirDecryptFile { get; set; }
+        public List<FileModelInSettings> DirDecryptFile { get; set; }
         [JsonProperty(PropertyName = "keys_for_encrypted_files")]
-        public Dictionary<string, string> KeysForEncryptedFiles { get; set; }
+        public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
+        public string default_crypr_file { get; set; }
+        public FileModelInSettings DefaultCryptFile { get
+            {
+                return DirCryptFile.FirstOrDefault(i => i.Name.ToLower() == default_crypr_file.ToLower());
+            } }
+        public string default_decrypr_file { get; set; }
+        public FileModelInSettings DefaultDecryptFile
+        {
+            get
+            {
+                return DirDecryptFile.FirstOrDefault(i => i.Name.ToLower() == default_decrypr_file.ToLower());
+            }
+        }
         public void Save()
         {
             //SaveData?.Invoke();
-            base.Serialize(this, pathToSettings);
+            base.SerializeToFile(this, pathToSettings);
         }
     }
 }

@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommonForCryptPasswordLibrary.Model
+namespace ConsoleCrypt.DTO
 {
-    public class CryptBlockModel: IEquatable<CryptBlockModel>
+    public class BlockDataDTO
     {
-        public Guid Id { get; set; }
-        public Guid GroupId { get; set; }
-        //public long Id { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }        
+        public string Description { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
@@ -26,22 +23,6 @@ namespace CommonForCryptPasswordLibrary.Model
                 $"{nameof(Password)}: {Password}\r\n" +
                 $"{nameof(Phone)}: {Phone}\r\n" +
                 $"{nameof(AdditionalInfo)}: {AdditionalInfo}\r\n";
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            CryptBlockModel objAsPart = obj as CryptBlockModel;
-            if (objAsPart == null) return false;
-            else return Equals(objAsPart);
-        }
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-        public bool Equals(CryptBlockModel other)
-        {
-            if (other == null) return false;
-            return (this.Id.Equals(other.Id));
         }
     }
 }

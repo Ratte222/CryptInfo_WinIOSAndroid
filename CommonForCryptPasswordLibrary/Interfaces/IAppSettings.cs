@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonForCryptPasswordLibrary.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,9 +7,11 @@ namespace CommonForCryptPasswordLibrary.Interfaces
 {
     public interface IAppSettings
     {
-        public Dictionary<string, string> DirCryptFile { get; set; }
-        public Dictionary<string, string> DirDecryptFile { get; set; }
-        public Dictionary<string, string> KeysForEncryptedFiles { get; set; }
+        public List<FileModelInSettings> DirCryptFile { get; set; }
+        public List<FileModelInSettings> DirDecryptFile { get; set; }
+        public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
+        public FileModelInSettings DefaultCryptFile { get; }
+        public FileModelInSettings DefaultDecryptFile { get; }
         void Save();
         //void Load();
     }

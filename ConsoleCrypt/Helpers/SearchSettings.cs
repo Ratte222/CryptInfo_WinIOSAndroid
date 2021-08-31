@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using CommonForCryptPasswordLibrary.Interfaces;
-using ConsoleCrypt.WorkWithJson;
+using CommonForCryptPasswordLibrary.WorkWithJson;
 
 namespace ConsoleCrypt.Helpers
 {
@@ -27,7 +27,7 @@ namespace ConsoleCrypt.Helpers
 
         public void Save()
         {
-            base.Serialize(this, pathToSettings);
+            base.SerializeToFile(this, pathToSettings);
         }
     }
 }
