@@ -11,6 +11,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         bool SearchInHeader { get; set; }
         bool SearchUntilFirstMatch { get; set; }
         bool ViewServiceInformation { get; set; }
+        bool SearchEverywhere { get; set; }
         void Save();
     }
 }

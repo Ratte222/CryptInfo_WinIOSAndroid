@@ -12,30 +12,10 @@ namespace CommonForCryptPasswordLibrary.Services
         {
             Console.WriteLine(content);
         }
-        public virtual void WriteLineUnknownCommand(string command)
-        {
-            Console.WriteLine($"->Unknown command. Use \"help {command}\" for give additional info");
-        }
-        public virtual void WriteLineTooFewParameters()
-        {
-            Console.WriteLine("->Too few parameters");
-        }
+        
         public virtual string ReadLine()
         {
             return Console.ReadLine();
-        }
-        public virtual string GetHiddenInput()
-        {
-            StringBuilder input = new StringBuilder();
-            while (true)
-            {
-                var key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Enter) break;
-                if (key.Key == ConsoleKey.Backspace && input.Length > 0) input.Remove(input.Length - 1, 1);
-                else if (key.Key == ConsoleKey.Backspace && input.Length == 0) /*Console.Write("\a");*/Console.Beep();
-                else if (key.Key != ConsoleKey.Backspace) input.Append(key.KeyChar);
-            }
-            return input.ToString();
         }
         public virtual void HandleMessage(string _msg, Exception ex)
         {

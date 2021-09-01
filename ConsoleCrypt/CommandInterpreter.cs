@@ -6,6 +6,9 @@ using CommonForCryptPasswordLibrary;
 using CommonForCryptPasswordLibrary.Interfaces;
 using System.Threading.Tasks;
 using AutoMapper;
+using CommonForCryptPasswordLibrary.Filters;
+using CommonForCryptPasswordLibrary.Model;
+using ConsoleCrypt.DTO;
 //using System.Void;
 namespace ConsoleCrypt
 {
@@ -73,7 +76,7 @@ namespace ConsoleCrypt
                 "generatepassword" => GeneratePassword(splitCommand),
                 "reenter" => ReEnter(splitCommand),
                 "update" => Update(splitCommand),
-                "intifiles" => InitFiles(splitCommand),
+                "initfiles" => InitFiles(splitCommand),
                 _ => UnknownCommand(splitCommand)
             };
             handler.GetAwaiter();           
@@ -94,8 +97,7 @@ namespace ConsoleCrypt
                 splitCommand[1] = splitCommand[1].ToLower();
                 if (String.Equals(splitCommand[1], "set"))
                 {
-                    _console_IO.WriteLine("-c - set in setting path crypt file. Example: set -c E:\\Crypr.txt");
-                    _console_IO.WriteLine("-d - set in setting path decrypt file. Example: set -d E:\\Decrypr.txt");
+                    
                 }
                 else if (String.Equals(splitCommand[1], "decrypt"))
                 {
@@ -107,17 +109,17 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "search"))
                 {
-                    _console_IO.WriteLine("search -cs -sh -st -sufm -vsi searchWord");
+                    _console_IO.WriteLine("search [-cs -se -sufm] searchWord");
                     _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive");
-                    _console_IO.WriteLine("-sh  (optional, toggle default param) search in header");
-                    _console_IO.WriteLine("-st  (optional, , toggle default param) search in tegs");
+                    _console_IO.WriteLine("-se  (optional, toggle default param) search everywhere");
+                    //_console_IO.WriteLine("-st  (optional, , toggle default param) search in tegs");
                     _console_IO.WriteLine("-sufm  (optional, toggle default param) search until first math");
-                    _console_IO.WriteLine("-vsi  (optional, toggle default param) view setting information");
+                    //_console_IO.WriteLine("-vsi  (optional, toggle default param) view setting information");
                 }
                 else if (String.Equals(splitCommand[1], "initfiles"))
                 {
                     _console_IO.WriteLine("-c init crypt files Example: intifiles -c");
-                    _console_IO.WriteLine("-d init decrypt files Example: intifiles -d");
+                    //_console_IO.WriteLine("-d init decrypt files Example: intifiles -d");
                 }
                 else if (String.Equals(splitCommand[1], "reenter"))
                 {
@@ -125,15 +127,17 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "show"))
                 {
-                    _console_IO.WriteLine("-b - show block in crypt file. Example: show -b 5 -vsi ");
-                    _console_IO.WriteLine("-ln - show line in block in crypt file. Example: show -b 5 -ln 4 ");
-                    _console_IO.WriteLine("-all - show all data in crypt file. Example: show -all -vsi");
-                    _console_IO.WriteLine("-vsi  (optional, toggle default param) view setting information");
+                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g] or [-all]) ");
+                    _console_IO.WriteLine("-b - show blocks. Example: show -b google ");
+                    _console_IO.WriteLine("-g - show block in group. Example: show -b google -ln work ");
+                    _console_IO.WriteLine("-all - show all blocks in crypt file. Example: show -all");
+                    _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive." +
+                        " Example: show -b Google -cs");
                 }
                 else if (String.Equals(splitCommand[1], "update"))
                 {
-                    _console_IO.WriteLine("-b - update (rewrite) block in crypt file. Example: update -b 5");
-                    _console_IO.WriteLine("-ln - update (rewrite) line in block in crypt file. Example: update -b 5 -ln 4 ");
+                    //_console_IO.WriteLine("-b - update (rewrite) block in crypt file. Example: update -b 5");
+                    //_console_IO.WriteLine("-ln - update (rewrite) line in block in crypt file. Example: update -b 5 -ln 4 ");
                 }
                 else if (String.Equals(splitCommand[1], "generatepassword"))
                 {
@@ -141,8 +145,8 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "add"))
                 {
-                    _console_IO.WriteLine("-toend - add string to end crypt file as block Example: add -toend");
-                    _console_IO.WriteLine("-inblock - coming soon");
+                    //_console_IO.WriteLine("-toend - add string to end crypt file as block Example: add -toend");
+                    //_console_IO.WriteLine("-inblock - coming soon");
                 }
                 else
                 {
@@ -188,26 +192,57 @@ namespace ConsoleCrypt
             {
                 _inputOutputFile.Toggle_caseSensitive();
             }
-            if (_IndexOfInArray(splitCommand, "-sh") > -1)// search In Header 
+            if (_IndexOfInArray(splitCommand, "-se") > -1)//search everywhere
             {
-                _inputOutputFile.Toggle_searchInHeader();
+                _inputOutputFile.Toggle_searchEverywhere();
             }
-            if (_IndexOfInArray(splitCommand, "-st") > -1)//search in tegs
-            {
-                _inputOutputFile.Toggle_searchInTegs();
-            }
+            //if (_IndexOfInArray(splitCommand, "-sh") > -1)// search In Header 
+            //{
+            //    _inputOutputFile.Toggle_searchInHeader();
+            //}
+            //if (_IndexOfInArray(splitCommand, "-st") > -1)//search in tegs
+            //{
+            //    _inputOutputFile.Toggle_searchInTegs();
+            //}
+            bool sufm = _searchSettings.SearchUntilFirstMatch;
             if (_IndexOfInArray(splitCommand, "-sufm") > -1)//search until first match
             {
-                _inputOutputFile.Toggle_searchUntilFirstMatch();
+                sufm = !sufm;
             }
-            if (_IndexOfInArray(splitCommand, "-vsi") > -1)//view service information
-            {
-                _inputOutputFile.Toggle_viewServiceInformation();
-            }
+            //if (_IndexOfInArray(splitCommand, "-vsi") > -1)//view service information
+            //{
+            //    _inputOutputFile.Toggle_viewServiceInformation();
+            //}
             CheckPassword();
-            HandleCallIntergaceMethods(_inputOutputFile.SearchBlockFromCryptRepositoriesUseKeyWord(password,
-                splitCommand[splitCommand.Length - 1]));
-            _console_IO.WriteLine("");
+            LoadTheDatabaseIfNeeded();
+            Filter filterShow = new Filter();
+            filterShow.BlockName = splitCommand[splitCommand.Length - 1];
+            if (sufm)
+            {
+                var res = _inputOutputFile.GetBlockData(filterShow);
+                if (res == null)
+                {
+                    _console_IO.WriteLine("Nothing found");
+                }
+                else
+                {
+                    _console_IO.WriteLine(_mapper.Map<CryptBlockModel, BlockDataDTO>(res
+                                ).ToString());
+                }
+            }
+            else
+            {
+                var res = _inputOutputFile.GetBlockDatas(filterShow);
+                if (res.Count == 0)
+                {
+                    _console_IO.WriteLine("Nothing found");
+                }
+                else 
+                { 
+                    _console_IO.Show(_mapper.Map<List<CryptBlockModel>, List<BlockDataDTO>>(res)); 
+                }
+
+            }
         }
 
         private async Task Show(string[] splitCommand)
@@ -222,18 +257,17 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    if (_IndexOfInArray(splitCommand, "-vsi") > -1)//view service information
+                    if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
                     {
-                        _inputOutputFile.Toggle_viewServiceInformation();
+                        _inputOutputFile.Toggle_caseSensitive();
                     }
                     if (_IndexOfInArray(splitCommand, "-all") > -1)
                     {
                         CheckPassword();
                         LoadTheDatabaseIfNeeded();
-                        foreach (var block in _cryptBlock.GetAll_List())
-                        {
-                            _console_IO.WriteLine(block.ToString());
-                        }
+                        List<CryptGroupModel> models = _cryptGroup.GetAll_List();                        
+                        _console_IO.Show(_mapper.Map<List<CryptGroupModel>, List<GroupDataDTO>>(models));
+                        
                     }
                     else if (_IndexOfInArray(splitCommand, "-b") > -1)
                     {
@@ -241,7 +275,7 @@ namespace ConsoleCrypt
                         {
                             _console_IO.WriteLineTooFewParameters();
                         }
-                        else if ((_IndexOfInArray(splitCommand, "-ln") > -1) && (splitCommand.Length < 3))
+                        else if ((_IndexOfInArray(splitCommand, "-g") > -1) && (splitCommand.Length < 3))
                         {
                             _console_IO.WriteLineTooFewParameters();
                         }
@@ -249,17 +283,37 @@ namespace ConsoleCrypt
                         {
                             //int[] vs;
                             CheckPassword();
-                            if (_IndexOfInArray(splitCommand, "-ln") > -1)
-                                _console_IO.WriteLine(_inputOutputFile.GetBlockData(out _, password,
-                                    Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]),
-                                    Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])));
+                            LoadTheDatabaseIfNeeded();
+                            Filter filterShow = new Filter();
+                            filterShow.BlockName = splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1];
+                            if (_IndexOfInArray(splitCommand, "-g") > -1)
+                            {
+                                filterShow.GroupName = splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1];
+                                var res = _inputOutputFile.GetBlockData(filterShow);
+                                if (res == null)
+                                {
+                                    _console_IO.WriteLine("Nothing found");
+                                }
+                                else
+                                {
+                                    _console_IO.WriteLine(_mapper.Map<CryptBlockModel, BlockDataDTO>(res).ToString());
+                                }
+                            }
                             else
-                                _console_IO.WriteLine(_inputOutputFile.GetBlockData(out _, password,
-                                    Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
+                            {
+                                var res = _inputOutputFile.GetBlockDatas(filterShow);
+                                if (res.Count == 0)
+                                {
+                                    _console_IO.WriteLine("Nothing found");
+                                }
+                                else
+                                {
+                                    _console_IO.Show(_mapper.Map<List<CryptBlockModel>, List<BlockDataDTO>>(res));
+                                }
+                            }
                         }
                     }
-                }
-                _console_IO.WriteLine("");
+                }                
             }
             catch(Exception ex)
             {
@@ -345,13 +399,16 @@ namespace ConsoleCrypt
             if (splitCommand.Length < 2)
             {
                 _console_IO.WriteLineTooFewParameters();
-                _console_IO.WriteLine("expected \"intifiles -c\" or \"intifiles -d\"");
+                _console_IO.WriteLine("expected \"initfiles -c\" or \"initfiles -d\"");
             }
             CheckPassword();
             if (splitCommand[1] == "-c")
-                _inputOutputFile.InitCryptFiles(password);
-            else if (splitCommand[1] == "-d")
-                _inputOutputFile.InitCryptFiles(password);
+            {
+                if(this.QuestionAgreeOrDissagry("Really initialize all encrypted files"))
+                _inputOutputFile.InitCryptFiles(password); 
+            }
+            //else if (splitCommand[1] == "-d")
+            //    _inputOutputFile.InitCryptFiles(password);
             _console_IO.WriteLine("Files init successsfully");
         }
 

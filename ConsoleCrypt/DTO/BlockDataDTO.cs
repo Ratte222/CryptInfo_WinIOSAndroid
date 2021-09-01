@@ -22,7 +22,7 @@ namespace ConsoleCrypt.DTO
                 $"{nameof(Email)}: {Email}\r\n" +
                 $"{nameof(Password)}: {Password}\r\n" +
                 $"{nameof(Phone)}: {Phone}\r\n" +
-                $"{nameof(AdditionalInfo)}: {AdditionalInfo}\r\n";
+                $"{nameof(AdditionalInfo)}: {AdditionalInfo}";
         }
     }
 }

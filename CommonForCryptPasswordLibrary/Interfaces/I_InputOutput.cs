@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommonForCryptPasswordLibrary.Filters;
+using CommonForCryptPasswordLibrary.Model;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -47,7 +49,8 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         void Toggle_searchInTegs();
         void Toggle_searchInHeader();
         void Toggle_searchUntilFirstMatch();
-        void Toggle_viewServiceInformation();        
+        void Toggle_viewServiceInformation();    
+        void Toggle_searchEverywhere();
         E_INPUTOUTPUTMESSAGE CryptFile(string key);
         E_INPUTOUTPUTMESSAGE DecryptFile(string key);
         E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord);
@@ -55,8 +58,9 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
         E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData);
         string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1);
+        CryptBlockModel GetBlockData(Filter filterShow);
+        List<CryptBlockModel> GetBlockDatas(Filter filterShow);
         void InitCryptFiles(string key);
-        void InitDecryptFiles(string key);
 
         //void ShowAPersone(string message);
         //string ReadFromPersone();

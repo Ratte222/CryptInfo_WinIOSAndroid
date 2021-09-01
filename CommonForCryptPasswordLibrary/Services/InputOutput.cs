@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Xml.Serialization;
+using System.Linq;
 using WorkWithFileLibrary;
 using CryptLibrary;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
+using CommonForCryptPasswordLibrary.Filters;
 
 namespace CommonForCryptPasswordLibrary.Services
 {
@@ -27,16 +28,17 @@ namespace CommonForCryptPasswordLibrary.Services
             searchInHeader = false,
             searchUntilFirstMatch = false,
             viewServiceInformation = false,
-            showAllFromCryptFile = false;
+            showAllFromCryptFile = false,
+            searchEverywhere = false;
 
         public InputOutputFile(IMyIO _console_IO, IAppSettings appSettings,
-            ISearchSettings searchSettings/*, ICryptGroup cryptGroup, ICryptoBlock cryptoBlock*/)
+            ISearchSettings searchSettings, ICryptGroup cryptGroup, ICryptBlock cryptoBlock)
         {
             console_IO = _console_IO;
             _appSettings = appSettings;
             _searchSettings = searchSettings;
-            //_cryptGroup = cryptGroup;
-            //_cryptoBlock = cryptoBlock;
+            _cryptGroup = cryptGroup;
+            _cryptBlock = cryptoBlock;
             LoadDefaultParams();
         }
 
@@ -47,6 +49,7 @@ namespace CommonForCryptPasswordLibrary.Services
             searchInHeader = _searchSettings.SearchInHeader;
             searchUntilFirstMatch = _searchSettings.SearchUntilFirstMatch;
             viewServiceInformation = _searchSettings.ViewServiceInformation;
+            searchEverywhere = _searchSettings.SearchEverywhere;
             return E_INPUTOUTPUTMESSAGE.Ok;
         }
 
@@ -70,6 +73,11 @@ namespace CommonForCryptPasswordLibrary.Services
         public void Toggle_viewServiceInformation()
         {
             viewServiceInformation = !viewServiceInformation;
+        }
+
+        public void Toggle_searchEverywhere()
+        {
+            searchEverywhere = !searchEverywhere;
         }
 
         public E_INPUTOUTPUTMESSAGE CryptFile(string key)
@@ -107,6 +115,66 @@ namespace CommonForCryptPasswordLibrary.Services
             throw new NotImplementedException();
         }
 
+        public CryptBlockModel GetBlockData(Filter filterShow)
+        {
+            IQueryable<CryptBlockModel> query = null;
+            if(!String.IsNullOrEmpty(filterShow.GroupName))
+            {
+                if (caseSensitive)
+                {
+                    query = _cryptGroup.Get(i => i.Name.ToLower().Contains(filterShow.GroupName.ToLower()))
+                      .CryptBlockModels.AsQueryable();
+                }
+                else
+                {
+                    _cryptGroup.Get(i => i.Name.ToLower().Contains(filterShow.GroupName.ToLower()))
+                        .CryptBlockModels.AsQueryable();
+                }                
+            }
+            else
+            {
+                query = _cryptBlock.GetAll_Queryable();
+            }
+            if (!caseSensitive&&!searchEverywhere)
+            {
+                return query.FirstOrDefault(i => i.Title.ToLower().Contains(filterShow.BlockName.ToLower()));
+            }
+            else if (!caseSensitive && searchEverywhere)
+            {
+                return query.FirstOrDefault(i => i.ToString().ToLower().Contains(filterShow.BlockName.ToLower()));
+            }
+            else if (caseSensitive && !searchEverywhere)
+            {
+                return query.FirstOrDefault(i => i.Title.Contains(filterShow.BlockName));
+            }
+            else// if (!caseSensitive && searchEverywhere)
+            {
+                return query.FirstOrDefault(i => i.ToString().Contains(filterShow.BlockName));
+            }
+        }
+
+        public List<CryptBlockModel> GetBlockDatas(Filter filterShow)
+        {
+            if(caseSensitive&&!searchEverywhere)
+            {
+                return _cryptBlock.GetAll_List().FindAll(i => i.Title.Contains(filterShow.BlockName));
+            }
+            else if(!caseSensitive && !searchEverywhere)
+            {
+                return _cryptBlock.GetAll_List().FindAll(i => 
+                i.Title.ToLower().Contains(filterShow.BlockName.ToLower()));
+            }
+            else if (caseSensitive && searchEverywhere)
+            {
+                return _cryptBlock.GetAll_List().FindAll(i => i.ToString().Contains(filterShow.BlockName));
+            }
+            else //if (!caseSensitive && searchEverywhere)
+            {
+                return _cryptBlock.GetAll_List().FindAll(i =>
+                i.ToString().ToLower().Contains(filterShow.BlockName.ToLower()));
+            }
+        }
+
         public void InitCryptFiles(string key)
         {
             foreach(var path in _appSettings.DirCryptFile)
@@ -124,10 +192,7 @@ namespace CommonForCryptPasswordLibrary.Services
             
         }
 
-        public void InitDecryptFiles(string key)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         
     }

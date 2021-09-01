@@ -12,6 +12,7 @@ namespace ConsoleCrypt.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<CryptBlockModel, BlockDataDTO>();
+            CreateMap<CryptGroupModel, GroupDataDTO>();
         }
     }
 }

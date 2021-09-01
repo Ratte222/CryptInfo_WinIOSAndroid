@@ -46,7 +46,8 @@ namespace ConsoleCrypt
             serviceCollection.AddSingleton<I_InputOutput>(provider =>
             {
                 return new InputOutputFile(provider.GetService<ImyIO_Console>(),
-                    provider.GetService<IAppSettings>(), provider.GetService<ISearchSettings>());
+                    provider.GetService<IAppSettings>(), provider.GetService<ISearchSettings>(),
+                    provider.GetService<ICryptGroup>(), provider.GetService<ICryptBlock>());
             });
             serviceCollection.AddSingleton<CommandInterpreter>(provider =>
             {

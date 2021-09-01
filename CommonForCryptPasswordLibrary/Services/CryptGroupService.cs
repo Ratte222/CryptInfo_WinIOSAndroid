@@ -27,16 +27,20 @@ namespace CommonForCryptPasswordLibrary.Services
             return _cryptDecrypt.CryptFileModel.DecryptInfoContent;
         }
 
-        public IEnumerable<CryptGroupModel> GetAll()
+        public IEnumerable<CryptGroupModel> GetAll_Enumerable()
         {
             return _cryptDecrypt.CryptFileModel.DecryptInfoContent.AsEnumerable();
+        }
+
+        public IQueryable<CryptGroupModel> GetAll_Queryable()
+        {
+            return _cryptDecrypt.CryptFileModel.DecryptInfoContent.AsQueryable();
         }
 
         //public CryptGroupModel Get(Guid guid)
         public CryptGroupModel Get(Predicate<CryptGroupModel> predicate)
         {
-            //return _cryptFileModel.DecryptInfoContent.Find(i => i.Id == guid);
-            throw new NotImplementedException();
+            return _cryptDecrypt.CryptFileModel.DecryptInfoContent.Find(predicate);            
         }
 
         public void Add(CryptGroupModel item)
@@ -46,7 +50,7 @@ namespace CommonForCryptPasswordLibrary.Services
             if(_cryptDecrypt.CryptFileModel.DecryptInfoContent.Any(i=>i.Name.ToLower() == item.Name.ToLower()))
                 throw new ValidationException($"This group name already exist");
             if (item.Id == null)
-                item.Id = new Guid();
+                item.Id = Guid.NewGuid();
             _cryptDecrypt.CryptFileModel.DecryptInfoContent.Add(item);
         }
 

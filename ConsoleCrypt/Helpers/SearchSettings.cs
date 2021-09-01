@@ -24,6 +24,8 @@ namespace ConsoleCrypt.Helpers
         public bool SearchUntilFirstMatch { get; set; }
         [JsonProperty(PropertyName = "view_service_information")]
         public bool ViewServiceInformation { get; set; }
+        [JsonProperty(PropertyName = "search_everywhere")]
+        public bool SearchEverywhere { get; set; }
 
         public void Save()
         {

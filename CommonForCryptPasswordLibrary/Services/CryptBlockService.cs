@@ -26,18 +26,17 @@ namespace CommonForCryptPasswordLibrary.Services
 
         public CryptBlockModel Get(Predicate<CryptBlockModel> predicate)
         {
-            //CryptBlockModel result = null;
-            //foreach(var value in _cryptFileModel.DecryptInfoContent)
-            //{
-            //    result = value.CryptBlockModels.FirstOrDefault(predicate);
-            //}
-            //return result;
-            throw new NotImplementedException();
+            return GetAll_List().Find(predicate);
         }
 
-        public IEnumerable<CryptBlockModel> GetAll()
+        public IEnumerable<CryptBlockModel> GetAll_Enumerable()
         {
-            throw new NotImplementedException();
+            return GetAll_List().AsEnumerable();
+        }
+
+        public IQueryable<CryptBlockModel> GetAll_Queryable()
+        {
+            return GetAll_List().AsQueryable();
         }
 
         public List<CryptBlockModel> GetAll_List()
@@ -57,7 +56,7 @@ namespace CommonForCryptPasswordLibrary.Services
                 .Any(j => j.Title.ToLower() == item.Title.ToLower()) ))
                 throw new ValidationException($"This block name already exist");            
             if (item.Id == null)
-                item.Id = new Guid();            
+                item.Id = Guid.NewGuid();            
             CryptGroupModel temp = _cryptDecrypt.CryptFileModel
                 .DecryptInfoContent.FirstOrDefault(i=>i.Id == item.GroupId);
             if(temp == null)
