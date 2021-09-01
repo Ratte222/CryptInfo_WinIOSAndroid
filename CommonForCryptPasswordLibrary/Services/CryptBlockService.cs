@@ -55,13 +55,13 @@ namespace CommonForCryptPasswordLibrary.Services
             if (_cryptDecrypt.CryptFileModel.DecryptInfoContent.Any(i => i.CryptBlockModels
                 .Any(j => j.Title.ToLower() == item.Title.ToLower()) ))
                 throw new ValidationException($"This block name already exist");            
-            if (item.Id == null)
-                item.Id = Guid.NewGuid();            
+            item.Id = Guid.NewGuid();            
             CryptGroupModel temp = _cryptDecrypt.CryptFileModel
                 .DecryptInfoContent.FirstOrDefault(i=>i.Id == item.GroupId);
             if(temp == null)
                 throw new ValidationException($"There is no group in this {nameof(item.GroupId)}");
             temp.CryptBlockModels.Add(item);
+            _cryptDecrypt.SaveChanges();
         }
 
         public void Delete(CryptBlockModel item)
@@ -72,6 +72,7 @@ namespace CommonForCryptPasswordLibrary.Services
             if (temp == null)
                 throw new ValidationException($"There is no group in this {nameof(item.GroupId)}");
             temp.CryptBlockModels.Remove(item);
+            _cryptDecrypt.SaveChanges();
         }
 
         public void Edit(CryptBlockModel item)
@@ -88,7 +89,8 @@ namespace CommonForCryptPasswordLibrary.Services
             temp.Password = item.Password; 
             temp.Phone = item.Phone; 
             temp.Description = item.Description; 
-            temp.AdditionalInfo = item.AdditionalInfo; 
+            temp.AdditionalInfo = item.AdditionalInfo;
+            _cryptDecrypt.SaveChanges();
         }
 
         

@@ -17,6 +17,7 @@ namespace ConsoleCrypt
         void Show(List<GroupDataDTO> groupDataDTOs);
         void Show(GroupDataDTO groupDataDTO);
         void Show(List<BlockDataDTO> blockDataDTOs);
+        void Show(BlockDataDTO blockDataDTO);
     }
     public class MyIO_Console:MyIO, ImyIO_Console
     {
@@ -62,7 +63,9 @@ namespace ConsoleCrypt
         {
             foreach (var group in groupDataDTOs)
             {
+                WriteLine("------start group------");
                 Show(group);
+                WriteLine("------end group------");
                 WriteLine("");
             }
         }
@@ -77,9 +80,16 @@ namespace ConsoleCrypt
         {
             foreach (var block in blockDataDTOs)
             {
-                WriteLine(block.ToString());
-                WriteLine("");
+                Show(block);
             }
         }
+        public void Show(BlockDataDTO blockDataDTO)
+        {
+            WriteLine("------start block------");
+            WriteLine(blockDataDTO.ToString());
+            WriteLine("------end block------");
+            WriteLine("");       
+        }
+        
     }
 }

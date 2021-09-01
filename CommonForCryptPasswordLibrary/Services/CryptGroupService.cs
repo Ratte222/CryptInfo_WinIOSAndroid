@@ -49,9 +49,9 @@ namespace CommonForCryptPasswordLibrary.Services
                 throw new ValidationException($"{nameof(item.Name)} is null or empty");
             if(_cryptDecrypt.CryptFileModel.DecryptInfoContent.Any(i=>i.Name.ToLower() == item.Name.ToLower()))
                 throw new ValidationException($"This group name already exist");
-            if (item.Id == null)
-                item.Id = Guid.NewGuid();
+            item.Id = Guid.NewGuid();
             _cryptDecrypt.CryptFileModel.DecryptInfoContent.Add(item);
+            _cryptDecrypt.SaveChanges();
         }
 
         public void Delete(CryptGroupModel item)
@@ -59,6 +59,7 @@ namespace CommonForCryptPasswordLibrary.Services
             if (item == null)
                 throw new ValidationException($"{nameof(item)} is null");
             _cryptDecrypt.CryptFileModel.DecryptInfoContent.Remove(item);
+            _cryptDecrypt.SaveChanges();
         }
 
         public void Edit(CryptGroupModel item)
@@ -69,6 +70,7 @@ namespace CommonForCryptPasswordLibrary.Services
                 throw new ValidationException("No element with this id");
             temp.Name = item.Name;
             temp.Description = item.Description;
+            _cryptDecrypt.SaveChanges();
         }
 
         
