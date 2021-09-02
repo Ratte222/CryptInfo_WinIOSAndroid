@@ -67,7 +67,7 @@ namespace ConsoleCrypt
             {
                 "help" => Help(splitCommand),
                 "show" => Show(splitCommand),
-                "add" => Add(splitCommand),
+                "create" => Create(splitCommand),
                 "search" => Search(splitCommand),
                 "set" => Set(splitCommand),
                 "decrypt" => Decrypt(splitCommand),
@@ -149,7 +149,7 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine("Example: generatePassword 10");
                 }
-                else if (String.Equals(splitCommand[1], "add"))
+                else if (String.Equals(splitCommand[1], "create"))
                 {
                     _console_IO.WriteLine("There must be at least one parameter ([-block] or [-group]) ");
                     _console_IO.WriteLine("-block - add block data to selected group. Example: add -block [name group]");
@@ -167,7 +167,7 @@ namespace ConsoleCrypt
                     _console_IO.WriteLine("reEnter - allows you to re-enter the parameter");
                     _console_IO.WriteLine("show - show something");
                     _console_IO.WriteLine("update - update (rewrite) data in crypt file");
-                    _console_IO.WriteLine("add - add string in crypt file");
+                    _console_IO.WriteLine("create - create something");
                     _console_IO.WriteLine("initfiles - init files");
                 }
             }
@@ -182,7 +182,7 @@ namespace ConsoleCrypt
                 _console_IO.WriteLine("reEnter - allows you to re-enter the parameter");
                 _console_IO.WriteLine("show - show something");
                 _console_IO.WriteLine("update - update (rewrite) data in crypt file");
-                _console_IO.WriteLine("add - add string in crypt file");
+                _console_IO.WriteLine("create - create something");
                 _console_IO.WriteLine("initfiles - init files");
             }
             _console_IO.WriteLine("");
@@ -341,7 +341,7 @@ namespace ConsoleCrypt
             
         }
 
-        private async Task Add(string[] splitCommand)
+        private async Task Create(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
