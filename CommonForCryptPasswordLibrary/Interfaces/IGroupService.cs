@@ -5,10 +5,10 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Interfaces
 {
-    public interface ICryptBlock: IRepository<CryptBlockModel>
+    public interface IGroupService : IRepository<GroupModel>
     {
-        List<CryptBlockModel> GetAll_List();
-        void LoadData(CryptDecryptSettings settings);
+        List<GroupModel> GetAll_List();
+        void LoadData(EncryptDecryptSettings settings);
         public bool DataExist { get; }
     }
 }

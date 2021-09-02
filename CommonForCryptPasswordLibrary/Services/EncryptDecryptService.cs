@@ -11,19 +11,19 @@ using System.IO;
 
 namespace CommonForCryptPasswordLibrary.Services
 {
-    public class CryptDecrypt:ICryptDecrypt
+    public class EncryptDecryptService:IEncryptDecryptService
     {
         public CryptFileModel CryptFileModel { get; set; }
-        private SerializeDeserializeJson<List<CryptGroupModel>> listCryptGroupModel = new SerializeDeserializeJson<List<CryptGroupModel>>();
+        private SerializeDeserializeJson<List<GroupModel>> listCryptGroupModel = new SerializeDeserializeJson<List<GroupModel>>();
         private SerializeDeserializeJson<CryptFileModel> cryptFileModel = new SerializeDeserializeJson<CryptFileModel>();
-        private CryptDecryptSettings _settings;
-        public CryptDecrypt() { }
-        public CryptDecrypt(CryptDecryptSettings settings)
+        private EncryptDecryptSettings _settings;
+        public EncryptDecryptService() { }
+        public EncryptDecryptService(EncryptDecryptSettings settings)
         {
             _settings = settings;
         }
 
-        public void LoadData(CryptDecryptSettings settings)
+        public void LoadData(EncryptDecryptSettings settings)
         {
             _settings = settings;
             DecryptData();
@@ -67,7 +67,7 @@ namespace CommonForCryptPasswordLibrary.Services
         public void GetInitData()
         {
             CryptFileModel = new CryptFileModel();
-            CryptGroupModel group1 = new CryptGroupModel()
+            GroupModel group1 = new GroupModel()
             {
                 Id = Guid.NewGuid(),
                 Name = "SocialWide",
@@ -75,10 +75,10 @@ namespace CommonForCryptPasswordLibrary.Services
             };
             group1.CryptBlockModels.AddRange(new[]
             {
-                new CryptBlockModel(){Id = Guid.NewGuid(), GroupId = group1.Id, Title = "Picabu", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" },
-                new CryptBlockModel(){Id = Guid.NewGuid(), GroupId = group1.Id, Title = "Instagram", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" }
+                new BlockModel(){Id = Guid.NewGuid(), GroupId = group1.Id, Title = "Picabu", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" },
+                new BlockModel(){Id = Guid.NewGuid(), GroupId = group1.Id, Title = "Instagram", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" }
             });
-            CryptGroupModel group2 = new CryptGroupModel()
+            GroupModel group2 = new GroupModel()
             {
                 Id = Guid.NewGuid(),
                 Name = "Work",
@@ -86,8 +86,8 @@ namespace CommonForCryptPasswordLibrary.Services
             };
             group2.CryptBlockModels.AddRange(new[]
             {
-                new CryptBlockModel(){Id = Guid.NewGuid(), GroupId = group2.Id, Title = "Google", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" },
-                new CryptBlockModel(){Id = Guid.NewGuid(), GroupId = group2.Id, Title = "LinkedIn", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" }
+                new BlockModel(){Id = Guid.NewGuid(), GroupId = group2.Id, Title = "Google", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" },
+                new BlockModel(){Id = Guid.NewGuid(), GroupId = group2.Id, Title = "LinkedIn", Email="yourEmail@gmail.com", Password="12345678", UserName="YourUserName" }
             });
             CryptFileModel.DecryptInfoContent.Add(group1);
             CryptFileModel.DecryptInfoContent.Add(group2);

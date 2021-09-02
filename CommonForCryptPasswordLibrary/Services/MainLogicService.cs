@@ -8,18 +8,19 @@ using CryptLibrary;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.Filters;
+using System.Runtime.InteropServices;
 
 namespace CommonForCryptPasswordLibrary.Services
 {
-    
-    public class InputOutputFile:I_InputOutput
+    [StructLayout(LayoutKind.Auto)]//default StructLayout = LayoutKind.Auto. This added for example
+    public class MainLogicService:IMainLogicService
     {
         IMyIO console_IO;
         Encoding _encoding = Encoding.UTF8;
         IAppSettings _appSettings;
         ISearchSettings _searchSettings;
-        ICryptGroup _cryptGroup;
-        ICryptBlock _cryptBlock;
+        IGroupService _cryptGroup;
+        IBlockService _cryptBlock;
         public E_INPUTOUTPUTMESSAGE lastProblem { get; protected set; } = E_INPUTOUTPUTMESSAGE.Ok;
         
         
@@ -31,8 +32,8 @@ namespace CommonForCryptPasswordLibrary.Services
             showAllFromCryptFile = false,
             searchEverywhere = false;
 
-        public InputOutputFile(IMyIO _console_IO, IAppSettings appSettings,
-            ISearchSettings searchSettings, ICryptGroup cryptGroup, ICryptBlock cryptoBlock)
+        public MainLogicService(IMyIO _console_IO, IAppSettings appSettings,
+            ISearchSettings searchSettings, IGroupService cryptGroup, IBlockService cryptoBlock)
         {
             console_IO = _console_IO;
             _appSettings = appSettings;
@@ -115,9 +116,9 @@ namespace CommonForCryptPasswordLibrary.Services
             throw new NotImplementedException();
         }
 
-        public CryptBlockModel GetBlockData(Filter filterShow)
+        public BlockModel GetBlockData(Filter filterShow)
         {
-            IQueryable<CryptBlockModel> query = null;
+            IQueryable<BlockModel> query = null;
             if(!String.IsNullOrEmpty(filterShow.GroupName))
             {
                 if (caseSensitive)
@@ -153,7 +154,7 @@ namespace CommonForCryptPasswordLibrary.Services
             }
         }
 
-        public List<CryptBlockModel> GetBlockDatas(Filter filterShow)
+        public List<BlockModel> GetBlockDatas(Filter filterShow)
         {
             if(caseSensitive&&!searchEverywhere)
             {
@@ -183,8 +184,8 @@ namespace CommonForCryptPasswordLibrary.Services
                 {
                     if (!Directory.Exists(Path.GetDirectoryName(path.Path)))
                         Directory.CreateDirectory(Path.GetDirectoryName(path.Path));
-                    CryptDecrypt cryptDecrypt = new CryptDecrypt(
-                        new CryptDecryptSettings() { Key = key, Path = path.Path });
+                    EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
+                        new EncryptDecryptSettings() { Key = key, Path = path.Path });
                     cryptDecrypt.GetInitData();
                     cryptDecrypt.EncryptAndSaveData();
                 }

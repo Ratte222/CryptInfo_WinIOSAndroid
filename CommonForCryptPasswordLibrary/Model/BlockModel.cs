@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Model
 {
-    public class CryptBlockModel: IEquatable<CryptBlockModel>
+    public class BlockModel: IEquatable<BlockModel>
     {
         public Guid Id { get; set; }
         public Guid GroupId { get; set; }
@@ -30,7 +30,7 @@ namespace CommonForCryptPasswordLibrary.Model
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            CryptBlockModel objAsPart = obj as CryptBlockModel;
+            BlockModel objAsPart = obj as BlockModel;
             if (objAsPart == null) return false;
             else return Equals(objAsPart);
         }
@@ -38,7 +38,7 @@ namespace CommonForCryptPasswordLibrary.Model
         {
             return Id.GetHashCode();
         }
-        public bool Equals(CryptBlockModel other)
+        public bool Equals(BlockModel other)
         {
             if (other == null) return false;
             return (this.Id.Equals(other.Id));

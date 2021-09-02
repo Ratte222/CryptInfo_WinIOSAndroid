@@ -5,10 +5,10 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Interfaces
 {
-    public interface ICryptDecrypt
+    public interface IEncryptDecryptService
     {
         CryptFileModel CryptFileModel { get; set; }
-        void LoadData(CryptDecryptSettings settings);
+        void LoadData(EncryptDecryptSettings settings);
         void SaveChanges();
     }
 }

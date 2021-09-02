@@ -29,32 +29,32 @@ namespace ConsoleCrypt
                 AppSettings appSettings = new AppSettings();
                 return appSettings.DeserializeFromFile(appSettings.pathToSettings);
             });
-            serviceCollection.AddSingleton<ICryptDecrypt, CryptDecrypt>();
+            serviceCollection.AddSingleton<IEncryptDecryptService, EncryptDecryptService>();
             serviceCollection.AddSingleton<ISearchSettings>(provider =>
             {
                 SearchSettings searchSettings = new SearchSettings();
                 return searchSettings.DeserializeFromFile(searchSettings.pathToSettings);
             });
-            serviceCollection.AddSingleton<ICryptBlock>(provider =>
+            serviceCollection.AddSingleton<IBlockService>(provider =>
             {
-                return new CryptBlockService(provider.GetService<ICryptDecrypt>());
+                return new BlockService(provider.GetService<IEncryptDecryptService>());
             });
-            serviceCollection.AddSingleton<ICryptGroup>(provider =>
+            serviceCollection.AddSingleton<IGroupService>(provider =>
             {
-                return new CryptGroupService(provider.GetService<ICryptDecrypt>());
+                return new GroupService(provider.GetService<IEncryptDecryptService>());
             });
-            serviceCollection.AddSingleton<I_InputOutput>(provider =>
+            serviceCollection.AddSingleton<IMainLogicService>(provider =>
             {
-                return new InputOutputFile(provider.GetService<ImyIO_Console>(),
+                return new MainLogicService(provider.GetService<ImyIO_Console>(),
                     provider.GetService<IAppSettings>(), provider.GetService<ISearchSettings>(),
-                    provider.GetService<ICryptGroup>(), provider.GetService<ICryptBlock>());
+                    provider.GetService<IGroupService>(), provider.GetService<IBlockService>());
             });
             serviceCollection.AddSingleton<CommandInterpreter>(provider =>
             {
-                return new CommandInterpreter(provider.GetService<I_InputOutput>(),
+                return new CommandInterpreter(provider.GetService<IMainLogicService>(),
                     provider.GetService<ImyIO_Console>(), provider.GetService<IAppSettings>(),
                     provider.GetService<ISearchSettings>(), provider.GetService<IMapper>(),
-                    provider.GetService<ICryptBlock>(), provider.GetService<ICryptGroup>());
+                    provider.GetService<IBlockService>(), provider.GetService<IGroupService>());
             });
             services = serviceCollection.BuildServiceProvider();
             //configure console logging

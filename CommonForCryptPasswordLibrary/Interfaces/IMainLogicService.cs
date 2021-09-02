@@ -24,7 +24,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         Update,
         Insert
     };
-    public interface I_InputOutput
+    public interface IMainLogicService
     {
         //protected AppSettings appSettings { get; set; }
         //void Init(AppSettings _appSettings)
@@ -58,8 +58,8 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
         E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData);
         string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1);
-        CryptBlockModel GetBlockData(Filter filterShow);
-        List<CryptBlockModel> GetBlockDatas(Filter filterShow);
+        BlockModel GetBlockData(Filter filterShow);
+        List<BlockModel> GetBlockDatas(Filter filterShow);
         void InitCryptFiles(string key);
 
         //void ShowAPersone(string message);

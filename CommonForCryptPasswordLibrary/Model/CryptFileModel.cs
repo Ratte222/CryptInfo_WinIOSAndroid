@@ -8,9 +8,9 @@ namespace CommonForCryptPasswordLibrary.Model
     public class CryptFileModel
     {
         public string Hash { get; set; }
-        public List<CryptGroupModel> DecryptInfoContent { get; set; } = new List<CryptGroupModel>();
+        public List<GroupModel> DecryptInfoContent { get; set; } = new List<GroupModel>();
 
-        public void CommonChecksForCryptBlockModel(CryptBlockModel item)
+        public void CommonChecksForCryptBlockModel(BlockModel item)
         {
             if (item == null)
                 throw new ValidationException($"{nameof(item)} is null");

@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace CommonForCryptPasswordLibrary.Services
 {
-    public class CryptBlockService:ICryptBlock
+    public class BlockService:IBlockService
     {
-        private ICryptDecrypt _cryptDecrypt;
+        private IEncryptDecryptService _cryptDecrypt;
         public bool DataExist
         {
             get
@@ -17,31 +17,31 @@ namespace CommonForCryptPasswordLibrary.Services
                 return _cryptDecrypt.CryptFileModel != null;
             }
         }
-        public CryptBlockService(ICryptDecrypt cryptDecrypt)
+        public BlockService(IEncryptDecryptService cryptDecrypt)
         {
             _cryptDecrypt = cryptDecrypt;
         }
 
         
 
-        public CryptBlockModel Get(Predicate<CryptBlockModel> predicate)
+        public BlockModel Get(Predicate<BlockModel> predicate)
         {
             return GetAll_List().Find(predicate);
         }
 
-        public IEnumerable<CryptBlockModel> GetAll_Enumerable()
+        public IEnumerable<BlockModel> GetAll_Enumerable()
         {
             return GetAll_List().AsEnumerable();
         }
 
-        public IQueryable<CryptBlockModel> GetAll_Queryable()
+        public IQueryable<BlockModel> GetAll_Queryable()
         {
             return GetAll_List().AsQueryable();
         }
 
-        public List<CryptBlockModel> GetAll_List()
+        public List<BlockModel> GetAll_List()
         {
-            List<CryptBlockModel> cryptBlockModels = new List<CryptBlockModel>();
+            List<BlockModel> cryptBlockModels = new List<BlockModel>();
             foreach(var value in _cryptDecrypt.CryptFileModel.DecryptInfoContent)
             {
                 cryptBlockModels.AddRange(value.CryptBlockModels);
@@ -49,14 +49,14 @@ namespace CommonForCryptPasswordLibrary.Services
             return cryptBlockModels;
         }
 
-        public void Add(CryptBlockModel item)
+        public void Add(BlockModel item)
         {
             _cryptDecrypt.CryptFileModel.CommonChecksForCryptBlockModel(item);
             if (_cryptDecrypt.CryptFileModel.DecryptInfoContent.Any(i => i.CryptBlockModels
                 .Any(j => j.Title.ToLower() == item.Title.ToLower()) ))
                 throw new ValidationException($"This block name already exist");            
             item.Id = Guid.NewGuid();            
-            CryptGroupModel temp = _cryptDecrypt.CryptFileModel
+            GroupModel temp = _cryptDecrypt.CryptFileModel
                 .DecryptInfoContent.FirstOrDefault(i=>i.Id == item.GroupId);
             if(temp == null)
                 throw new ValidationException($"There is no group in this {nameof(item.GroupId)}");
@@ -64,10 +64,10 @@ namespace CommonForCryptPasswordLibrary.Services
             _cryptDecrypt.SaveChanges();
         }
 
-        public void Delete(CryptBlockModel item)
+        public void Delete(BlockModel item)
         {
             _cryptDecrypt.CryptFileModel.CommonChecksForCryptBlockModel(item);
-            CryptGroupModel temp = _cryptDecrypt.CryptFileModel
+            GroupModel temp = _cryptDecrypt.CryptFileModel
                 .DecryptInfoContent.FirstOrDefault(i => i.Id == item.GroupId);
             if (temp == null)
                 throw new ValidationException($"There is no group in this {nameof(item.GroupId)}");
@@ -75,10 +75,10 @@ namespace CommonForCryptPasswordLibrary.Services
             _cryptDecrypt.SaveChanges();
         }
 
-        public void Edit(CryptBlockModel item)
+        public void Update(BlockModel item)
         {
             _cryptDecrypt.CryptFileModel.CommonChecksForCryptBlockModel(item);
-            CryptBlockModel temp = _cryptDecrypt.CryptFileModel
+            BlockModel temp = _cryptDecrypt.CryptFileModel
                 .DecryptInfoContent.FirstOrDefault(i => i.Id == item.GroupId)
                 .CryptBlockModels.FirstOrDefault(j => j.Id == item.Id);
             if (temp == null)
@@ -95,7 +95,7 @@ namespace CommonForCryptPasswordLibrary.Services
 
         
 
-        public void LoadData(CryptDecryptSettings settings)
+        public void LoadData(EncryptDecryptSettings settings)
         {
             _cryptDecrypt.LoadData(settings);
         }

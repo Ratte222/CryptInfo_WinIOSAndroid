@@ -11,7 +11,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         T Get(Predicate<T> predicate);
         //T Get(string name);
         void Add(T item);
-        void Edit(T item);
+        void Update(T item);
         void Delete(T item);
     }
 }

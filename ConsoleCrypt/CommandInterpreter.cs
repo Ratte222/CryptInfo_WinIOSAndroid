@@ -15,16 +15,16 @@ namespace ConsoleCrypt
     public class CommandInterpreter
     {
         private string password;
-        private I_InputOutput _inputOutputFile;
+        private IMainLogicService _inputOutputFile;
         ImyIO_Console _console_IO;
         IAppSettings _appSettings;
         ISearchSettings _searchSettings;
         IMapper _mapper;
-        ICryptBlock _cryptBlock;
-        ICryptGroup _cryptGroup;
-        public CommandInterpreter(I_InputOutput _InputOutputFile, ImyIO_Console _console_IO,
+        IBlockService _cryptBlock;
+        IGroupService _cryptGroup;
+        public CommandInterpreter(IMainLogicService _InputOutputFile, ImyIO_Console _console_IO,
             IAppSettings appSettings, ISearchSettings searchSettings, IMapper mapper,
-            ICryptBlock cryptBlock, ICryptGroup cryptGroup)
+            IBlockService cryptBlock, IGroupService cryptGroup)
         {
             _inputOutputFile = _InputOutputFile;
             this._console_IO = _console_IO;
@@ -109,7 +109,7 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "search"))
                 {
-                    _console_IO.WriteLine("search [-cs -se -sufm] searchWord");
+                    _console_IO.WriteLine("search [-cs -se -sufm] [searchWord]");
                     _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive");
                     _console_IO.WriteLine("-se  (optional, toggle default param) search everywhere");
                     //_console_IO.WriteLine("-st  (optional, , toggle default param) search in tegs");
@@ -127,17 +127,22 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "show"))
                 {
-                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g] or [-all]) ");
-                    _console_IO.WriteLine("-b - show blocks. Example: show -b google ");
-                    _console_IO.WriteLine("-g - show block in group. Example: show -b google -ln work ");
+                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g] or [-allblocks] or [-allgroups]) ");
+                    _console_IO.WriteLine("-b - show blocks. There must also be aparameter [-g]. " +
+                        "After [-b] it should contain the name of the block.  Example: show -g work -b google ");
+                    _console_IO.WriteLine("-g - show block in group. After [-g] it should contain the name of the group. Example: show -b google -ln work ");
                     _console_IO.WriteLine("-allblocks - show all blocks and groups in crypt file. Example: show -allblocks");
                     _console_IO.WriteLine("-allgroups - show all groups in crypt file. Example: show -allgroups");
                     _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive." +
-                        " Example: show -b Google -cs");
+                        " Example: show -g Work -cs");
                 }
                 else if (String.Equals(splitCommand[1], "update"))
                 {
-                    //_console_IO.WriteLine("-b - update (rewrite) block in crypt file. Example: update -b 5");
+                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g]) ");
+                    _console_IO.WriteLine("-b - update block fields. There must also be aparameter [-g]. " +
+                        "After [-b] it should contain the name of the block.  Example: show -g work -b google ");
+                    _console_IO.WriteLine("-g - update group fields. After [-g] it should contain the name of the group." +
+                        " Example: show -b google -ln work ");
                     //_console_IO.WriteLine("-ln - update (rewrite) line in block in crypt file. Example: update -b 5 -ln 4 ");
                 }
                 else if (String.Equals(splitCommand[1], "generatepassword"))
@@ -146,6 +151,7 @@ namespace ConsoleCrypt
                 }
                 else if (String.Equals(splitCommand[1], "add"))
                 {
+                    _console_IO.WriteLine("There must be at least one parameter ([-block] or [-group]) ");
                     _console_IO.WriteLine("-block - add block data to selected group. Example: add -block [name group]");
                     _console_IO.WriteLine("-group - add group data. Example: add -group");
                     //_console_IO.WriteLine("-inblock - coming soon");
@@ -228,7 +234,7 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    _console_IO.Show(_mapper.Map<CryptBlockModel, BlockDataDTO>(res));
+                    _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
                 }
             }
             else
@@ -240,7 +246,7 @@ namespace ConsoleCrypt
                 }
                 else 
                 { 
-                    _console_IO.Show(_mapper.Map<List<CryptBlockModel>, List<BlockDataDTO>>(res)); 
+                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res)); 
                 }
 
             }
@@ -266,16 +272,16 @@ namespace ConsoleCrypt
                     {
                         CheckPassword();
                         LoadTheDatabaseIfNeeded();
-                        List<CryptGroupModel> models = _cryptGroup.GetAll_List();                        
-                        _console_IO.Show(_mapper.Map<List<CryptGroupModel>, List<GroupDataDTO>>(models));
+                        List<GroupModel> models = _cryptGroup.GetAll_List();                        
+                        _console_IO.Show(_mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models));
                         
                     }
                     else if (_IndexOfInArray(splitCommand, "-allgroups") > -1)
                     {
                         CheckPassword();
                         LoadTheDatabaseIfNeeded();
-                        List<CryptGroupModel> models = _cryptGroup.GetAll_List();
-                        foreach(var group in _mapper.Map<List<CryptGroupModel>, List<GroupDataDTO>>(models))
+                        List<GroupModel> models = _cryptGroup.GetAll_List();
+                        foreach(var group in _mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models))
                         {
                             _console_IO.WriteLine(group.ToString());
                             _console_IO.WriteLine("");
@@ -308,7 +314,7 @@ namespace ConsoleCrypt
                                 }
                                 else
                                 {
-                                    _console_IO.Show(_mapper.Map<CryptBlockModel, BlockDataDTO>(res));
+                                    _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
                                 }
                             }
                             else
@@ -320,7 +326,7 @@ namespace ConsoleCrypt
                                 }
                                 else
                                 {
-                                    _console_IO.Show(_mapper.Map<List<CryptBlockModel>, List<BlockDataDTO>>(res));
+                                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
                                 }
                             }
                         }
@@ -353,7 +359,7 @@ namespace ConsoleCrypt
                         _console_IO.WriteLineTooFewParameters();
                         return;
                     }
-                    CryptGroupModel cryptGroupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                    GroupModel cryptGroupModel = _cryptGroup.Get(i => i.Name.ToLower()
                         .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-block") + 1].ToLower()));
                     if(cryptGroupModel == null)
                     {
@@ -363,7 +369,7 @@ namespace ConsoleCrypt
                     {
                         _console_IO.WriteLine($"Target group:\r\n" +
                             $"{cryptGroupModel.ToString()}\r\n");
-                        CryptBlockModel cryptBlockModel = AddBlock();
+                        BlockModel cryptBlockModel = AddBlock();
                         cryptBlockModel.GroupId = cryptGroupModel.Id;
                         if (this.QuestionAgreeOrDissagry($"Add a block to group?"))
                         {
@@ -373,7 +379,7 @@ namespace ConsoleCrypt
                 }
                 else if (_IndexOfInArray(splitCommand, "-group") > -1)
                 {
-                    CryptGroupModel cryptGroupModel = AddGroup();
+                    GroupModel cryptGroupModel = AddGroup();
                     _cryptGroup.Add(cryptGroupModel);
                 }
             }
@@ -521,46 +527,75 @@ namespace ConsoleCrypt
             else
             {
                 _inputOutputFile.LoadDefaultParams();
-                if (_searchSettings.ViewServiceInformation)
-                    _inputOutputFile.Toggle_viewServiceInformation();
-                if ((_IndexOfInArray(splitCommand, "-ln") > -1) && (splitCommand.Length < 3))
+                if ((_IndexOfInArray(splitCommand, "-b") > -1) && (splitCommand.Length < 3))
                 {
                     _console_IO.WriteLineTooFewParameters();
                 }
                 else
                 {
-                    int[] vs;
                     CheckPassword();
-                    if (_IndexOfInArray(splitCommand, "-ln") > -1)
+                    if (_IndexOfInArray(splitCommand, "-b") > -1)
                     {
-                        _console_IO.WriteLine("Please, edit line and press \"Enter\"");
-                        _console_IO.WriteLine(_inputOutputFile.GetBlockData(out vs, password,
-                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]),
-                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-ln") + 1])).TrimEnd(
-                            new char[] { '\r', '\n' }));
                         _console_IO.WriteLine("");
-                        string content = Console.ReadLine();
-                        if (QuestionAgreeOrDissagry("Save this line? "))
-                            HandleCallIntergaceMethods(_inputOutputFile.Update(password, content, vs));
+                        GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                            .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1]));
+                        if (groupModel == null)
+                        {
+                            _console_IO.WriteLine("Group not found");
+                        }
+                        else
+                        {
+                            BlockModel blockModel = groupModel.CryptBlockModels.Find(i => i.Title.ToLower()
+                                .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]));
+                            if(blockModel == null)
+                            {
+                                _console_IO.WriteLine("Block not found");
+                            }
+                            else
+                            {
+                                _console_IO.WriteLine(groupModel.ToString());
+                                _console_IO.WriteLine("");
+                                _console_IO.WriteLine(blockModel.ToString());
+                                UpdateBlock(ref blockModel);
+                                if (QuestionAgreeOrDissagry("Save this block? "))
+                                {
+                                    _cryptBlock.Update(blockModel);
+                                }
+                            }
+                            
+                        }
                     }
                     else
                     {
                         _console_IO.WriteLine("");
-                        _console_IO.WriteLine(_inputOutputFile.GetBlockData(out vs, password,
-                            Convert.ToInt32(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1])));
-                        _console_IO.WriteLine("");
-                        string content = _console_IO.ConsoleReadMultiline();
-                        if (QuestionAgreeOrDissagry("Save this line? "))
-                            HandleCallIntergaceMethods(_inputOutputFile.Update(password, content, vs));
+                        GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                            .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1]));
+                        if(groupModel == null)
+                        {
+                            _console_IO.WriteLine("Group not found");
+                        }
+                        else
+                        {
+                            _console_IO.WriteLine(groupModel.ToString());
+                            _console_IO.WriteLine("");
+                            var temp = AddGroup();
+                            groupModel.Name = temp.Name;
+                            groupModel.Description = temp.Description;
+                            if (QuestionAgreeOrDissagry("Save this group? "))
+                            {
+                                _cryptGroup.Update(groupModel);
+                            }
+                        }
+                        
                     }
 
                 }
             }
         }
 
-        private CryptBlockModel AddBlock()
+        private BlockModel AddBlock()
         {
-            CryptBlockModel cryptBlockModel = new CryptBlockModel();
+            BlockModel cryptBlockModel = new BlockModel();
             _console_IO.WriteLine($"Fill {nameof(cryptBlockModel.Title)} and press \"Enter\"");
             cryptBlockModel.Title = _console_IO.ReadLine();
             _console_IO.WriteLine($"Fill {nameof(cryptBlockModel.Description)} and press \"Enter\"");
@@ -578,14 +613,54 @@ namespace ConsoleCrypt
             return cryptBlockModel;
         }
 
-        private CryptGroupModel AddGroup()
+        private GroupModel AddGroup()
         {
-            CryptGroupModel cryptGroupModel = new CryptGroupModel();
+            GroupModel cryptGroupModel = new GroupModel();
             _console_IO.WriteLine($"Fill {nameof(cryptGroupModel.Name)} and press \"Enter\"");
             cryptGroupModel.Name = _console_IO.ReadLine();
             _console_IO.WriteLine($"Fill {nameof(cryptGroupModel.Description)} and press \"Enter\"");
             cryptGroupModel.Description = _console_IO.ReadLine();
             return cryptGroupModel;
+        }
+
+        private BlockModel UpdateBlock(ref BlockModel blockModel)
+        {
+            if(QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Title)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.Title)} and press \"Enter\"");
+                blockModel.Title = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Description)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.Description)} and press \"Enter\"");
+                blockModel.Description = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Email)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.Email)} and press \"Enter\"");
+                blockModel.Email = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.UserName)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.UserName)} and press \"Enter\"");
+                blockModel.UserName = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Password)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.Password)} and press \"Enter\"");
+                blockModel.Password = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Phone)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(blockModel.Phone)} and press \"Enter\"");
+                blockModel.Phone = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(blockModel.AdditionalInfo)}?"))
+            {
+                Console.Write($"Fill {nameof(blockModel.AdditionalInfo)} ");
+                blockModel.AdditionalInfo = _console_IO.ConsoleReadMultiline();
+            }
+            return blockModel;
         }
 
         public bool QuestionAgreeOrDissagry(string question)
@@ -621,7 +696,7 @@ namespace ConsoleCrypt
 
         private void LoadTheDatabaseIfNeeded()
         {
-            var settings = new CommonForCryptPasswordLibrary.Model.CryptDecryptSettings()
+            var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
             {
                 Key = password,
                 Path = _appSettings.DefaultCryptFile.Path
