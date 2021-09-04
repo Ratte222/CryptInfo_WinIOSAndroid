@@ -63,33 +63,85 @@ namespace ConsoleCrypt
                 //_searchSettings.Save();
                 return false;
             }
-            var handler = splitCommand[0].ToLower() switch
+            //var handler = splitCommand[0].ToLower() switch
+            //{
+            //    "help" => Help(splitCommand),
+            //    "show" => Show(splitCommand),
+            //    "create" => Create(splitCommand),
+            //    "search" => Search(splitCommand),
+            //    "set" => Set(splitCommand),
+            //    "decrypt" => Decrypt(splitCommand),
+            //    "encrypt" => Encrypt(splitCommand),
+            //    "viewsetting" => ViewSettings(splitCommand),
+            //    "generatepassword" => GeneratePassword(splitCommand),
+            //    "reenter" => ReEnter(splitCommand),
+            //    "update" => Update(splitCommand),
+            //    "initfiles" => InitFiles(splitCommand),
+            //    _ => UnknownCommand(splitCommand)
+            //};
+            //handler.GetAwaiter();           
+            try 
             {
-                "help" => Help(splitCommand),
-                "show" => Show(splitCommand),
-                "create" => Create(splitCommand),
-                "search" => Search(splitCommand),
-                "set" => Set(splitCommand),
-                "decrypt" => Decrypt(splitCommand),
-                "crypt" => Crypt(splitCommand),
-                "viewsetting" => ViewSettings(splitCommand),
-                "generatepassword" => GeneratePassword(splitCommand),
-                "reenter" => ReEnter(splitCommand),
-                "update" => Update(splitCommand),
-                "initfiles" => InitFiles(splitCommand),
-                _ => UnknownCommand(splitCommand)
-            };
-            handler.GetAwaiter();           
+                switch (splitCommand[0].ToLower())
+                {
+                    case "help":
+                        Help(splitCommand);
+                        break;
+                    case "show":
+                        Show(splitCommand);
+                        break;
+                    case "search":
+                        Search(splitCommand);
+                        break;
+                    case "create":
+                        Create(splitCommand);
+                        break;
+                    case "set":
+                        Set(splitCommand);
+                        break;
+                    case "decrypt":
+                        Decrypt(splitCommand);
+                        break;
+                    case "encrypt":
+                        Encrypt(splitCommand);
+                        break;
+                    case "viewsetting":
+                        ViewSettings(splitCommand);
+                        break;
+                    case "generatepassword":
+                        GeneratePassword(splitCommand);
+                        break;
+                    case "reenter":
+                        ReEnter(splitCommand);
+                        break;
+                    case "update":
+                        Update(splitCommand);
+                        break;
+                    case "initfiles":
+                        InitFiles(splitCommand);
+                        break;
+                    default:
+                        UnknownCommand(splitCommand);
+                        break;
+                }
+            }
+            catch(Exception ex)
+            {
+#if DEBUG
+                _console_IO.HandleMessage("", ex);
+#endif
+            }
             
+
             return true;
         }
 
-        private async Task UnknownCommand(string[] splitCommand)
+        private void UnknownCommand(string[] splitCommand)
         {
             _console_IO.WriteLine("->Unknown command");
         }
 
-        private async Task Help(string[] splitCommand)
+        private void Help(string[] splitCommand)
         {
             _console_IO.WriteLine("");
             if (splitCommand.Length > 1)
@@ -103,9 +155,9 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine("-f - decrypt file. Example: decrypt -f");
                 }
-                else if (String.Equals(splitCommand[1], "crypt"))
+                else if (String.Equals(splitCommand[1], "encrypt"))
                 {
-                    _console_IO.WriteLine("-f - crypt file. Example: crypt -f ");
+                    _console_IO.WriteLine("-f - encrypt file. Example: encrypt -f ");
                 }
                 else if (String.Equals(splitCommand[1], "search"))
                 {
@@ -160,7 +212,7 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine("set - set some params");
                     _console_IO.WriteLine("decrypt - decrypt something");
-                    _console_IO.WriteLine("crypt - crypt something");
+                    _console_IO.WriteLine("encrypt - encrypt something");
                     _console_IO.WriteLine("search - search in crypt file ");
                     _console_IO.WriteLine("viewSetting - view path program setting ");
                     _console_IO.WriteLine("generatePassword - generate random string desired length");
@@ -175,7 +227,7 @@ namespace ConsoleCrypt
             {
                 _console_IO.WriteLine("set - set some params");
                 _console_IO.WriteLine("decrypt - decrypt something");
-                _console_IO.WriteLine("crypt - crypt something");
+                _console_IO.WriteLine("encrypt - encrypt something");
                 _console_IO.WriteLine("search - search in crypt file ");
                 _console_IO.WriteLine("viewSetting - view path program setting ");
                 _console_IO.WriteLine("generatePassword - generate random string desired length");
@@ -188,7 +240,7 @@ namespace ConsoleCrypt
             _console_IO.WriteLine("");
         }
 
-        private async Task Search(string[] splitCommand)
+        private void Search(string[] splitCommand)
         {
             _inputOutputFile.LoadDefaultParams();
             if (splitCommand.Length < 2)
@@ -252,96 +304,90 @@ namespace ConsoleCrypt
             }
         }
 
-        private async Task Show(string[] splitCommand)
+        private void Show(string[] splitCommand)
         {
-            try
+            _inputOutputFile.LoadDefaultParams();
+            if (splitCommand.Length < 2)
             {
-                _inputOutputFile.LoadDefaultParams();
-                if (splitCommand.Length < 2)
+                _console_IO.WriteLineTooFewParameters();
+                //console_IO.WriteLine("expected \"search keyWord\"");
+            }
+            else
+            {
+                if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
                 {
-                    _console_IO.WriteLineTooFewParameters();
-                    //console_IO.WriteLine("expected \"search keyWord\"");
+                    _inputOutputFile.Toggle_caseSensitive();
                 }
-                else
+                if (_IndexOfInArray(splitCommand, "-allblocks") > -1)
                 {
-                    if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
-                    {
-                        _inputOutputFile.Toggle_caseSensitive();
-                    }
-                    if (_IndexOfInArray(splitCommand, "-allblocks") > -1)
-                    {
-                        CheckPassword();
-                        LoadTheDatabaseIfNeeded();
-                        List<GroupModel> models = _cryptGroup.GetAll_List();                        
-                        _console_IO.Show(_mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models));
+                    CheckPassword();
+                    LoadTheDatabaseIfNeeded();
+                    List<GroupModel> models = _cryptGroup.GetAll_List();                        
+                    _console_IO.Show(_mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models));
                         
-                    }
-                    else if (_IndexOfInArray(splitCommand, "-allgroups") > -1)
+                }
+                else if (_IndexOfInArray(splitCommand, "-allgroups") > -1)
+                {
+                    CheckPassword();
+                    LoadTheDatabaseIfNeeded();
+                    List<GroupModel> models = _cryptGroup.GetAll_List();
+                    foreach(var group in _mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models))
                     {
+                        _console_IO.WriteLine(group.ToString());
+                        _console_IO.WriteLine("");
+                    }
+                }
+                else if (_IndexOfInArray(splitCommand, "-b") > -1)
+                {
+                    if (splitCommand.Length < 3)
+                    {
+                        _console_IO.WriteLineTooFewParameters();
+                    }
+                    else if ((_IndexOfInArray(splitCommand, "-g") > -1) && (splitCommand.Length < 3))
+                    {
+                        _console_IO.WriteLineTooFewParameters();
+                    }
+                    else
+                    {
+                        //int[] vs;
                         CheckPassword();
                         LoadTheDatabaseIfNeeded();
-                        List<GroupModel> models = _cryptGroup.GetAll_List();
-                        foreach(var group in _mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models))
+                        Filter filterShow = new Filter();
+                        filterShow.BlockName = splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1];
+                        if (_IndexOfInArray(splitCommand, "-g") > -1)
                         {
-                            _console_IO.WriteLine(group.ToString());
-                            _console_IO.WriteLine("");
-                        }
-                    }
-                    else if (_IndexOfInArray(splitCommand, "-b") > -1)
-                    {
-                        if (splitCommand.Length < 3)
-                        {
-                            _console_IO.WriteLineTooFewParameters();
-                        }
-                        else if ((_IndexOfInArray(splitCommand, "-g") > -1) && (splitCommand.Length < 3))
-                        {
-                            _console_IO.WriteLineTooFewParameters();
-                        }
-                        else
-                        {
-                            //int[] vs;
-                            CheckPassword();
-                            LoadTheDatabaseIfNeeded();
-                            Filter filterShow = new Filter();
-                            filterShow.BlockName = splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1];
-                            if (_IndexOfInArray(splitCommand, "-g") > -1)
+                            filterShow.GroupName = splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1];
+                            var res = _inputOutputFile.GetBlockData(filterShow);
+                            if (res == null)
                             {
-                                filterShow.GroupName = splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1];
-                                var res = _inputOutputFile.GetBlockData(filterShow);
-                                if (res == null)
-                                {
-                                    _console_IO.WriteLine("Nothing found");
-                                }
-                                else
-                                {
-                                    _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
-                                }
+                                _console_IO.WriteLine("Nothing found");
                             }
                             else
                             {
-                                var res = _inputOutputFile.GetBlockDatas(filterShow);
-                                if (res.Count == 0)
-                                {
-                                    _console_IO.WriteLine("Nothing found");
-                                }
-                                else
-                                {
-                                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
-                                }
+                                _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
+                            }
+                        }
+                        else
+                        {
+                            var res = _inputOutputFile.GetBlockDatas(filterShow);
+                            if (res.Count == 0)
+                            {
+                                _console_IO.WriteLine("Nothing found");
+                            }
+                            else
+                            {
+                                _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
                             }
                         }
                     }
-                    //_console_IO.WriteLine("");
-                }                
-            }
-            catch(Exception ex)
-            {
-
-            }
+                }
+                //_console_IO.WriteLine("");
+            }                
+            
             
         }
 
-        private async Task Create(string[] splitCommand)
+        private void Create(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -385,7 +431,7 @@ namespace ConsoleCrypt
             }
         }
 
-        private async Task GeneratePassword(string[] splitCommand)
+        private void GeneratePassword(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -400,7 +446,7 @@ namespace ConsoleCrypt
             _console_IO.WriteLine($"password: {CryptoWithoutTry.GeneratePassword(passwordLength)}");
         }
 
-        private async Task ReEnter(string[] splitCommand)
+        private void ReEnter(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -422,7 +468,7 @@ namespace ConsoleCrypt
             }
         }
 
-        private async Task ViewSettings(string[] splitCommand)
+        private void ViewSettings(string[] splitCommand)
         {
             _console_IO.WriteLine($"Path {System.Reflection.Assembly.GetEntryAssembly().Location}");
             //console_IO.WriteLine($"DirCryptFile {_appSettings.GetDirCryptFile()}");
@@ -435,7 +481,7 @@ namespace ConsoleCrypt
             _console_IO.WriteLine("");
         }
 
-        private async Task InitFiles(string[] splitCommand)
+        private void InitFiles(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -453,7 +499,7 @@ namespace ConsoleCrypt
             _console_IO.WriteLine("Files init successsfully");
         }
 
-        private async Task Set(string[] splitCommand)
+        private void Set(string[] splitCommand)
         {
             if (splitCommand.Length < 3)
             {
@@ -476,7 +522,7 @@ namespace ConsoleCrypt
             }
         }
 
-        private async Task Decrypt(string[] splitCommand)
+        private void Decrypt(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -488,7 +534,9 @@ namespace ConsoleCrypt
                 if (String.Equals(splitCommand[1], "-f"))
                 {
                     CheckPassword();
-                    HandleCallIntergaceMethods(_inputOutputFile.DecryptFile(password));
+                    LoadTheDatabaseIfNeeded();
+                    _inputOutputFile.DecryptFile();
+                    _console_IO.WriteLine("File decrypted successfully!\r\n");
                 }
                 else
                 {
@@ -497,7 +545,7 @@ namespace ConsoleCrypt
             }
         }
 
-        private async Task Crypt(string[] splitCommand)
+        private void Encrypt(string[] splitCommand)
         {
             if (splitCommand.Length < 2)
             {
@@ -508,17 +556,18 @@ namespace ConsoleCrypt
                 if (String.Equals(splitCommand[1], "-f"))
                 {
                     CheckPassword();
-                    HandleCallIntergaceMethods(_inputOutputFile.CryptFile(password));
+                    _inputOutputFile.EncryptFile(password);
+                    _console_IO.WriteLine("File encrypted successfully");
                 }
                 else
                 {
-                    _console_IO.WriteLineUnknownCommand("ctypt");
+                    _console_IO.WriteLineUnknownCommand("enctypt");
                 }
             }
         }
 
 
-        private async Task Update(string[] splitCommand)
+        private void Update(string[] splitCommand)
         {
             if (splitCommand.Length < 3)
             {

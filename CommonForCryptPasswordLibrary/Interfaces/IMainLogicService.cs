@@ -26,44 +26,17 @@ namespace CommonForCryptPasswordLibrary.Interfaces
     };
     public interface IMainLogicService
     {
-        //protected AppSettings appSettings { get; set; }
-        //void Init(AppSettings _appSettings)
-        //{
-        //    appSettings = _appSettings;
-        //}
-        
-        //E_INPUTOUTPUTMESSAGE LoadSetting();
         E_INPUTOUTPUTMESSAGE LoadDefaultParams();
-        //E_INPUTOUTPUTMESSAGE SaveSetting();
-        //E_INPUTOUTPUTMESSAGE ResetSetting();
-        //E_INPUTOUTPUTMESSAGE SetDirCryptFile(string val);
-        //E_INPUTOUTPUTMESSAGE SetDirDecryptFile(string val);
-        //string GetDirDecryptFile();
-        //string GetDirCryptFile();
-        //bool Get_caseSensitive();
-        //bool Get_searchInTegs();
-        //bool Get_searchInHeader();
-        //bool Get_searchUntilFirstMatch();
-        //bool Get_viewServiceInformation();
         void Toggle_caseSensitive();
         void Toggle_searchInTegs();
         void Toggle_searchInHeader();
         void Toggle_searchUntilFirstMatch();
         void Toggle_viewServiceInformation();    
         void Toggle_searchEverywhere();
-        E_INPUTOUTPUTMESSAGE CryptFile(string key);
-        E_INPUTOUTPUTMESSAGE DecryptFile(string key);
-        E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord);
-        E_INPUTOUTPUTMESSAGE ShowAllFromCryptFile(string key);
-        E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data);
-        E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData);
-        string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1);
         BlockModel GetBlockData(Filter filterShow);
         List<BlockModel> GetBlockDatas(Filter filterShow);
         void InitCryptFiles(string key);
-
-        //void ShowAPersone(string message);
-        //string ReadFromPersone();
-
+        void DecryptFile();
+        void EncryptFile(string key);
     }
 }

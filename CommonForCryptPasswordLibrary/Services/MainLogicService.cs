@@ -9,6 +9,7 @@ using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.Filters;
 using System.Runtime.InteropServices;
+using CommonForCryptPasswordLibrary.WorkWithJson;
 
 namespace CommonForCryptPasswordLibrary.Services
 {
@@ -79,41 +80,6 @@ namespace CommonForCryptPasswordLibrary.Services
         public void Toggle_searchEverywhere()
         {
             searchEverywhere = !searchEverywhere;
-        }
-
-        public E_INPUTOUTPUTMESSAGE CryptFile(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public E_INPUTOUTPUTMESSAGE DecryptFile(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public E_INPUTOUTPUTMESSAGE SearchBlockFromCryptRepositoriesUseKeyWord(string key, string keyWord)
-        {
-            throw new NotImplementedException();
-        }
-
-        public E_INPUTOUTPUTMESSAGE ShowAllFromCryptFile(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public E_INPUTOUTPUTMESSAGE WriteToEndCryptFile(string key, string data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public E_INPUTOUTPUTMESSAGE Update(string key, string data, int[] blockData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetBlockData(out int[] blockData, string key, int block, int targetLine = -1)
-        {
-            throw new NotImplementedException();
         }
 
         public BlockModel GetBlockData(Filter filterShow)
@@ -193,8 +159,25 @@ namespace CommonForCryptPasswordLibrary.Services
             
         }
 
-        
+        public void DecryptFile()
+        {
+            SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
+                    = new SerializeDeserializeJson<List<GroupModel>>();
+            serializeDeserializeJson.SerializeToFile(_cryptGroup.GetAll_List(), _appSettings.DefaultDecryptFile.Path);
+        }
 
-        
+        public void EncryptFile(string key)
+        {
+            SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
+                    = new SerializeDeserializeJson<List<GroupModel>>();
+            EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
+                        new EncryptDecryptSettings() { Key = key, Path = _appSettings.DefaultCryptFile.Path });
+            cryptDecrypt.CryptFileModel= new CryptFileModel()
+            {
+                DecryptInfoContent = serializeDeserializeJson
+                .DeserializeFromFile(_appSettings.DefaultDecryptFile.Path)
+            };
+            cryptDecrypt.EncryptAndSaveData();
+        }
     }
 }
