@@ -6,6 +6,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 [assembly: CLSCompliant(true)]//compiler must check compatible with CLS. 
+//https://docs.microsoft.com/ru-ru/dotnet/api/system.security.cryptography.symmetricalgorithm?view=net-5.0
 namespace CryptLibrary
 {
     
@@ -673,6 +674,10 @@ namespace CryptLibrary
 
             byte[] Result = Ms.ToArray();
 
+            Ms.Close();
+            Cs.Close();
+            Sa.Clear();
+            Sa.Dispose();
             Ms.Dispose();
             Cs.Dispose();
             Ct.Dispose();
@@ -694,7 +699,8 @@ namespace CryptLibrary
             StreamReader Sr = new StreamReader(Cs);
 
             Result = Sr.ReadToEnd();
-
+            Cs.Close();
+            Sr.Close();
             Cs.Dispose();
             Sr.Dispose();
             return Result;
@@ -704,7 +710,7 @@ namespace CryptLibrary
         [DebuggerNonUserCode]
         private static CryptoStream InternalDecrypt(byte[] key, string value)
         {
-            SymmetricAlgorithm sa = Rijndael.Create();
+            using SymmetricAlgorithm sa = Rijndael.Create();
             ICryptoTransform ct = sa.CreateDecryptor((new PasswordDeriveBytes(value, null)).GetBytes(16), new byte[16]);
 
             MemoryStream ms = new MemoryStream(key);
