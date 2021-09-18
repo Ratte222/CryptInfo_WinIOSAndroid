@@ -21,18 +21,19 @@ namespace ConsoleCrypt.Helpers
         [JsonProperty(PropertyName = "keys_for_encrypted_files")]
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
         public string default_crypr_file { get; set; }
-        public FileModelInSettings DefaultCryptFile { get
+        public FileModelInSettings SelectedCryptFile { get
             {
                 return DirCryptFile.FirstOrDefault(i => i.Name.ToLower() == default_crypr_file.ToLower());
             } }
         public string default_decrypr_file { get; set; }
-        public FileModelInSettings DefaultDecryptFile
+        public FileModelInSettings SelectedDecryptFile
         {
             get
             {
                 return DirDecryptFile.FirstOrDefault(i => i.Name.ToLower() == default_decrypr_file.ToLower());
             }
         }
+
         public void Save()
         {
             //SaveData?.Invoke();

@@ -56,6 +56,7 @@ namespace ConsoleCrypt
                     provider.GetService<ISearchSettings>(), provider.GetService<IMapper>(),
                     provider.GetService<IBlockService>(), provider.GetService<IGroupService>());
             });
+            //serviceCollection.AddSingleton<FluentCommandLineParser<>>
             services = serviceCollection.BuildServiceProvider();
             //configure console logging
             //serviceProvider

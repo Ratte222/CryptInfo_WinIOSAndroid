@@ -9,12 +9,27 @@ using AutoMapper;
 using CommonForCryptPasswordLibrary.Filters;
 using CommonForCryptPasswordLibrary.Model;
 using ConsoleCrypt.DTO;
+using CommandLine;
+using ConsoleCrypt.Commands;
 //using System.Void;
 namespace ConsoleCrypt
 {
     public class CommandInterpreter
     {
         private string password;
+        private string Password {
+            get
+            {
+                return password;
+            }
+            set 
+            {
+                if (!String.IsNullOrEmpty(value) && !String.IsNullOrWhiteSpace(value))
+                {
+                    password = value;
+                }
+            }
+        }
         private IMainLogicService _inputOutputFile;
         ImyIO_Console _console_IO;
         IAppSettings _appSettings;
@@ -41,15 +56,30 @@ namespace ConsoleCrypt
             do
             {
                 string command = _console_IO.ReadLine();
+                //var parser = new FluentCommandLineParser<AppCommand>();
+                //parser.Setup<bool>(arg => arg.CaseSensetive)
+                //    .As("cs")
+                //    .WithDescription("Case sensetive")
+                //    .SetDefault(false);
+                //parser.Setup<Search>("search")
+                //    .
+                //parser.SetupHelp("?", "h", "help")
+                //.Callback(text => Console.WriteLine(text));
+                //var parseResult = parser.Parse(splitCommand);
+
+
                 string[] splitCommand = command.Split(' ');
                 splitCommand[0] = splitCommand[0].ToLower();
+                
+
                 if (!String.IsNullOrWhiteSpace(command) && !String.IsNullOrEmpty(command))
                 {
                     work = InterpretCommand(splitCommand);
                 }
                 else
                 {
-                    _console_IO.WriteLine("Command isNull Or WriteSpace Or Empty");
+                    //_console_IO.WriteLine("Command isNull Or WriteSpace Or Empty");
+                    Help(null);
                 }
             }
             while (work);
@@ -62,6 +92,36 @@ namespace ConsoleCrypt
                 //_appSettings.Save();
                 //_searchSettings.Save();
                 return false;
+            }
+            try
+            {
+                //CommandLine.Parser.Default.ParseArguments<SearchCommand, ShowCommand>(splitCommand)
+                      //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
+                 var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
+                     EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand>(splitCommand);
+                result
+                   .WithParsed<SearchCommand>(Search)
+                   .WithParsed<ShowCommand>(Show)
+                   .WithParsed<CreateCommand>(Create)
+                   .WithParsed<UpdateCommand>(Update)
+                   .WithParsed<DecryptCommand>(Decrypt)
+                   .WithParsed<EncryptCommand>(Encrypt)
+                   .WithParsed<InitCommand>(Init)
+                   .WithParsed<ReEnterCommand>(ReEnter)
+                   .WithParsed<GeneratePasswordCommand>(GeneratePassword);
+
+                    //.MapResult(
+                    //    (SearchCommand opts) => { Search(opts); return true; },
+                    //    (ShowCommand opts) => { Show(opts); return true; },
+                    //    (CreateCommand opts) => { Create(opts); return true; },
+                    //    _ => {  UnknownCommand(); return true; }
+                    //    );
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                _console_IO.HandleMessage("", ex);
+#endif
             }
             //var handler = splitCommand[0].ToLower() switch
             //{
@@ -80,63 +140,63 @@ namespace ConsoleCrypt
             //    _ => UnknownCommand(splitCommand)
             //};
             //handler.GetAwaiter();           
-            try 
-            {
-                switch (splitCommand[0].ToLower())
-                {
-                    case "help":
-                        Help(splitCommand);
-                        break;
-                    case "show":
-                        Show(splitCommand);
-                        break;
-                    case "search":
-                        Search(splitCommand);
-                        break;
-                    case "create":
-                        Create(splitCommand);
-                        break;
-                    case "set":
-                        Set(splitCommand);
-                        break;
-                    case "decrypt":
-                        Decrypt(splitCommand);
-                        break;
-                    case "encrypt":
-                        Encrypt(splitCommand);
-                        break;
-                    case "viewsetting":
-                        ViewSettings(splitCommand);
-                        break;
-                    case "generatepassword":
-                        GeneratePassword(splitCommand);
-                        break;
-                    case "reenter":
-                        ReEnter(splitCommand);
-                        break;
-                    case "update":
-                        Update(splitCommand);
-                        break;
-                    case "initfiles":
-                        InitFiles(splitCommand);
-                        break;
-                    default:
-                        UnknownCommand(splitCommand);
-                        break;
-                }
-            }
-            catch(Exception ex)
-            {
-#if DEBUG
-                _console_IO.HandleMessage("", ex);
-#endif
-            }
-            
+            //            try 
+            //            {
+            //                switch (splitCommand[0].ToLower())
+            //                {
+            //                    case "help":
+            //                        Help(splitCommand);
+            //                        break;
+            //                    case "show":
+            //                        Show(splitCommand);
+            //                        break;
+            //                    case "search":
+            //                        Search(splitCommand);
+            //                        break;
+            //                    case "create":
+            //                        Create(splitCommand);
+            //                        break;
+            //                    case "set":
+            //                        Set(splitCommand);
+            //                        break;
+            //                    case "decrypt":
+            //                        Decrypt(splitCommand);
+            //                        break;
+            //                    case "encrypt":
+            //                        Encrypt(splitCommand);
+            //                        break;
+            //                    case "viewsetting":
+            //                        ViewSettings(splitCommand);
+            //                        break;
+            //                    case "generatepassword":
+            //                        GeneratePassword(splitCommand);
+            //                        break;
+            //                    case "reenter":
+            //                        ReEnter(splitCommand);
+            //                        break;
+            //                    case "update":
+            //                        Update(splitCommand);
+            //                        break;
+            //                    case "initfiles":
+            //                        InitFiles(splitCommand);
+            //                        break;
+            //                    default:
+            //                        Help(splitCommand);
+            //                        break;
+            //                }
+            //            }
+            //            catch(Exception ex)
+            //            {
+            //#if DEBUG
+            //                _console_IO.HandleMessage("", ex);
+            //#endif
+            //            }
+
 
             return true;
         }
 
-        private void UnknownCommand(string[] splitCommand)
+        private void UnknownCommand()
         {
             _console_IO.WriteLine("->Unknown command");
         }
@@ -240,44 +300,16 @@ namespace ConsoleCrypt
             _console_IO.WriteLine("");
         }
 
-        private void Search(string[] splitCommand)
+        private void Search(SearchCommand command)
         {
             _inputOutputFile.LoadDefaultParams();
-            if (splitCommand.Length < 2)
-            {
-                _console_IO.WriteLineTooFewParameters();
-                _console_IO.WriteLine("expected \"search keyWord\"");
-            }
-            if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
-            {
-                _inputOutputFile.Toggle_caseSensitive();
-            }
-            if (_IndexOfInArray(splitCommand, "-se") > -1)//search everywhere
-            {
-                _inputOutputFile.Toggle_searchEverywhere();
-            }
-            //if (_IndexOfInArray(splitCommand, "-sh") > -1)// search In Header 
-            //{
-            //    _inputOutputFile.Toggle_searchInHeader();
-            //}
-            //if (_IndexOfInArray(splitCommand, "-st") > -1)//search in tegs
-            //{
-            //    _inputOutputFile.Toggle_searchInTegs();
-            //}
-            bool sufm = _searchSettings.SearchUntilFirstMatch;
-            if (_IndexOfInArray(splitCommand, "-sufm") > -1)//search until first match
-            {
-                sufm = !sufm;
-            }
-            //if (_IndexOfInArray(splitCommand, "-vsi") > -1)//view service information
-            //{
-            //    _inputOutputFile.Toggle_viewServiceInformation();
-            //}
-            CheckPassword();
+            if(command.CaseSensetive) _inputOutputFile.Toggle_caseSensitive();
+            if(command.SearchEverywhere) _inputOutputFile.Toggle_searchEverywhere();
+            CheckPassword(command.Password);
             LoadTheDatabaseIfNeeded();
             Filter filterShow = new Filter();
-            filterShow.BlockName = splitCommand[splitCommand.Length - 1];
-            if (sufm)
+            filterShow.BlockName = command.KeyWord;
+            if (command.SearchUntilFirstMatch)
             {
                 var res = _inputOutputFile.GetBlockData(filterShow);
                 if (res == null)
@@ -296,176 +328,125 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine("Nothing found");
                 }
-                else 
-                { 
-                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res)); 
+                else
+                {
+                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
                 }
 
             }
         }
 
-        private void Show(string[] splitCommand)
+        
+        private void Show(ShowCommand command)
         {
             _inputOutputFile.LoadDefaultParams();
-            if (splitCommand.Length < 2)
+            if (command.CaseSensetive) _inputOutputFile.Toggle_caseSensitive();
+            CheckPassword(command.Password);
+            LoadTheDatabaseIfNeeded();
+            if (command.AllBlocks)
             {
-                _console_IO.WriteLineTooFewParameters();
-                //console_IO.WriteLine("expected \"search keyWord\"");
+                
+                List<GroupModel> models = _cryptGroup.GetAll_List();
+                _console_IO.Show(_mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models));
+
             }
-            else
+            else if (command.AllGroups)
+            {                
+                List<GroupModel> models = _cryptGroup.GetAll_List();
+                foreach (var group in _mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models))
+                {
+                    _console_IO.WriteLine(group.ToString());
+                    _console_IO.WriteLine("");
+                }
+            }
+            else 
             {
-                if (_IndexOfInArray(splitCommand, "-cs") > -1)//case sensetive
+                Filter filterShow = new Filter();
+                filterShow.BlockName = command.Block;
+                if (!String.IsNullOrWhiteSpace(command.Group))
                 {
-                    _inputOutputFile.Toggle_caseSensitive();
-                }
-                if (_IndexOfInArray(splitCommand, "-allblocks") > -1)
-                {
-                    CheckPassword();
-                    LoadTheDatabaseIfNeeded();
-                    List<GroupModel> models = _cryptGroup.GetAll_List();                        
-                    _console_IO.Show(_mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models));
-                        
-                }
-                else if (_IndexOfInArray(splitCommand, "-allgroups") > -1)
-                {
-                    CheckPassword();
-                    LoadTheDatabaseIfNeeded();
-                    List<GroupModel> models = _cryptGroup.GetAll_List();
-                    foreach(var group in _mapper.Map<List<GroupModel>, List<GroupDataDTO>>(models))
+                    filterShow.GroupName = command.Group;
+                    var res = _inputOutputFile.GetBlockData(filterShow);
+                    if (res == null)
                     {
-                        _console_IO.WriteLine(group.ToString());
-                        _console_IO.WriteLine("");
-                    }
-                }
-                else if (_IndexOfInArray(splitCommand, "-b") > -1)
-                {
-                    if (splitCommand.Length < 3)
-                    {
-                        _console_IO.WriteLineTooFewParameters();
-                    }
-                    else if ((_IndexOfInArray(splitCommand, "-g") > -1) && (splitCommand.Length < 3))
-                    {
-                        _console_IO.WriteLineTooFewParameters();
+                        _console_IO.WriteLine("Nothing found");
                     }
                     else
                     {
-                        //int[] vs;
-                        CheckPassword();
-                        LoadTheDatabaseIfNeeded();
-                        Filter filterShow = new Filter();
-                        filterShow.BlockName = splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1];
-                        if (_IndexOfInArray(splitCommand, "-g") > -1)
-                        {
-                            filterShow.GroupName = splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1];
-                            var res = _inputOutputFile.GetBlockData(filterShow);
-                            if (res == null)
-                            {
-                                _console_IO.WriteLine("Nothing found");
-                            }
-                            else
-                            {
-                                _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
-                            }
-                        }
-                        else
-                        {
-                            var res = _inputOutputFile.GetBlockDatas(filterShow);
-                            if (res.Count == 0)
-                            {
-                                _console_IO.WriteLine("Nothing found");
-                            }
-                            else
-                            {
-                                _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
-                            }
-                        }
+                        _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
                     }
-                }
-                //_console_IO.WriteLine("");
-            }                
-            
-            
-        }
-
-        private void Create(string[] splitCommand)
-        {
-            if (splitCommand.Length < 2)
-            {
-                _console_IO.WriteLineTooFewParameters();
-                //console_IO.WriteLine("expected \"search keyWord\"");
-            }
-            else
-            {
-                CheckPassword();
-                LoadTheDatabaseIfNeeded();
-                if (_IndexOfInArray(splitCommand, "-block") > -1)
-                {
-                    if (splitCommand.Length < 3)
-                    {
-                        _console_IO.WriteLineTooFewParameters();
-                        return;
-                    }
-                    GroupModel cryptGroupModel = _cryptGroup.Get(i => i.Name.ToLower()
-                        .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-block") + 1].ToLower()));
-                    if(cryptGroupModel == null)
-                    {
-                        _console_IO.WriteLine("Sorry, group with this name was not found");
-                    }
-                    else
-                    {
-                        _console_IO.WriteLine($"Target group:\r\n" +
-                            $"{cryptGroupModel.ToString()}\r\n");
-                        BlockModel cryptBlockModel = AddBlock();
-                        cryptBlockModel.GroupId = cryptGroupModel.Id;
-                        if (this.QuestionAgreeOrDissagry($"Add a block to group?"))
-                        {
-                            _cryptBlock.Add(cryptBlockModel);
-                        }
-                    }
-                }
-                else if (_IndexOfInArray(splitCommand, "-group") > -1)
-                {
-                    GroupModel cryptGroupModel = AddGroup();
-                    _cryptGroup.Add(cryptGroupModel);
-                }
-            }
-        }
-
-        private void GeneratePassword(string[] splitCommand)
-        {
-            if (splitCommand.Length < 2)
-            {
-                _console_IO.WriteLineTooFewParameters();
-                _console_IO.WriteLine("expected \"generatePassword lengthPassword\"");
-            }
-            int passwordLength;
-            if (!Int32.TryParse(splitCommand[1], out passwordLength))
-            {
-                _console_IO.WriteLine("parameter expected number");
-            }
-            _console_IO.WriteLine($"password: {CryptoWithoutTry.GeneratePassword(passwordLength)}");
-        }
-
-        private void ReEnter(string[] splitCommand)
-        {
-            if (splitCommand.Length < 2)
-            {
-                _console_IO.WriteLineTooFewParameters();
-                //console_IO.WriteLine("expected \"generatePassword lengthPassword\"");
-            }
-            else
-            {
-                if (String.Equals(splitCommand[1], "-p"))
-                {
-                    _console_IO.WriteLine("Enter password");
-                    password = _console_IO.GetHiddenInput();
-                    _console_IO.WriteLine("Ok");
                 }
                 else
                 {
-                    _console_IO.WriteLineUnknownCommand("reenter");
+                    var res = _inputOutputFile.GetBlockDatas(filterShow);
+                    if (res.Count == 0)
+                    {
+                        _console_IO.WriteLine("Nothing found");
+                    }
+                    else
+                    {
+                        _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
+                    }
                 }
             }
+        }
+
+        private void Create(CreateCommand command)
+        {
+            CheckPassword(command.Password);
+            LoadTheDatabaseIfNeeded();
+            if (command.Block)
+            {
+                _console_IO.WriteLine("Entered group name (full or partial)");
+                string groupName = _console_IO.ReadLine();
+                GroupModel cryptGroupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                    .Contains(groupName.ToLower()));                
+                if (cryptGroupModel == null)
+                {
+                    _console_IO.WriteLine("Sorry, group with this name was not found");
+                }
+                else
+                {
+                    _console_IO.WriteLine($"Target group:\r\n" +
+                        $"{cryptGroupModel.ToString()}\r\n");
+                    if (!QuestionAgreeOrDissagry($"Is this the right group? "))
+                    {
+                        return;
+                    }
+                    BlockModel cryptBlockModel = AddBlock();
+                    cryptBlockModel.GroupId = cryptGroupModel.Id;
+                    if (this.QuestionAgreeOrDissagry($"Add a block to group?"))
+                    {
+                        _cryptBlock.Add(cryptBlockModel);
+                        _console_IO.WriteLine($"Block \"{cryptBlockModel.Title}\" created successfully");
+                    }
+                }
+            }
+            else if (command.Group)
+            {
+                GroupModel cryptGroupModel = AddGroup();
+                if (this.QuestionAgreeOrDissagry($"Add a group?"))
+                {
+                    _cryptGroup.Add(cryptGroupModel);
+                    _console_IO.WriteLine($"Group \"{cryptGroupModel.Name}\" created successfully");
+                }
+            }
+        }
+
+        private void GeneratePassword(GeneratePasswordCommand command)
+        {            
+            _console_IO.WriteLine($"password: {CryptoWithoutTry.GeneratePassword(command.Length)}");
+        }
+
+        private void ReEnter(ReEnterCommand command)
+        {
+            if (command.ReenterPassword)
+            {
+                    _console_IO.WriteLine("Enter password");
+                    Password = _console_IO.GetHiddenInput();
+                    _console_IO.WriteLine("Ok");
+            }
+                
         }
 
         private void ViewSettings(string[] splitCommand)
@@ -481,22 +462,20 @@ namespace ConsoleCrypt
             _console_IO.WriteLine("");
         }
 
-        private void InitFiles(string[] splitCommand)
+        private void Init(InitCommand command)
         {
-            if (splitCommand.Length < 2)
+            CheckPassword(command.Password);
+            if (command.EncryptedFile)
             {
-                _console_IO.WriteLineTooFewParameters();
-                _console_IO.WriteLine("expected \"initfiles -c\" or \"initfiles -d\"");
+                _inputOutputFile.InitCryptFile(Password);
+                _console_IO.WriteLine("File init successsfully");
             }
-            CheckPassword();
-            if (splitCommand[1] == "-c")
+            if (command.EncryptedFiles)
             {
-                if(this.QuestionAgreeOrDissagry("Really initialize all encrypted files"))
-                _inputOutputFile.InitCryptFiles(password); 
+                _inputOutputFile.InitCryptFiles(Password);
+                _console_IO.WriteLine("Files init successsfully");
             }
-            //else if (splitCommand[1] == "-d")
-            //    _inputOutputFile.InitCryptFiles(password);
-            _console_IO.WriteLine("Files init successsfully");
+            
         }
 
         private void Set(string[] splitCommand)
@@ -522,123 +501,90 @@ namespace ConsoleCrypt
             }
         }
 
-        private void Decrypt(string[] splitCommand)
+        private void Decrypt(DecryptCommand command)
         {
-            if (splitCommand.Length < 2)
+            if (command.File)
             {
-                _console_IO.WriteLineTooFewParameters();
-            }
-            else
-            {
-
-                if (String.Equals(splitCommand[1], "-f"))
-                {
-                    CheckPassword();
-                    LoadTheDatabaseIfNeeded();
-                    _inputOutputFile.DecryptFile();
-                    _console_IO.WriteLine("File decrypted successfully!\r\n");
-                }
-                else
-                {
-                    _console_IO.WriteLineUnknownCommand("dectypt");
-                }
+                CheckPassword(command.Password);
+                LoadTheDatabaseIfNeeded();
+                _inputOutputFile.DecryptFile();
+                _console_IO.WriteLine("File decrypted successfully!\r\n");
             }
         }
 
-        private void Encrypt(string[] splitCommand)
+        private void Encrypt(EncryptCommand command)
         {
-            if (splitCommand.Length < 2)
+            if (command.File)
             {
-                _console_IO.WriteLineTooFewParameters();
-            }
-            else
-            {
-                if (String.Equals(splitCommand[1], "-f"))
-                {
-                    CheckPassword();
-                    _inputOutputFile.EncryptFile(password);
-                    _console_IO.WriteLine("File encrypted successfully");
-                }
-                else
-                {
-                    _console_IO.WriteLineUnknownCommand("enctypt");
-                }
+                CheckPassword(command.Password);
+                _inputOutputFile.EncryptFile(Password);
+                _console_IO.WriteLine("File encrypted successfully");
             }
         }
 
 
-        private void Update(string[] splitCommand)
+        private void Update(UpdateCommand command)
         {
-            if (splitCommand.Length < 3)
+            _inputOutputFile.LoadDefaultParams();
+            CheckPassword(command.Password);
+            LoadTheDatabaseIfNeeded();
+            if (!String.IsNullOrEmpty(command.Block))
             {
-                _console_IO.WriteLineTooFewParameters();
-            }
-            else
-            {
-                _inputOutputFile.LoadDefaultParams();
-                if ((_IndexOfInArray(splitCommand, "-b") > -1) && (splitCommand.Length < 3))
+                _console_IO.WriteLine("");
+                GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                    .Contains(command.Group));
+                if (groupModel == null)
                 {
-                    _console_IO.WriteLineTooFewParameters();
+                    _console_IO.WriteLine("Group not found");
                 }
                 else
                 {
-                    CheckPassword();
-                    if (_IndexOfInArray(splitCommand, "-b") > -1)
+                    if (!QuestionAgreeOrDissagry($"Is this the right group? "))
                     {
-                        _console_IO.WriteLine("");
-                        GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
-                            .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1]));
-                        if (groupModel == null)
-                        {
-                            _console_IO.WriteLine("Group not found");
-                        }
-                        else
-                        {
-                            BlockModel blockModel = groupModel.CryptBlockModels.Find(i => i.Title.ToLower()
-                                .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-b") + 1]));
-                            if(blockModel == null)
-                            {
-                                _console_IO.WriteLine("Block not found");
-                            }
-                            else
-                            {
-                                _console_IO.WriteLine(groupModel.ToString());
-                                _console_IO.WriteLine("");
-                                _console_IO.WriteLine(blockModel.ToString());
-                                UpdateBlock(ref blockModel);
-                                if (QuestionAgreeOrDissagry("Save this block? "))
-                                {
-                                    _cryptBlock.Update(blockModel);
-                                }
-                            }
-                            
-                        }
+                        return;
+                    }
+                    BlockModel blockModel = groupModel.CryptBlockModels.Find(i => i.Title.ToLower()
+                        .Contains(command.Block));
+                    if (blockModel == null)
+                    {
+                        _console_IO.WriteLine("Block not found");
                     }
                     else
                     {
+                        _console_IO.WriteLine(groupModel.ToString());
                         _console_IO.WriteLine("");
-                        GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
-                            .Contains(splitCommand[GetIndexInArray(ref splitCommand, "-g") + 1]));
-                        if(groupModel == null)
+                        _console_IO.WriteLine(blockModel.ToString());
+                        UpdateBlock(ref blockModel);
+                        if (QuestionAgreeOrDissagry("Save this block? "))
                         {
-                            _console_IO.WriteLine("Group not found");
+                            _cryptBlock.Update(blockModel);
                         }
-                        else
-                        {
-                            _console_IO.WriteLine(groupModel.ToString());
-                            _console_IO.WriteLine("");
-                            var temp = AddGroup();
-                            groupModel.Name = temp.Name;
-                            groupModel.Description = temp.Description;
-                            if (QuestionAgreeOrDissagry("Save this group? "))
-                            {
-                                _cryptGroup.Update(groupModel);
-                            }
-                        }
-                        
                     }
 
                 }
+            }
+            else
+            {
+                _console_IO.WriteLine("");
+                GroupModel groupModel = _cryptGroup.Get(i => i.Name.ToLower()
+                    .Contains(command.Group));
+                if (groupModel == null)
+                {
+                    _console_IO.WriteLine("Group not found");
+                }
+                else
+                {
+                    _console_IO.WriteLine(groupModel.ToString());
+                    _console_IO.WriteLine("");
+                    var temp = AddGroup();
+                    groupModel.Name = temp.Name;
+                    groupModel.Description = temp.Description;
+                    if (QuestionAgreeOrDissagry("Save this group? "))
+                    {
+                        _cryptGroup.Update(groupModel);
+                    }
+                }
+
             }
         }
 
@@ -747,8 +693,8 @@ namespace ConsoleCrypt
         {
             var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
             {
-                Key = password,
-                Path = _appSettings.DefaultCryptFile.Path
+                Key = Password,
+                Path = _appSettings.SelectedCryptFile.Path
             };
             if (!_cryptBlock.DataExist)
             {
@@ -760,12 +706,13 @@ namespace ConsoleCrypt
             }
         }
 
-        private void CheckPassword()
+        private void CheckPassword(string passwrd = "")
         {
-            if(String.IsNullOrEmpty(password))
+            Password = passwrd;
+            if(String.IsNullOrEmpty(Password))
             {
                 _console_IO.WriteLine("Enter password");
-                password = _console_IO.GetHiddenInput();
+                Password = _console_IO.GetHiddenInput();
                 _console_IO.WriteLine("Ok");
             }
         }

@@ -35,6 +35,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         void Toggle_searchEverywhere();
         BlockModel GetBlockData(Filter filterShow);
         List<BlockModel> GetBlockDatas(Filter filterShow);
+        void InitCryptFile(string key);
         void InitCryptFiles(string key);
         void DecryptFile();
         void EncryptFile(string key);

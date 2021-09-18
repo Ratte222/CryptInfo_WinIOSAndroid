@@ -10,8 +10,10 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         public List<FileModelInSettings> DirCryptFile { get; set; }
         public List<FileModelInSettings> DirDecryptFile { get; set; }
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
-        public FileModelInSettings DefaultCryptFile { get; }
-        public FileModelInSettings DefaultDecryptFile { get; }
+        public FileModelInSettings SelectedCryptFile { get; }
+        //public FileModelInSettings DefaultCryptFile { get; }
+        public FileModelInSettings SelectedDecryptFile { get; }
+        //public FileModelInSettings DefaultDecryptFile { get; }
         void Save();
         //void Load();
     }
