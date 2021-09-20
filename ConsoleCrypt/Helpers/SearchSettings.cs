@@ -4,6 +4,7 @@ using System.Text;
 using Newtonsoft.Json;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.WorkWithJson;
+using System.Reflection;
 
 namespace ConsoleCrypt.Helpers
 {
@@ -11,8 +12,10 @@ namespace ConsoleCrypt.Helpers
     {
         //public delegate void SaveSettingData();
         //public event SaveSettingData SaveData;
+        //Assembly.GetExecutingAssembly().Location in net5 and letter returned null!!!!!!
         [JsonIgnore]
-        public readonly string pathToSettings = System.IO.Path.Combine("JSON", "SearchSettings.json");
+        public readonly string pathToSettings = System.IO.Path.Combine(
+            System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "JSON", "SearchSettings.json");
 
         [JsonProperty(PropertyName = "case_sensitive")]
         public bool CaseSensitive { get; set; }

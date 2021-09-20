@@ -142,7 +142,7 @@ namespace CommonForCryptPasswordLibrary.Services
             }
         }
 
-        public void InitCryptFile(string key)
+        public string InitCryptFile(string key)
         {
             if (!System.IO.File.Exists(_appSettings.SelectedCryptFile.Path))
             {
@@ -152,11 +152,17 @@ namespace CommonForCryptPasswordLibrary.Services
                     new EncryptDecryptSettings() { Key = key, Path = _appSettings.SelectedCryptFile.Path });
                 cryptDecrypt.GetInitData();
                 cryptDecrypt.EncryptAndSaveData();
+                return $"Init file - {_appSettings.SelectedCryptFile.Path}";
+            }
+            else
+            {
+                return $"File exist {_appSettings.SelectedCryptFile.Path}";
             }
         }
 
-        public void InitCryptFiles(string key)
+        public string InitCryptFiles(string key)
         {
+            StringBuilder stringBuilder = new StringBuilder();
             foreach (var path in _appSettings.DirCryptFile)
             {
                 if (!System.IO.File.Exists(path.Path))
@@ -167,9 +173,14 @@ namespace CommonForCryptPasswordLibrary.Services
                         new EncryptDecryptSettings() { Key = key, Path = path.Path });
                     cryptDecrypt.GetInitData();
                     cryptDecrypt.EncryptAndSaveData();
+                    stringBuilder.AppendLine($"Init file - {_appSettings.SelectedCryptFile.Path}");
+                }
+                else
+                {
+                    stringBuilder.AppendLine($"File exist {_appSettings.SelectedCryptFile.Path}");
                 }
             }
-
+            return stringBuilder.ToString();
         }
 
         public void DecryptFile()

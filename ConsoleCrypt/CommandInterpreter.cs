@@ -98,7 +98,7 @@ namespace ConsoleCrypt
                 //CommandLine.Parser.Default.ParseArguments<SearchCommand, ShowCommand>(splitCommand)
                       //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
                  var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
-                     EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand>(splitCommand);
+                     EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand>(splitCommand);
                 result
                    .WithParsed<SearchCommand>(Search)
                    .WithParsed<ShowCommand>(Show)
@@ -107,8 +107,9 @@ namespace ConsoleCrypt
                    .WithParsed<DecryptCommand>(Decrypt)
                    .WithParsed<EncryptCommand>(Encrypt)
                    .WithParsed<InitCommand>(Init)
-                   .WithParsed<ReEnterCommand>(ReEnter)
-                   .WithParsed<GeneratePasswordCommand>(GeneratePassword);
+                   .WithParsed<ReEnterCommand>(ReEnter)                   
+                   .WithParsed<GeneratePasswordCommand>(GeneratePassword)
+                   .WithParsed<ViewSettingsCommand>(ViewSettings);
 
                     //.MapResult(
                     //    (SearchCommand opts) => { Search(opts); return true; },
@@ -449,7 +450,7 @@ namespace ConsoleCrypt
                 
         }
 
-        private void ViewSettings(string[] splitCommand)
+        private void ViewSettings(ViewSettingsCommand command)
         {
             _console_IO.WriteLine($"Path {System.Reflection.Assembly.GetEntryAssembly().Location}");
             //console_IO.WriteLine($"DirCryptFile {_appSettings.GetDirCryptFile()}");
@@ -459,6 +460,10 @@ namespace ConsoleCrypt
             //console_IO.WriteLine($"searchInHeader {settings.Get_searchInHeader()}");
             //console_IO.WriteLine($"searchUntilFirstMatch {settings.Get_searchUntilFirstMatch()}");
             //console_IO.WriteLine($"viewServiceInformation {settings.Get_viewServiceInformation()}");
+            _console_IO.WriteLine($"{nameof(_appSettings.SelectedCryptFile)}: Name = " +
+                $"{_appSettings.SelectedCryptFile.Name} path = {_appSettings.SelectedCryptFile.Path}");
+            _console_IO.WriteLine($"{nameof(_appSettings.SelectedDecryptFile)}: Name = " +
+                $"{_appSettings.SelectedDecryptFile.Name} path = {_appSettings.SelectedDecryptFile.Path}");
             _console_IO.WriteLine("");
         }
 
@@ -467,13 +472,13 @@ namespace ConsoleCrypt
             CheckPassword(command.Password);
             if (command.EncryptedFile)
             {
-                _inputOutputFile.InitCryptFile(Password);
-                _console_IO.WriteLine("File init successsfully");
+                _console_IO.WriteLine(_inputOutputFile.InitCryptFile(Password));
+                //_console_IO.WriteLine("File init successsfully");
             }
             if (command.EncryptedFiles)
             {
-                _inputOutputFile.InitCryptFiles(Password);
-                _console_IO.WriteLine("Files init successsfully");
+                _console_IO.WriteLine(_inputOutputFile.InitCryptFiles(Password));
+                //_console_IO.WriteLine("Files init successsfully");
             }
             
         }
@@ -508,7 +513,8 @@ namespace ConsoleCrypt
                 CheckPassword(command.Password);
                 LoadTheDatabaseIfNeeded();
                 _inputOutputFile.DecryptFile();
-                _console_IO.WriteLine("File decrypted successfully!\r\n");
+                _console_IO.WriteLine($"File decrypted successfully! " +
+                    $"From {_appSettings.SelectedCryptFile.Path} to {_appSettings.SelectedDecryptFile.Path}\r\n");
             }
         }
 
@@ -518,7 +524,8 @@ namespace ConsoleCrypt
             {
                 CheckPassword(command.Password);
                 _inputOutputFile.EncryptFile(Password);
-                _console_IO.WriteLine("File encrypted successfully");
+                _console_IO.WriteLine($"File encrypted successfully! " +
+                    $"From {_appSettings.SelectedDecryptFile.Path} to {_appSettings.SelectedCryptFile.Path}");
             }
         }
 
