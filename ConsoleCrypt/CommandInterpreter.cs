@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using CryptLibrary;
 using CommonForCryptPasswordLibrary;
 using CommonForCryptPasswordLibrary.Interfaces;
@@ -310,7 +310,7 @@ namespace ConsoleCrypt
             LoadTheDatabaseIfNeeded();
             Filter filterShow = new Filter();
             filterShow.BlockName = command.KeyWord;
-            if (command.SearchUntilFirstMatch)
+            if (!command.SearchUntilFirstMatch)
             {
                 var res = _inputOutputFile.GetBlockData(filterShow);
                 if (res == null)
@@ -319,6 +319,18 @@ namespace ConsoleCrypt
                 }
                 else
                 {
+                    if(command.ShowGroup)
+                    {
+                        var group = _cryptGroup.GetAll_List().Find(i => i.Id == res.GroupId);
+                        if(group is null)
+                        {
+                            _console_IO.WriteLine($"Block \"{res.Title}\" does not belond to the group");                            
+                        }
+                        else
+                        {
+                            _console_IO.Show(_mapper.Map<GroupModel, GroupDataDTO>(group), false);
+                        }
+                    }
                     _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(res));
                 }
             }
@@ -331,7 +343,32 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
+                    if(command.ShowGroup)
+                    {
+                        var temp = res.GroupBy(p => p.GroupId);
+                        foreach (var ig in temp)
+                        {
+                            var group = _cryptGroup.GetAll_List().Find(i => i.Id == ig.Key);
+                            if (group is null)
+                            {
+                                _console_IO.WriteLine($"Block \"{ig.FirstOrDefault()?.Title}\" does not belond to the group");
+                            }
+                            else
+                            {
+                                _console_IO.Show(_mapper.Map<GroupModel, GroupDataDTO>(group), false);
+                            }
+                            foreach (var b in ig)
+                            {
+                                _console_IO.Show(_mapper.Map<BlockModel, BlockDataDTO>(b));
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        _console_IO.Show(_mapper.Map<List<BlockModel>, List<BlockDataDTO>>(res));
+                    }
+                    
                 }
 
             }
@@ -408,8 +445,9 @@ namespace ConsoleCrypt
                 }
                 else
                 {
-                    _console_IO.WriteLine($"Target group:\r\n" +
-                        $"{cryptGroupModel.ToString()}\r\n");
+                    //_console_IO.WriteLine($"Target group:\r\n" +
+                    //    $"{cryptGroupModel.ToString()}\r\n");
+                    _console_IO.Show(_mapper.Map<GroupModel, GroupDataDTO>(cryptGroupModel), false);
                     if (!QuestionAgreeOrDissagry($"Is this the right group? "))
                     {
                         return;
@@ -546,6 +584,9 @@ namespace ConsoleCrypt
                 }
                 else
                 {
+                    //_console_IO.WriteLine($"Target group:\r\n" +
+                    //    $"{groupModel.ToString()}\r\n");
+                    _console_IO.Show(_mapper.Map<GroupModel, GroupDataDTO>(groupModel), false);
                     if (!QuestionAgreeOrDissagry($"Is this the right group? "))
                     {
                         return;
@@ -565,6 +606,7 @@ namespace ConsoleCrypt
                         if (QuestionAgreeOrDissagry("Save this block? "))
                         {
                             _cryptBlock.Update(blockModel);
+                            _console_IO.WriteLine($"Block \"{blockModel.Title}\" updated successfully");
                         }
                     }
 

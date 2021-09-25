@@ -15,12 +15,18 @@ namespace ConsoleCrypt
         void WriteLineTooFewParameters();
         string GetHiddenInput();
         void Show(List<GroupDataDTO> groupDataDTOs);
-        void Show(GroupDataDTO groupDataDTO);
+        void Show(GroupDataDTO groupDataDTO, bool showGroupBlocks = true);
         void Show(List<BlockDataDTO> blockDataDTOs);
         void Show(BlockDataDTO blockDataDTO);
     }
     public class MyIO_Console:MyIO, ImyIO_Console
     {
+        private const string startGroup = "------start group------";
+        private const string endGroup = "------end group------";
+        private const string startBlock = "------start block------";
+        private const string endBlock = "------end block------";
+
+
         public virtual void WriteLineUnknownCommand(string command)
         {
             Console.WriteLine($"->Unknown command. Use \"help {command}\" for give additional info");
@@ -63,17 +69,34 @@ namespace ConsoleCrypt
         {
             foreach (var group in groupDataDTOs)
             {
-                WriteLine("------start group------");
+                //WriteLine(startGroup);
                 Show(group);
-                WriteLine("------end group------");
+                //WriteLine(endGroup);
                 WriteLine("");
             }
         }
 
-        public void Show(GroupDataDTO groupDataDTO)
+        public void Show(GroupDataDTO groupDataDTO, bool showGroupBlocks = true)
         {
+            //if (showGroupBlocks)
+            //{
+            //    WriteLine(groupDataDTO.ToString());
+            //    Show(groupDataDTO.CryptBlockModels);
+            //}
+            //else
+            //{
+            //    WriteLine(startGroup);
+            //    WriteLine(groupDataDTO.ToString());
+            //    WriteLine(endGroup);
+            //    WriteLine("");
+            //}
+            WriteLine(startGroup);
             WriteLine(groupDataDTO.ToString());
-            Show(groupDataDTO.CryptBlockModels);
+            WriteLine(endGroup);
+            WriteLine("");
+            if (showGroupBlocks)
+                Show(groupDataDTO.CryptBlockModels);
+
         }
 
         public void Show(List<BlockDataDTO> blockDataDTOs)
@@ -85,9 +108,9 @@ namespace ConsoleCrypt
         }
         public void Show(BlockDataDTO blockDataDTO)
         {
-            WriteLine("------start block------");
+            WriteLine(startBlock);
             WriteLine(blockDataDTO.ToString());
-            WriteLine("------end block------");
+            WriteLine(endBlock);
             WriteLine("");       
         }
         

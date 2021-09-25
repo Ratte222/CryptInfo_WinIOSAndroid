@@ -19,6 +19,9 @@ namespace ConsoleCrypt.Commands
         [Option("se", Required = false, HelpText = "Search everywhere", Default = false)]
         public bool SearchEverywhere{ get; set; }
 
+        [Option("showgroup", Required = false, HelpText = "Show group for block", Default = false)]
+        public bool ShowGroup{ get; set; }
+
         //[Value(0, Hidden =true)]
         //public string Command { get; set; }
 

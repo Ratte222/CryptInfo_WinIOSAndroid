@@ -89,12 +89,12 @@ namespace CommonForCryptPasswordLibrary.Services
             {
                 if (caseSensitive)
                 {
-                    query = _cryptGroup.Get(i => i.Name.ToLower().Contains(filterShow.GroupName.ToLower()))
+                    query = _cryptGroup.Get(i => i.Name.Trim(' ').ToLower().Contains(filterShow.GroupName.ToLower()))
                       .CryptBlockModels.AsQueryable();
                 }
                 else
                 {
-                    _cryptGroup.Get(i => i.Name.ToLower().Contains(filterShow.GroupName.ToLower()))
+                    _cryptGroup.Get(i => i.Name.Trim(' ').ToLower().Contains(filterShow.GroupName.ToLower()))
                         .CryptBlockModels.AsQueryable();
                 }                
             }
@@ -104,19 +104,19 @@ namespace CommonForCryptPasswordLibrary.Services
             }
             if (!caseSensitive&&!searchEverywhere)
             {
-                return query.FirstOrDefault(i => i.Title.ToLower().Contains(filterShow.BlockName.ToLower()));
+                return query.FirstOrDefault(i => i.Title.Trim(' ').ToLower().Contains(filterShow.BlockName.ToLower()));
             }
             else if (!caseSensitive && searchEverywhere)
             {
-                return query.FirstOrDefault(i => i.ToString().ToLower().Contains(filterShow.BlockName.ToLower()));
+                return query.FirstOrDefault(i => i.ToString().Trim(' ').ToLower().Contains(filterShow.BlockName.ToLower()));
             }
             else if (caseSensitive && !searchEverywhere)
             {
-                return query.FirstOrDefault(i => i.Title.Contains(filterShow.BlockName));
+                return query.FirstOrDefault(i => i.Title.Trim(' ').Contains(filterShow.BlockName));
             }
             else// if (!caseSensitive && searchEverywhere)
             {
-                return query.FirstOrDefault(i => i.ToString().Contains(filterShow.BlockName));
+                return query.FirstOrDefault(i => i.ToString().Trim(' ').Contains(filterShow.BlockName));
             }
         }
 
@@ -124,21 +124,21 @@ namespace CommonForCryptPasswordLibrary.Services
         {
             if(caseSensitive&&!searchEverywhere)
             {
-                return _cryptBlock.GetAll_List().FindAll(i => i.Title.Contains(filterShow.BlockName));
+                return _cryptBlock.GetAll_List().FindAll(i => i.Title.Trim(' ').Contains(filterShow.BlockName));
             }
             else if(!caseSensitive && !searchEverywhere)
             {
                 return _cryptBlock.GetAll_List().FindAll(i => 
-                i.Title.ToLower().Contains(filterShow.BlockName.ToLower()));
+                i.Title.Trim(' ').ToLower().Contains(filterShow.BlockName.ToLower()));
             }
             else if (caseSensitive && searchEverywhere)
             {
-                return _cryptBlock.GetAll_List().FindAll(i => i.ToString().Contains(filterShow.BlockName));
+                return _cryptBlock.GetAll_List().FindAll(i => i.ToString().Trim(' ').Contains(filterShow.BlockName));
             }
             else //if (!caseSensitive && searchEverywhere)
             {
                 return _cryptBlock.GetAll_List().FindAll(i =>
-                i.ToString().ToLower().Contains(filterShow.BlockName.ToLower()));
+                i.ToString().Trim(' ').ToLower().Contains(filterShow.BlockName.ToLower()));
             }
         }
 
