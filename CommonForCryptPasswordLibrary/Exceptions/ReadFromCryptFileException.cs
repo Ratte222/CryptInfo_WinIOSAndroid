@@ -4,12 +4,12 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Exceptions
 {
-    public class ValidationException : Exception
+    public class ReadFromCryptFileException: Exception
     {
         public string Property { get; protected set; }
-        public ValidationException(string message, string prop = "") : base(message)
+        public ReadFromCryptFileException(string message, string prop = "") : base(message)
         {
-            Property = prop;            
-        }        
+            Property = prop;
+        }
     }
 }

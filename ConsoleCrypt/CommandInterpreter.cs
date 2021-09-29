@@ -11,6 +11,7 @@ using CommonForCryptPasswordLibrary.Model;
 using ConsoleCrypt.DTO;
 using CommandLine;
 using ConsoleCrypt.Commands;
+using CommonForCryptPasswordLibrary.Exceptions;
 //using System.Void;
 namespace ConsoleCrypt
 {
@@ -70,17 +71,17 @@ namespace ConsoleCrypt
 
                 string[] splitCommand = command.Split(' ');
                 splitCommand[0] = splitCommand[0].ToLower();
-                
 
-                if (!String.IsNullOrWhiteSpace(command) && !String.IsNullOrEmpty(command))
-                {
-                    work = InterpretCommand(splitCommand);
-                }
-                else
-                {
-                    //_console_IO.WriteLine("Command isNull Or WriteSpace Or Empty");
-                    Help(null);
-                }
+                work = InterpretCommand(splitCommand);
+                //if (!String.IsNullOrWhiteSpace(command) && !String.IsNullOrEmpty(command))
+                //{
+                //    work = InterpretCommand(splitCommand);
+                //}
+                //else
+                //{
+                //    //_console_IO.WriteLine("Command isNull Or WriteSpace Or Empty");
+                //    Help(null);
+                //}
             }
             while (work);
         }
@@ -118,11 +119,38 @@ namespace ConsoleCrypt
                     //    _ => {  UnknownCommand(); return true; }
                     //    );
             }
+            catch(ValidationException ex)
+            {
+#if DEBUG
+                _console_IO.HandleMessage("", ex);
+#else
+                _console_IO.WriteLine($"{ex?.Message}");
+#endif
+            }
+            catch(ReadFromCryptFileException ex)
+            {
+#if DEBUG
+                _console_IO.HandleMessage("", ex);
+#else
+                _console_IO.WriteLine($"{ex?.Message}");
+#endif
+            }
+            catch (TheFileIsDamagedException ex)
+            {
+#if DEBUG
+                _console_IO.HandleMessage("", ex);
+#else
+                _console_IO.WriteLine($"{ex?.Message}");
+#endif
+            }
             catch (Exception ex)
             {
 #if DEBUG
                 _console_IO.HandleMessage("", ex);
+#else
+                _console_IO.WriteLine("Oops! An unexpected error occurred.");
 #endif
+
             }
             //var handler = splitCommand[0].ToLower() switch
             //{

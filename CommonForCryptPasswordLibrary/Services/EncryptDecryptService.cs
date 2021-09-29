@@ -52,11 +52,24 @@ namespace CommonForCryptPasswordLibrary.Services
         public void DecryptData()
         {
             string encryptData = "";
+            if (!File.Exists(_settings.Path))
+                throw new ValidationException($"The encrypted file does not exist. Path to file: {_settings.Path}");
             using(StreamReader sr = new StreamReader(_settings.Path, Encoding.UTF8))
             {
                 encryptData = sr.ReadToEnd();
             }
-            string decryptData = CryptoWithoutTry.Decrypt(encryptData, _settings.Key);
+            string decryptData = "";
+            try
+            {
+                decryptData = CryptoWithoutTry.Decrypt(encryptData, _settings.Key);
+            }
+            catch(Exception ex)
+            {
+                if(ex.HResult == -2146233087)
+                {
+                    throw new ReadFromCryptFileException("Faled to decrypt data. Check password.");
+                }
+            }
             CryptFileModel = cryptFileModel.Deserialize(decryptData);
             string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
             string hash = CryptoWithoutTry.GetHashSHA512(tempJson);
