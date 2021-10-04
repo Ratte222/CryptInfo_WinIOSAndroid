@@ -13,7 +13,7 @@ namespace ConsoleCrypt.Commands
         [Option("cs", Required = false, HelpText = "Case sensetive", Default = false)]
         public bool CaseSensetive { get; set; }
 
-        [Option("sufm", Required = false, HelpText = "Search until first match", Default = true)]
+        [Option("sufm", Required = false, HelpText = "Search until first match", Default = false)]
         public bool SearchUntilFirstMatch { get; set; }
 
         [Option("se", Required = false, HelpText = "Search everywhere", Default = false)]

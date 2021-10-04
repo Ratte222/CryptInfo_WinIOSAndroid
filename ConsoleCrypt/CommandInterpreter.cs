@@ -338,7 +338,8 @@ namespace ConsoleCrypt
             LoadTheDatabaseIfNeeded();
             Filter filterShow = new Filter();
             filterShow.BlockName = command.KeyWord;
-            if (!command.SearchUntilFirstMatch)
+            command.SearchUntilFirstMatch = !command.SearchUntilFirstMatch;
+            if (command.SearchUntilFirstMatch)
             {
                 var res = _inputOutputFile.GetBlockData(filterShow);
                 if (res == null)
