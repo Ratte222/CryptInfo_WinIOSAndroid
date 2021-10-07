@@ -52,7 +52,7 @@ namespace CryptApp.ViewModels
             Item newItem = new Item()
             {
                 Id = Guid.NewGuid().ToString(),
-                Text = Text,
+                Title = Text,
                 Description = Description
             };
 

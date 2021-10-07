@@ -778,10 +778,10 @@ namespace ConsoleCrypt
             {
                 _cryptBlock.LoadData(settings);
             }
-            if (!_cryptGroup.DataExist)
-            {
-                _cryptBlock.LoadData(settings);
-            }
+            //if (!_cryptGroup.DataExist)
+            //{
+            //    _cryptGroup.LoadData(settings);
+            //}
         }
 
         private void CheckPassword(string passwrd = "")

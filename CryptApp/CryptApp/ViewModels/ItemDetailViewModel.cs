@@ -10,20 +10,55 @@ namespace CryptApp.ViewModels
     public class ItemDetailViewModel : BaseViewModel
     {
         private string itemId;
-        private string text;
+        private string itemTitle;
         private string description;
+        private string username;
+        private string email;
+        private string password;
+        private string phone;
+        private string additionalInfo;
         public string Id { get; set; }
 
-        public string Text
+        public string ItemTitle
         {
-            get => text;
-            set => SetProperty(ref text, value);
+            get => itemTitle;
+            set => SetProperty(ref itemTitle, value);
         }
 
         public string Description
         {
             get => description;
             set => SetProperty(ref description, value);
+        }
+
+        public string UserName
+        {
+            get => username;
+            set => SetProperty(ref username, value);
+        }
+
+        public string Email
+        {
+            get => email;
+            set => SetProperty(ref email, value);
+        }
+
+        public string Password
+        {
+            get => password;
+            set => SetProperty(ref password, value);
+        }
+
+        public string Phone
+        {
+            get => phone;
+            set => SetProperty(ref phone, value);
+        }
+
+        public string AdditionalInfo
+        {
+            get => additionalInfo;
+            set => SetProperty(ref additionalInfo, value);
         }
 
         public string ItemId
@@ -45,8 +80,13 @@ namespace CryptApp.ViewModels
             {
                 var item = await DataStore.GetItemAsync(itemId);
                 Id = item.Id;
-                Text = item.Text;
+                ItemTitle = item.Title;
                 Description = item.Description;
+                UserName = item.UserName;
+                Email = item.Email;
+                Password = item.Password;
+                Phone = item.Phone;
+                AdditionalInfo = item.AdditionalInfo;
             }
             catch (Exception)
             {

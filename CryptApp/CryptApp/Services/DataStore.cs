@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using CommonForCryptPasswordLibrary;
 using System.IO;
 using Xamarin.Forms;
+using CommonForCryptPasswordLibrary.Services;
+using CommonForCryptPasswordLibrary.Interfaces;
+using CommonForCryptPasswordLibrary.Model;
+using CommonForCryptPasswordLibrary.Exceptions;
 
 namespace CryptApp.Services
 {
@@ -14,75 +18,116 @@ namespace CryptApp.Services
         readonly List<Item> items;
         protected SettingAndroid settings;
         protected MyIOAndroid myIOAndroid;
-        InputOutputFile inputOutputFile;
+        IMainLogicService inputOutputFile;
         string key = "";
         public DataStore()
         {
             myIOAndroid = new MyIOAndroid();
-            settings = new SettingAndroid(myIOAndroid);
+            settings = new SettingAndroid();
             CryptApp.Helpers.AppSettings appSettings =  DependencyService.Get
                 <CryptApp.Helpers.AppSettings>(DependencyFetchTarget.GlobalInstance);
             key = appSettings.Password;
             IGetPathToFile getPathToFile = DependencyService.Get<IGetPathToFile>();
-            if(appSettings.TestMode)
-                settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "CryptTest.txt"));
-            else
-                settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt.txt"));
-            inputOutputFile = new InputOutputFile(myIOAndroid, settings);
-            if (!File.Exists(settings.GetDirCryptFile()))
+            if (appSettings.TestMode)
             {
-                File.Create(settings.GetDirCryptFile());
-                inputOutputFile.WriteToEndCryptFile(key,
-                    "Example 1 \r\n" +
-                    "tegs\r\n" +
-                    "e - mail:nik@gmail.com\r\n" +
-                    "password: secretPassword\r\n");
+                settings.DirCryptFile.Add(new FileModelInSettings()
+                {
+                    Name = "Test",
+                    Path = Path.Combine(getPathToFile.GetPathToCryptFile(), "CryptTestV2.txt")
+                });
+                settings.default_crypr_file = "Test";
             }
-            
+            else
+            {
+                settings.DirCryptFile.Add(new FileModelInSettings()
+                {
+                    Name = "Work",
+                    Path = Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt")
+                });
+                settings.default_crypr_file = "Work";
+            }
+            SearchSettingAndroid searchSettingAndroid = new SearchSettingAndroid();
+            IEncryptDecryptService encryptDecryptService = new EncryptDecryptService();
+            IGroupService groupService = new GroupService(encryptDecryptService);
+            IBlockService blockService = new BlockService(encryptDecryptService);
+            inputOutputFile = new MainLogicService(myIOAndroid, settings, searchSettingAndroid,
+                groupService, blockService);
+            if (!File.Exists(settings.SelectedCryptFile.Path))
+            {
+                inputOutputFile.InitCryptFile(key);
+            }
+            if (!blockService.DataExist)
+            {
+                try
+                {
+                    encryptDecryptService.LoadData(
+                  new EncryptDecryptSettings()
+                  {
+                      Path = settings.SelectedCryptFile.Path,
+                      Key = key
+                  });
+                }
+                catch(TheFileIsDamagedException ex)
+                {
+
+                }
+                catch(Exception ex)
+                {
+
+                }
+                
+            }
             items = new List<Item>();
-            //{
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description="This is an item description." },
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is an item description." },
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is an item description." },
-            //new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." }               
-            //};
+            
             myIOAndroid.Output = "";
             try
             {
-                int[] vs;
-                int blockCount = inputOutputFile.GetCountBlock(key);
-                if (blockCount >= 1)
-                    for (int i = 0; i < blockCount; i++)
+                foreach(var block in blockService.GetAll_List())
+                {
+                    items.Add(new Item()
                     {
-                        try
-                        {
-                            string content = inputOutputFile.GetBlockData(out vs, key, i);
-                            string[] splitContent = content.Split('\n');
-                            items.Add(new Item
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                StartBlockLine = vs[0],
-                                EndBlockLine = vs[1],
-                                Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
-                                Description = content.Substring(splitContent[0].Length + 1)
-                            });
-                        }
-                        catch(Exception ex)
-                        {
-                            items.Add(new Item
-                            {
-                                Id = Guid.NewGuid().ToString(),
-                                Text = $"Block number {i}",
-                                Description = $"message: {ex.Message}\r\n" +
-                                $"InnerException: {ex?.InnerException}" +
-                                $"StackTrace: {ex?.StackTrace}" +
-                                $"HResult: {ex?.HResult}"
-                            });
-                        }
+                        Id = Guid.NewGuid().ToString(),
+                        Title = block.Title,
+                        Description = block.Description,
+                        UserName = block.UserName,
+                        Email = block.Email,
+                        Password = block.Password,
+                        Phone = block.Phone,
+                        AdditionalInfo = block.AdditionalInfo
+                    });
+                }
+                //int[] vs;
+                //int blockCount = inputOutputFile.GetCountBlock(key);
+                //if (blockCount >= 1)
+                //    for (int i = 0; i < blockCount; i++)
+                //    {
+                //        try
+                //        {
+                //            string content = inputOutputFile.GetBlockData(out vs, key, i);
+                //            string[] splitContent = content.Split('\n');
+                //            items.Add(new Item
+                //            {
+                //                Id = Guid.NewGuid().ToString(),
+                //                StartBlockLine = vs[0],
+                //                EndBlockLine = vs[1],
+                //                Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
+                //                Description = content.Substring(splitContent[0].Length + 1)
+                //            });
+                //        }
+                //        catch(Exception ex)
+                //        {
+                //            items.Add(new Item
+                //            {
+                //                Id = Guid.NewGuid().ToString(),
+                //                Text = $"Block number {i}",
+                //                Description = $"message: {ex.Message}\r\n" +
+                //                $"InnerException: {ex?.InnerException}" +
+                //                $"StackTrace: {ex?.StackTrace}" +
+                //                $"HResult: {ex?.HResult}"
+                //            });
+                //        }
                         
-                    }
+                //    }
             }
             catch(Exception ex)
             {
