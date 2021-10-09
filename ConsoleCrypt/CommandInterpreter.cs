@@ -59,6 +59,7 @@ namespace ConsoleCrypt
             bool work = false;
             do
             {
+                Console.Write("cc> ");
                 string command = _console_IO.ReadLine();
                 //var parser = new FluentCommandLineParser<AppCommand>();
                 //parser.Setup<bool>(arg => arg.CaseSensetive)
