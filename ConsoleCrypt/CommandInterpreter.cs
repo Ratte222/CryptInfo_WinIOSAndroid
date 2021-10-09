@@ -12,12 +12,15 @@ using ConsoleCrypt.DTO;
 using CommandLine;
 using ConsoleCrypt.Commands;
 using CommonForCryptPasswordLibrary.Exceptions;
+using CryptLibrariStandart.Exceptions;
+using CryptLibrariStandart.AsymmetricCryptography;
 //using System.Void;
 namespace ConsoleCrypt
 {
     public class CommandInterpreter
     {
         private string password;
+        private RSACryptoFile AsymmetricCryptography = new RSACryptoFile();
         private string Password {
             get
             {
@@ -99,7 +102,8 @@ namespace ConsoleCrypt
                 //CommandLine.Parser.Default.ParseArguments<SearchCommand, ShowCommand>(splitCommand)
                       //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
                  var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
-                     EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand>(splitCommand);
+                     EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand,
+                     EncryptDecryptFileCommand>(splitCommand);
                 result
                    .WithParsed<SearchCommand>(Search)
                    .WithParsed<ShowCommand>(Show)
@@ -110,7 +114,8 @@ namespace ConsoleCrypt
                    .WithParsed<InitCommand>(Init)
                    .WithParsed<ReEnterCommand>(ReEnter)                   
                    .WithParsed<GeneratePasswordCommand>(GeneratePassword)
-                   .WithParsed<ViewSettingsCommand>(ViewSettings);
+                   .WithParsed<ViewSettingsCommand>(ViewSettings)
+                   .WithParsed<EncryptDecryptFileCommand>(EncryptDecryptFile);
 
                     //.MapResult(
                     //    (SearchCommand opts) => { Search(opts); return true; },
@@ -121,212 +126,64 @@ namespace ConsoleCrypt
             }
             catch(ValidationException ex)
             {
-#if DEBUG
                 _console_IO.HandleMessage("", ex);
-#else
-                _console_IO.WriteLine($"{ex?.Message}");
-#endif
             }
             catch(ReadFromCryptFileException ex)
             {
-#if DEBUG
                 _console_IO.HandleMessage("", ex);
-#else
-                _console_IO.WriteLine($"{ex?.Message}");
-#endif
             }
             catch (TheFileIsDamagedException ex)
             {
-#if DEBUG
                 _console_IO.HandleMessage("", ex);
-#else
-                _console_IO.WriteLine($"{ex?.Message}");
-#endif
+            }
+            catch (CryptoException ex)
+            {
+                _console_IO.HandleMessage("", ex);
+            }
+            catch (CryptoArgumentNullException ex)
+            {
+                _console_IO.HandleMessage("", ex);
             }
             catch (Exception ex)
             {
-#if DEBUG
-                _console_IO.HandleMessage("", ex);
-#else
-                _console_IO.WriteLine("Oops! An unexpected error occurred.");
-#endif
-
+                _console_IO.HandleMessage("Oops! An unexpected error occurred.", ex);
             }
-            //var handler = splitCommand[0].ToLower() switch
-            //{
-            //    "help" => Help(splitCommand),
-            //    "show" => Show(splitCommand),
-            //    "create" => Create(splitCommand),
-            //    "search" => Search(splitCommand),
-            //    "set" => Set(splitCommand),
-            //    "decrypt" => Decrypt(splitCommand),
-            //    "encrypt" => Encrypt(splitCommand),
-            //    "viewsetting" => ViewSettings(splitCommand),
-            //    "generatepassword" => GeneratePassword(splitCommand),
-            //    "reenter" => ReEnter(splitCommand),
-            //    "update" => Update(splitCommand),
-            //    "initfiles" => InitFiles(splitCommand),
-            //    _ => UnknownCommand(splitCommand)
-            //};
-            //handler.GetAwaiter();           
-            //            try 
-            //            {
-            //                switch (splitCommand[0].ToLower())
-            //                {
-            //                    case "help":
-            //                        Help(splitCommand);
-            //                        break;
-            //                    case "show":
-            //                        Show(splitCommand);
-            //                        break;
-            //                    case "search":
-            //                        Search(splitCommand);
-            //                        break;
-            //                    case "create":
-            //                        Create(splitCommand);
-            //                        break;
-            //                    case "set":
-            //                        Set(splitCommand);
-            //                        break;
-            //                    case "decrypt":
-            //                        Decrypt(splitCommand);
-            //                        break;
-            //                    case "encrypt":
-            //                        Encrypt(splitCommand);
-            //                        break;
-            //                    case "viewsetting":
-            //                        ViewSettings(splitCommand);
-            //                        break;
-            //                    case "generatepassword":
-            //                        GeneratePassword(splitCommand);
-            //                        break;
-            //                    case "reenter":
-            //                        ReEnter(splitCommand);
-            //                        break;
-            //                    case "update":
-            //                        Update(splitCommand);
-            //                        break;
-            //                    case "initfiles":
-            //                        InitFiles(splitCommand);
-            //                        break;
-            //                    default:
-            //                        Help(splitCommand);
-            //                        break;
-            //                }
-            //            }
-            //            catch(Exception ex)
-            //            {
-            //#if DEBUG
-            //                _console_IO.HandleMessage("", ex);
-            //#endif
-            //            }
-
-
             return true;
         }
 
-        private void UnknownCommand()
-        {
-            _console_IO.WriteLine("->Unknown command");
-        }
+        
 
-        private void Help(string[] splitCommand)
+        private void EncryptDecryptFile(EncryptDecryptFileCommand command)
         {
-            _console_IO.WriteLine("");
-            if (splitCommand.Length > 1)
+            if(command.CreateKey)
             {
-                splitCommand[1] = splitCommand[1].ToLower();
-                if (String.Equals(splitCommand[1], "set"))
-                {
-                    
-                }
-                else if (String.Equals(splitCommand[1], "decrypt"))
-                {
-                    _console_IO.WriteLine("-f - decrypt file. Example: decrypt -f");
-                }
-                else if (String.Equals(splitCommand[1], "encrypt"))
-                {
-                    _console_IO.WriteLine("-f - encrypt file. Example: encrypt -f ");
-                }
-                else if (String.Equals(splitCommand[1], "search"))
-                {
-                    _console_IO.WriteLine("search [-cs -se -sufm] [searchWord]");
-                    _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive");
-                    _console_IO.WriteLine("-se  (optional, toggle default param) search everywhere");
-                    //_console_IO.WriteLine("-st  (optional, , toggle default param) search in tegs");
-                    _console_IO.WriteLine("-sufm  (optional, toggle default param) search until first math");
-                    //_console_IO.WriteLine("-vsi  (optional, toggle default param) view setting information");
-                }
-                else if (String.Equals(splitCommand[1], "initfiles"))
-                {
-                    _console_IO.WriteLine("-c init crypt files Example: intifiles -c");
-                    //_console_IO.WriteLine("-d init decrypt files Example: intifiles -d");
-                }
-                else if (String.Equals(splitCommand[1], "reenter"))
-                {
-                    _console_IO.WriteLine("-p - re-enter password. Example: reenter -p");
-                }
-                else if (String.Equals(splitCommand[1], "show"))
-                {
-                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g] or [-allblocks] or [-allgroups]) ");
-                    _console_IO.WriteLine("-b - show blocks. There must also be aparameter [-g]. " +
-                        "After [-b] it should contain the name of the block.  Example: show -g work -b google ");
-                    _console_IO.WriteLine("-g - show block in group. After [-g] it should contain the name of the group. Example: show -b google -ln work ");
-                    _console_IO.WriteLine("-allblocks - show all blocks and groups in crypt file. Example: show -allblocks");
-                    _console_IO.WriteLine("-allgroups - show all groups in crypt file. Example: show -allgroups");
-                    _console_IO.WriteLine("-cs  (optional, toggle default param) case sensetive." +
-                        " Example: show -g Work -cs");
-                }
-                else if (String.Equals(splitCommand[1], "update"))
-                {
-                    _console_IO.WriteLine("There must be at least one parameter ([-b] or [-g]) ");
-                    _console_IO.WriteLine("-b - update block fields. There must also be aparameter [-g]. " +
-                        "After [-b] it should contain the name of the block.  Example: show -g work -b google ");
-                    _console_IO.WriteLine("-g - update group fields. After [-g] it should contain the name of the group." +
-                        " Example: show -b google -ln work ");
-                    //_console_IO.WriteLine("-ln - update (rewrite) line in block in crypt file. Example: update -b 5 -ln 4 ");
-                }
-                else if (String.Equals(splitCommand[1], "generatepassword"))
-                {
-                    _console_IO.WriteLine("Example: generatePassword 10");
-                }
-                else if (String.Equals(splitCommand[1], "create"))
-                {
-                    _console_IO.WriteLine("There must be at least one parameter ([-block] or [-group]) ");
-                    _console_IO.WriteLine("-block - add block data to selected group. Example: add -block [name group]");
-                    _console_IO.WriteLine("-group - add group data. Example: add -group");
-                    //_console_IO.WriteLine("-inblock - coming soon");
-                }
-                else
-                {
-                    _console_IO.WriteLine("set - set some params");
-                    _console_IO.WriteLine("decrypt - decrypt something");
-                    _console_IO.WriteLine("encrypt - encrypt something");
-                    _console_IO.WriteLine("search - search in crypt file ");
-                    _console_IO.WriteLine("viewSetting - view path program setting ");
-                    _console_IO.WriteLine("generatePassword - generate random string desired length");
-                    _console_IO.WriteLine("reEnter - allows you to re-enter the parameter");
-                    _console_IO.WriteLine("show - show something");
-                    _console_IO.WriteLine("update - update (rewrite) data in crypt file");
-                    _console_IO.WriteLine("create - create something");
-                    _console_IO.WriteLine("initfiles - init files");
-                }
+                //if(String.IsNullOrEmpty(command.AsymmetricKey))
+                //{
+                //    _console_IO.WriteLine($"{nameof(command.AsymmetricKey)} is null or empty");
+                //    return;
+                //}
+                _console_IO.WriteLine(AsymmetricCryptography.CreateAsmKeys(command.AsymmetricKey));
             }
-            else
+            if (command.ImporPublicKey)
             {
-                _console_IO.WriteLine("set - set some params");
-                _console_IO.WriteLine("decrypt - decrypt something");
-                _console_IO.WriteLine("encrypt - encrypt something");
-                _console_IO.WriteLine("search - search in crypt file ");
-                _console_IO.WriteLine("viewSetting - view path program setting ");
-                _console_IO.WriteLine("generatePassword - generate random string desired length");
-                _console_IO.WriteLine("reEnter - allows you to re-enter the parameter");
-                _console_IO.WriteLine("show - show something");
-                _console_IO.WriteLine("update - update (rewrite) data in crypt file");
-                _console_IO.WriteLine("create - create something");
-                _console_IO.WriteLine("initfiles - init files");
+                _console_IO.WriteLine(AsymmetricCryptography.ImportPublicKey(command.PathFrom));
             }
-            _console_IO.WriteLine("");
+            if (command.ExportPublicKey)
+            {
+                AsymmetricCryptography.ExportPublicKey(command.PathTo);
+                _console_IO.WriteLine("Key successfully exported");
+            }
+            if (command.Encrypt)
+            {
+                _console_IO.WriteLine(AsymmetricCryptography.CreateAsmKeys(command.AsymmetricKey));
+                _console_IO.WriteLine(AsymmetricCryptography.EncryptFile(command.PathFrom, command.PathTo));
+            }
+            if (command.Decrypt)
+            {
+                _console_IO.WriteLine(AsymmetricCryptography.CreateAsmKeys(command.AsymmetricKey));
+                _console_IO.WriteLine(AsymmetricCryptography.DecryptFile(command.PathFrom, command.PathTo));
+            }  
+            
         }
 
         private void Search(SearchCommand command)

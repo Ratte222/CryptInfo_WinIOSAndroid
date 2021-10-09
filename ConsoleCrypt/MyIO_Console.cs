@@ -27,6 +27,29 @@ namespace ConsoleCrypt
         private const string endBlock = "------end block------";
 
 
+        public override void HandleMessage(string _msg, Exception ex)
+        {
+            string message = "";
+            if (ex != null)
+            {
+                message = $"{_msg} \r\n" +
+                    $"Message = {ex?.Message?.ToString()} \r\n" +
+                    $"InnerException = {ex?.InnerException?.ToString()} \r\n" +
+                    $"Source = {ex?.Source?.ToString()} \r\n" +
+                    $"StackTrace = {ex?.StackTrace?.ToString()} \r\n" +
+                    $"TargetSite = {ex?.TargetSite?.ToString()}";
+            }
+            else
+            {
+                message = $"{_msg}";
+            }
+#if DEBUG
+            WriteLine(message);
+#else
+            WriteLine($"{_msg} {ex?.Message}");
+#endif
+        }
+
         public virtual void WriteLineUnknownCommand(string command)
         {
             Console.WriteLine($"->Unknown command. Use \"help {command}\" for give additional info");
