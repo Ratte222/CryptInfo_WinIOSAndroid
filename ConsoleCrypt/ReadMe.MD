@@ -1,5 +1,5 @@
 # Console crypt
-## Quic start
+## Quick start
 
 In AppSetting.json, in dir_crypt_files, specefy the path to the encrypted file,
 in dir_decrypt_files, spacefy the path to the decrypted file. If you  are use Linux, find path useing the pwd command.
@@ -9,6 +9,8 @@ Start program in loog mode
 ```sh
 ConsoleCrypt loop
 ```
+
+For get out of the loop mode use "quit" or "q"
 
 Inicialize the starting encrypted file
 ```sh

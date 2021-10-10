@@ -37,7 +37,11 @@ namespace ConsoleCrypt
                 {
                     consoleInterpreter.InterpretCommand(args);
                 }
-            }            
+            }
+            else
+            {
+                consoleInterpreter.InterpretCommand(args);
+            }
         }       
     }
 }

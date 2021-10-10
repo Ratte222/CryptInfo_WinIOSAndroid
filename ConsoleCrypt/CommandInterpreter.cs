@@ -34,6 +34,9 @@ namespace ConsoleCrypt
                 }
             }
         }
+
+        private bool loopMode = true;
+
         private IMainLogicService _inputOutputFile;
         ImyIO_Console _console_IO;
         IAppSettings _appSettings;
@@ -56,7 +59,6 @@ namespace ConsoleCrypt
         public void Start()
         {
             _console_IO.WriteLine("Enter command");
-            bool work = false;
             do
             {
                 Console.Write("cc> ");
@@ -76,7 +78,7 @@ namespace ConsoleCrypt
                 string[] splitCommand = command.Split(' ');
                 splitCommand[0] = splitCommand[0].ToLower();
 
-                work = InterpretCommand(splitCommand);
+                InterpretCommand(splitCommand);
                 //if (!String.IsNullOrWhiteSpace(command) && !String.IsNullOrEmpty(command))
                 //{
                 //    work = InterpretCommand(splitCommand);
@@ -87,24 +89,25 @@ namespace ConsoleCrypt
                 //    Help(null);
                 //}
             }
-            while (work);
+            while (loopMode);
         }
 
-        public bool InterpretCommand(string[] splitCommand)
+        public void InterpretCommand(string[] splitCommand)
         {
-            if (String.Equals(splitCommand[0].ToLower(), "exit"))
-            {
-                //_appSettings.Save();
-                //_searchSettings.Save();
-                return false;
-            }
+            //if (String.Equals(splitCommand[0].ToLower(), "quit")
+            //    || String.Equals(splitCommand[0].ToLower(), 'q'))
+            //{
+            //    //_appSettings.Save();
+            //    //_searchSettings.Save();
+            //    return false;
+            //}
             try
             {
                 //CommandLine.Parser.Default.ParseArguments<SearchCommand, ShowCommand>(splitCommand)
                       //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
                  var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
                      EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand,
-                     EncryptDecryptFileCommand>(splitCommand);
+                     EncryptDecryptFileCommand, QuitCommand>(splitCommand);
                 result
                    .WithParsed<SearchCommand>(Search)
                    .WithParsed<ShowCommand>(Show)
@@ -113,10 +116,11 @@ namespace ConsoleCrypt
                    .WithParsed<DecryptCommand>(Decrypt)
                    .WithParsed<EncryptCommand>(Encrypt)
                    .WithParsed<InitCommand>(Init)
-                   .WithParsed<ReEnterCommand>(ReEnter)                   
+                   .WithParsed<ReEnterCommand>(ReEnter)
                    .WithParsed<GeneratePasswordCommand>(GeneratePassword)
                    .WithParsed<ViewSettingsCommand>(ViewSettings)
-                   .WithParsed<EncryptDecryptFileCommand>(EncryptDecryptFile);
+                   .WithParsed<EncryptDecryptFileCommand>(EncryptDecryptFile)
+                   .WithParsed<QuitCommand>(Quit);
 
                     //.MapResult(
                     //    (SearchCommand opts) => { Search(opts); return true; },
@@ -149,10 +153,12 @@ namespace ConsoleCrypt
             {
                 _console_IO.HandleMessage("Oops! An unexpected error occurred.", ex);
             }
-            return true;
         }
 
-        
+        private void Quit(QuitCommand quitCommand)
+        {
+            loopMode = false;
+        }
 
         private void EncryptDecryptFile(EncryptDecryptFileCommand command)
         {
