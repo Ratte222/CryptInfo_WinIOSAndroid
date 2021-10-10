@@ -140,3 +140,20 @@ Phone:
 AdditionalInfo:
 ------end block------
 ```
+
+## Some undocumented features
+Encrypted\decrypted file use asymmetrical algorithm
+Work only windows 10!!!
+```sh
+encdec_asm --createKey --key 12345678
+
+encdec_asm --key 12345678 --encrypt --pathFrom E:\Temp\RO-CA15-79113496.pdf --pathTo E:\Temp\EncryptedFiles\RO-CA15-79113496.pdf
+encdec_asm --encrypt --pathFrom E:\Temp\RO-CA15-79113496.pdf --pathTo E:\Temp\EncryptedFiles\RO-CA15-79113496.pdf
+
+encdec_asm --key 12345678 --decrypt --pathFrom E:\Temp\EncryptedFiles\RO-CA15-79113496.pdf.enc --pathTo E:\Temp\DecryptedFiles\RO-CA15-79113496.pdf
+encdec_asm --decrypt --pathFrom E:\Temp\EncryptedFiles\RO-CA15-79113496.pdf.enc --pathTo E:\Temp\DecryptedFiles\RO-CA15-79113496.pdf
+
+encdec_asm --exportPublicKey --pathTo E:\Temp\EncryptedFiles\publicKey
+
+encdec_asm --importPublicKey --pathFrom E:\Temp\EncryptedFiles\publicKey
+```
