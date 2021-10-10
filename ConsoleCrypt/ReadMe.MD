@@ -35,3 +35,108 @@ cc> search linked
 - Search in encrypted data storage
 - etc.
 
+##Command example
+### Create
+Create block
+```sh
+cc> create -b
+Entered group name (full or partial)
+socia
+------start group------
+Name: Social wide
+Description: description
+------end group------
+
+Is this the right group?  [y/n]
+y
+Fill Title and press "Enter"
+Reddit
+Fill Description and press "Enter"
+
+Fill Email and press "Enter"
+example@gmail.com
+Fill UserName and press "Enter"
+Ratte222
+Fill Password and press "Enter"
+12345678
+Fill Phone and press "Enter"
+
+Fill AdditionalInfo When you end - write "end". If you want to undo the input - write "cancel"
+end
+Add a block to group? [y/n]
+y
+Block "Reddit" created successfully
+```
+Create group
+```sh
+cc> create -g
+Fill Name and press "Enter"
+ExampleGroup
+Fill Description and press "Enter"
+
+Add a group? [y/n]
+y
+Group "ExampleGroup" created successfully
+```
+###Update
+To update a block, you need to know the block name and the group name.
+Use command "search" with option "--showgroup"
+```sh
+cc> update -b redd -g soc
+
+------start group------
+Name: Social wide
+Description: description
+------end group------
+
+Is this the right group?  [y/n]
+y
+Name: Social wide
+Description: description
+
+Title: Reddit
+Description:
+UserName: Ratte222
+Email: example@gmail.com
+Password: 12345678
+Phone:
+AdditionalInfo:
+Update field Title? [y/n]
+n
+Update field Description? [y/n]
+y
+Fill Description and press "Enter"
+Entertainment, news service
+Update field Email? [y/n]
+n
+Update field UserName? [y/n]
+n
+Update field Password? [y/n]
+n
+Update field Phone? [y/n]
+n
+Update field AdditionalInfo? [y/n]
+n
+Save this block?  [y/n]
+y
+Block "Reddit" updated successfully
+```
+
+###Search
+```sh
+cc> search redd --showgroup
+------start group------
+Name: Social wide
+Description: description
+------end group------
+
+------start block------
+Title: Reddit
+Description:
+UserName: Ratte222
+Email: example@gmail.com
+Password: 12345678
+Phone:
+AdditionalInfo:
+------end block------
+```

@@ -512,12 +512,13 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine(groupModel.ToString());
                     _console_IO.WriteLine("");
-                    var temp = AddGroup();
-                    groupModel.Name = temp.Name;
-                    groupModel.Description = temp.Description;
+                    var temp = AddGroup();                    
                     if (QuestionAgreeOrDissagry("Save this group? "))
                     {
+                        groupModel.Name = temp.Name;
+                        groupModel.Description = temp.Description;
                         _cryptGroup.Update(groupModel);
+                        _console_IO.WriteLine($"Group \"{groupModel.Name}\" updated successfully");
                     }
                 }
 
