@@ -22,11 +22,13 @@ namespace ConsoleCrypt.Helpers
         [JsonProperty(PropertyName = "keys_for_encrypted_files")]
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
         public string selected_crypr_file { get; set; }
+        [JsonIgnore]
         public FileModelInSettings SelectedCryptFile { get
             {
                 return DirCryptFile.FirstOrDefault(i => i.Name.ToLower() == selected_crypr_file.ToLower());
             } }
         public string selected_decrypr_file { get; set; }
+        [JsonIgnore]
         public FileModelInSettings SelectedDecryptFile
         {
             get
