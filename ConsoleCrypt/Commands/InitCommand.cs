@@ -11,7 +11,7 @@ namespace ConsoleCrypt.Commands
         [Option("encryptedfile", Required = false, HelpText = "init selected encrypted file", Default = false)]
         public bool EncryptedFile { get; set; }
 
-        [Option("encryptedfiles", Required = false, HelpText = "init selected encrypted file", Default = false)]
+        [Option("encryptedfiles", Required = false, HelpText = "init selected encrypted files", Default = false)]
         public bool EncryptedFiles { get; set; }
 
         [Option('p', "password", Required = false, HelpText = "Entered password")]

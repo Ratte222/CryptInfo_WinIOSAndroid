@@ -107,7 +107,7 @@ namespace ConsoleCrypt
                       //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
                  var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
                      EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand,
-                     EncryptDecryptFileCommand, QuitCommand>(splitCommand);
+                     EncryptDecryptFileCommand, QuitCommand, SwitchCommand>(splitCommand);
                 result
                    .WithParsed<SearchCommand>(Search)
                    .WithParsed<ShowCommand>(Show)
@@ -120,6 +120,7 @@ namespace ConsoleCrypt
                    .WithParsed<GeneratePasswordCommand>(GeneratePassword)
                    .WithParsed<ViewSettingsCommand>(ViewSettings)
                    .WithParsed<EncryptDecryptFileCommand>(EncryptDecryptFile)
+                   .WithParsed<SwitchCommand>(Switch)
                    .WithParsed<QuitCommand>(Quit);
 
                     //.MapResult(
@@ -160,6 +161,63 @@ namespace ConsoleCrypt
             loopMode = false;
         }
 
+
+        /// <summary>
+        /// use save appsetting
+        /// </summary>
+        private void Switch(SwitchCommand command)
+        {
+            if(command.EncryptPasswordFile)
+            {
+                SwitchEncryptDecryptFile(_appSettings.DirCryptFile, i=> _appSettings.selected_crypr_file = i, 
+                    _appSettings.selected_crypr_file, _appSettings.SelectedCryptFile, command.Name, command.Password);
+            }
+            if (command.DecryptPasswordFile)
+            {
+                SwitchEncryptDecryptFile(_appSettings.DirDecryptFile, i => _appSettings.selected_decrypr_file = i,
+                    _appSettings.selected_decrypr_file, _appSettings.SelectedDecryptFile, command.Name, command.Password);
+            }
+        }
+
+        private void SwitchEncryptDecryptFile(List<FileModelInSettings> _files, Action<string> Set_selected, string _selected,
+            FileModelInSettings selectedFile, string _searchName, string _password)
+        {
+            List<FileModelInSettings> files = _appSettings.DirCryptFile.Where(i => i.Name.ToLower().Contains(_searchName.ToLower()))
+                .Except(new[] { selectedFile }).ToList();
+            if (files.Count == 0)
+            {
+                _console_IO.WriteLine($"File with name \"{_searchName}\" does not exist in appSettings.DirCryptFile");
+            }
+            else
+            {
+
+                for (int i = 0; i < files.Count; i++)
+                {
+                    _console_IO.WriteLine(files[i].ToString());
+
+                    if (this.QuestionAgreeOrDissagry("Selected this file?"))
+                    {
+                        FileModelInSettings file = files[i];
+                        Set_selected.Invoke(file.Name);
+                        this.password = null;
+                        CheckPassword(_password);
+                        ReloadTheDatabase();
+                        if (QuestionAgreeOrDissagry("Save this file as default?\r\n" +
+                            "You will be able to work with the selected file anyway "))
+                        {
+                            _appSettings.Save();
+                        }
+                        else
+                        {
+                            Set_selected.Invoke(_selected);
+                        }
+                        break;
+                    }
+                }
+
+
+            }
+        }
         private void EncryptDecryptFile(EncryptDecryptFileCommand command)
         {
             if(command.CreateKey)
@@ -643,6 +701,20 @@ namespace ConsoleCrypt
             {
                 _cryptBlock.LoadData(settings);
             }
+            //if (!_cryptGroup.DataExist)
+            //{
+            //    _cryptGroup.LoadData(settings);
+            //}
+        }
+
+        private void ReloadTheDatabase()
+        {
+            var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
+            {
+                Key = Password,
+                Path = _appSettings.SelectedCryptFile.Path
+            };
+            _cryptBlock.LoadData(settings);
             //if (!_cryptGroup.DataExist)
             //{
             //    _cryptGroup.LoadData(settings);

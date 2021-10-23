@@ -8,5 +8,11 @@ namespace CommonForCryptPasswordLibrary.Model
     {
         public string Name { get; set; }
         public string Path { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(Name)} = {Name}\r\n" +
+                $"{nameof(Path)} = {Path}";
+        }
     }
 }
