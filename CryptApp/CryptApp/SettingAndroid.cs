@@ -24,20 +24,20 @@ namespace CryptApp
         [JsonProperty(PropertyName = "keys_for_encrypted_files")]
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
             = new List<FileModelInSettings>();
-        public string default_crypr_file { get; set; }
+        public string selected_crypr_file { get; set; }
         public FileModelInSettings SelectedCryptFile
         {
             get
             {
-                return DirCryptFile.FirstOrDefault(i => i.Name.ToLower() == default_crypr_file.ToLower());
+                return DirCryptFile.FirstOrDefault(i => i.Name.ToLower() == selected_crypr_file.ToLower());
             }
         }
-        public string default_decrypr_file { get; set; }
+        public string selected_decrypr_file { get; set; }
         public FileModelInSettings SelectedDecryptFile
         {
             get
             {
-                return DirDecryptFile.FirstOrDefault(i => i.Name.ToLower() == default_decrypr_file.ToLower());
+                return DirDecryptFile.FirstOrDefault(i => i.Name.ToLower() == selected_decrypr_file.ToLower());
             }
         }
 

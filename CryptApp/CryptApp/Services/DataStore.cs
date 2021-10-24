@@ -35,7 +35,7 @@ namespace CryptApp.Services
                     Name = "Test",
                     Path = Path.Combine(getPathToFile.GetPathToCryptFile(), "CryptTestV2.txt")
                 });
-                settings.default_crypr_file = "Test";
+                settings.selected_crypr_file = "Test";
             }
             else
             {
@@ -44,7 +44,7 @@ namespace CryptApp.Services
                     Name = "Work",
                     Path = Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt")
                 });
-                settings.default_crypr_file = "Work";
+                settings.selected_crypr_file = "Work";
             }
             SearchSettingAndroid searchSettingAndroid = new SearchSettingAndroid();
             IEncryptDecryptService encryptDecryptService = new EncryptDecryptService();
@@ -133,7 +133,7 @@ namespace CryptApp.Services
             {
 
             }
-            
+            items = items.OrderBy(i => i.Title).ToList();
             
 
         }
