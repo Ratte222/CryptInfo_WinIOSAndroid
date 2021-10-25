@@ -1,16 +1,33 @@
 # Console crypt
 ## Quick start
 
-In AppSetting.json, in dir_crypt_files, specefy the path to the encrypted file,
-in dir_decrypt_files, spacefy the path to the decrypted file. If you  are use Linux, find path useing the pwd command.
-Set name in default_crypr_file and default_decrypr_file from entity with paths. 
-
 Start program in loog mode
 ```sh
 ConsoleCrypt loop
 ```
 
 For get out of the loop mode use "quit" or "q"
+
+To select an editor, selected 
+```sh
+cc> config editor 'path to editor' 
+```
+Example for windows and Notepad++
+```sh
+cc> config editor C:\Program\*Files\Notepad++\notepad++.exe
+```
+Note that the space must be replaced with '\\*'
+
+Open config in editor
+```sh
+cc> config --openInEditor
+```
+
+In dir_crypt_files, specefy the path to the encrypted file,
+in dir_decrypt_files, spacefy the path to the decrypted file. If you  are use Linux, find path useing the pwd command.
+Set name in selected_crypr_file and selected_decrypr_file from entity with paths. 
+
+Restart program
 
 Inicialize the starting encrypted file
 ```sh
@@ -37,7 +54,7 @@ cc> search linked
 - Search in encrypted data storage
 - etc.
 
-##Command example
+## Command example
 ### Create
 Create block
 ```sh
@@ -80,7 +97,7 @@ Add a group? [y/n]
 y
 Group "ExampleGroup" created successfully
 ```
-###Update
+### Update
 To update a block, you need to know the block name and the group name.
 Use command "search" with option "--showgroup"
 ```sh
@@ -124,7 +141,7 @@ y
 Block "Reddit" updated successfully
 ```
 
-###Search
+### Search
 ```sh
 cc> search redd --showgroup
 ------start group------
@@ -142,6 +159,48 @@ Phone:
 AdditionalInfo:
 ------end block------
 ```
+
+### Switch
+Oprtions "epf" and "dpf" are used to switch the current file for passwords (encrypted or decrypted)
+In the example I used such settings files (I give part og the file)
+```json
+"dir_crypt_files": [
+        {
+            "Name": "Crypt",
+            "Path": "D:\\Program\\win-x64\\Crypt"
+        },
+        {
+            "Name": "Crypt2",
+            "Path": "D:\\Program\\win-x64\\Crypt__"
+        },
+        {
+            "Name": "CryptTest",
+            "Path": "E:\\Temp\\CryptTest.txt"
+        }
+    ],
+    "selected_crypr_file": "Crypt"
+```
+
+Switch to file "CryptTest"
+```sh
+cc> switch --epf cryp
+Name = Crypt2
+Path = D:\Program\win-x64\Crypt__
+Selected this file? [y/n]
+n
+Name = CryptTest
+Path = E:\Temp\CryptTest.txt
+Selected this file? [y/n]
+y
+Enter password
+Ok
+Save this file as default?
+You will be able to work with the selected file anyway  [y/n]
+n
+```
+Now I have select another file and will work with it until the program closed or switches to anothher file. After restarting the program, you will be working with the previos file.
+If you want to woth with this file after restart the program, save it as default file. 
+
 
 ## Some undocumented features
 Encrypted\decrypted file use asymmetrical algorithm

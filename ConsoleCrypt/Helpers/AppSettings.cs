@@ -5,15 +5,16 @@ using System.Reflection;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.WorkWithJson;
+using ConsoleCrypt.Contracts;
 using Newtonsoft.Json;
 
 namespace ConsoleCrypt.Helpers
 {
-    public class AppSettings : SerializeDeserializeJson<AppSettings>, IAppSettings
+    public class AppSettings : SerializeDeserializeJson<AppSettings>, IAppSettingsConsole
     {
         //Assembly.GetExecutingAssembly().Location in net5 and letter returned null!!!!!!
         [JsonIgnore]
-        public readonly string pathToSettings = System.IO.Path.Combine(
+        public string PathToSettings { get; } = System.IO.Path.Combine(
             System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "JSON", "AppSettings.json");
         [JsonProperty(PropertyName = "dir_crypt_files")]
         public List<FileModelInSettings> DirCryptFile { get; set; }
@@ -36,11 +37,11 @@ namespace ConsoleCrypt.Helpers
                 return DirDecryptFile.FirstOrDefault(i => i.Name.ToLower() == selected_decrypr_file.ToLower());
             }
         }
-
+        public string Editor { get; set; }
         public void Save()
         {
             //SaveData?.Invoke();
-            base.SerializeToFile(this, pathToSettings);
+            base.SerializeToFile(this, PathToSettings);
         }
     }
 }

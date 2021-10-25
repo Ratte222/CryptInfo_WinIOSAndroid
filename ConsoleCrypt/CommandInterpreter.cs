@@ -14,6 +14,9 @@ using ConsoleCrypt.Commands;
 using CommonForCryptPasswordLibrary.Exceptions;
 using CryptLibrariStandart.Exceptions;
 using CryptLibrariStandart.AsymmetricCryptography;
+using ConsoleCrypt.Contracts;
+using System.Diagnostics;
+using System.IO;
 //using System.Void;
 namespace ConsoleCrypt
 {
@@ -39,13 +42,13 @@ namespace ConsoleCrypt
 
         private IMainLogicService _inputOutputFile;
         ImyIO_Console _console_IO;
-        IAppSettings _appSettings;
+        IAppSettingsConsole _appSettings;
         ISearchSettings _searchSettings;
         IMapper _mapper;
         IBlockService _cryptBlock;
         IGroupService _cryptGroup;
         public CommandInterpreter(IMainLogicService _InputOutputFile, ImyIO_Console _console_IO,
-            IAppSettings appSettings, ISearchSettings searchSettings, IMapper mapper,
+            IAppSettingsConsole appSettings, ISearchSettings searchSettings, IMapper mapper,
             IBlockService cryptBlock, IGroupService cryptGroup)
         {
             _inputOutputFile = _InputOutputFile;
@@ -107,7 +110,7 @@ namespace ConsoleCrypt
                       //.WithParsed<SearchCommand, ShowCommand>(Search, Show);
                  var result = Parser.Default.ParseArguments<SearchCommand, ShowCommand, CreateCommand, UpdateCommand, DecryptCommand,
                      EncryptCommand, InitCommand, ReEnterCommand, GeneratePasswordCommand, ViewSettingsCommand,
-                     EncryptDecryptFileCommand, QuitCommand, SwitchCommand>(splitCommand);
+                     EncryptDecryptFileCommand, QuitCommand, SwitchCommand, ConfigCommand>(splitCommand);
                 result
                    .WithParsed<SearchCommand>(Search)
                    .WithParsed<ShowCommand>(Show)
@@ -121,6 +124,7 @@ namespace ConsoleCrypt
                    .WithParsed<ViewSettingsCommand>(ViewSettings)
                    .WithParsed<EncryptDecryptFileCommand>(EncryptDecryptFile)
                    .WithParsed<SwitchCommand>(Switch)
+                   .WithParsed<ConfigCommand>(Config)
                    .WithParsed<QuitCommand>(Quit);
 
                     //.MapResult(
@@ -152,7 +156,14 @@ namespace ConsoleCrypt
             }
             catch (Exception ex)
             {
-                _console_IO.HandleMessage("Oops! An unexpected error occurred.", ex);
+                if ((ex?.Source == "System.Diagnostics.Process") && (ex.HResult == -2147467259))
+                {
+                    _console_IO.HandleMessage($"{ex.Message}", ex);
+                }
+                else
+                {
+                    _console_IO.HandleMessage("Oops! An unexpected error occurred.", ex);
+                }                
             }
         }
 
@@ -161,6 +172,43 @@ namespace ConsoleCrypt
             loopMode = false;
         }
 
+
+        private void Config(ConfigCommand command)
+        {
+            if((!String.IsNullOrEmpty(command.ConfigParameter)) && (!String.IsNullOrEmpty(command.ParameterValue)))
+            {
+                switch(command.ConfigParameter.ToLower().Trim())
+                {
+                    case "editor":
+                        _appSettings.Editor = command.ParameterValue.Replace(@"\*", " ");
+                        _appSettings.Save();
+                        break;
+                    default:
+                        _console_IO.WriteLine("Parameter not found");
+                        break;
+                }
+            }
+            else if(command.OpenInEditor)
+            {
+                //using (Process process = new Process())
+                //{
+                //    process.StartInfo.FileName = _appSettings.Editor;
+                //    process.StartInfo.Arguments = _appSettings.PathToSettings;
+                //    process.Start();
+                //    process.WaitForExit();
+                //}
+                Process process = null;
+                try
+                {
+                    process = Process.Start(_appSettings.Editor, _appSettings.PathToSettings);
+                    process.WaitForExit();
+                }                
+                finally
+                {
+                    process?.Dispose();
+                }
+            }
+        }
 
         /// <summary>
         /// use save appsetting
@@ -453,6 +501,8 @@ namespace ConsoleCrypt
                 $"{_appSettings.SelectedCryptFile.Name} path = {_appSettings.SelectedCryptFile.Path}");
             _console_IO.WriteLine($"{nameof(_appSettings.SelectedDecryptFile)}: Name = " +
                 $"{_appSettings.SelectedDecryptFile.Name} path = {_appSettings.SelectedDecryptFile.Path}");
+            _console_IO.WriteLine($"{nameof(_appSettings.Editor)} = {_appSettings.Editor}" );
+            _console_IO.WriteLine($"{nameof(_appSettings.PathToSettings)} = {_appSettings.PathToSettings}" );
             _console_IO.WriteLine("");
         }
 

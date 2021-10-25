@@ -11,7 +11,7 @@ namespace ConsoleCrypt.Commands
         public bool Block { get; set; }
 
         [Option('g', "group", Required = false, HelpText = "Create group")]
-        public bool Group { get; set; }
+        public bool Group { get; set; }        
 
         [Option('p', "password", Required = false, HelpText = "Entered password")]
         public string Password { get; set; }

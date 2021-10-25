@@ -5,6 +5,7 @@ using AutoMapper;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Services;
 using ConsoleCrypt.AutoMapper;
+using ConsoleCrypt.Contracts;
 using ConsoleCrypt.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Logging;
@@ -25,9 +26,9 @@ namespace ConsoleCrypt
                 //.AddSingleton<I_InputOutput, InputOutputFile>()
                 .AddAutoMapper(typeof(AutoMapperProfile));
             serviceCollection.AddScoped<ImyIO_Console, MyIO_Console>();
-            serviceCollection.AddSingleton<IAppSettings>(provider => {
+            serviceCollection.AddSingleton<IAppSettingsConsole>(provider => {
                 AppSettings appSettings = new AppSettings();
-                return appSettings.DeserializeFromFile(appSettings.pathToSettings);
+                return appSettings.DeserializeFromFile(appSettings.PathToSettings);
             });
             serviceCollection.AddSingleton<IEncryptDecryptService, EncryptDecryptService>();
             serviceCollection.AddSingleton<ISearchSettings>(provider =>
@@ -46,13 +47,13 @@ namespace ConsoleCrypt
             serviceCollection.AddSingleton<IMainLogicService>(provider =>
             {
                 return new MainLogicService(provider.GetService<ImyIO_Console>(),
-                    provider.GetService<IAppSettings>(), provider.GetService<ISearchSettings>(),
+                    provider.GetService<IAppSettingsConsole>(), provider.GetService<ISearchSettings>(),
                     provider.GetService<IGroupService>(), provider.GetService<IBlockService>());
             });
             serviceCollection.AddSingleton<CommandInterpreter>(provider =>
             {
                 return new CommandInterpreter(provider.GetService<IMainLogicService>(),
-                    provider.GetService<ImyIO_Console>(), provider.GetService<IAppSettings>(),
+                    provider.GetService<ImyIO_Console>(), provider.GetService<IAppSettingsConsole>(),
                     provider.GetService<ISearchSettings>(), provider.GetService<IMapper>(),
                     provider.GetService<IBlockService>(), provider.GetService<IGroupService>());
             });
