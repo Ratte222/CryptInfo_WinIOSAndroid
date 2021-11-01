@@ -9,8 +9,11 @@ namespace CommonForCryptPasswordLibrary.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public DateTime DateTimeCreate { get; set; }
+        public DateTime DateTimeUpdate { get; set; }
+        public string HashSha512 { get; set; }
         public List<BlockModel> CryptBlockModels { get; set; } = new List<BlockModel>();
-
+        
         public override string ToString()
         {
             return $"{nameof(Name)}: {Name}\r\n" +

@@ -453,6 +453,8 @@ namespace ConsoleCrypt
                     }
                     BlockModel cryptBlockModel = AddBlock();
                     cryptBlockModel.GroupId = cryptGroupModel.Id;
+                    cryptBlockModel.DateTimeCreate = DateTime.UtcNow;
+                    cryptBlockModel.DateTimeUpdate = DateTime.UtcNow;
                     if (this.QuestionAgreeOrDissagry($"Add a block to group?"))
                     {
                         _cryptBlock.Add(cryptBlockModel);
@@ -465,6 +467,8 @@ namespace ConsoleCrypt
                 GroupModel cryptGroupModel = AddGroup();
                 if (this.QuestionAgreeOrDissagry($"Add a group?"))
                 {
+                    cryptGroupModel.DateTimeCreate = DateTime.UtcNow;
+                    cryptGroupModel.DateTimeUpdate = DateTime.UtcNow;
                     _cryptGroup.Add(cryptGroupModel);
                     _console_IO.WriteLine($"Group \"{cryptGroupModel.Name}\" created successfully");
                 }
@@ -606,6 +610,7 @@ namespace ConsoleCrypt
                         UpdateBlock(ref blockModel);
                         if (QuestionAgreeOrDissagry("Save this block? "))
                         {
+                            blockModel.DateTimeUpdate = DateTime.UtcNow;
                             _cryptBlock.Update(blockModel);
                             _console_IO.WriteLine($"Block \"{blockModel.Title}\" updated successfully");
                         }
@@ -631,6 +636,7 @@ namespace ConsoleCrypt
                     {
                         groupModel.Name = temp.Name;
                         groupModel.Description = temp.Description;
+                        groupModel.DateTimeUpdate = DateTime.UtcNow;
                         _cryptGroup.Update(groupModel);
                         _console_IO.WriteLine($"Group \"{groupModel.Name}\" updated successfully");
                     }
