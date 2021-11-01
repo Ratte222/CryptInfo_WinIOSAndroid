@@ -9,7 +9,7 @@
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
             <Entry Placeholder="Password" VerticalOptions="Center" AutomationId="true" x:Name="PasswordEntry" 
-                   IsPassword="True" Text="{Binding PasswordFromEntry}"/>
+                   IsPassword="True" Text="{Binding PasswordFromEntry}" TextColor="Black"/>
             <!--https://docs.microsoft.com/ru-ru/xamarin/xamarin-forms/user-interface/layouts/grid-->
             <Grid>
                 <Grid.RowDefinitions>
@@ -20,10 +20,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label Text="View password" Grid.Column="0" Grid.Row="0"/>
+                <Label Text="View password" Grid.Column="0" Grid.Row="0" TextColor="Red"/>
                 <CheckBox x:Name="CB_ViwePassword" Grid.Column="1" Grid.Row="0" IsChecked="False" 
                           CheckedChanged="CB_ViewPassword_CheckedChange"/>
-                <Label Text="Test mode" Grid.Column="0" Grid.Row="1"/>
+                <Label Text="Test mode" Grid.Column="0" Grid.Row="1" TextColor="Red"/>
                 <CheckBox x:Name="CB_TestMode" Grid.Column="1" Grid.Row="1" IsChecked="{Binding CB_TestMode}"/>
             </Grid>
             

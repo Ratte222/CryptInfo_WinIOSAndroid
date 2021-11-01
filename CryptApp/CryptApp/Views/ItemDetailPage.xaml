@@ -5,20 +5,20 @@
              Title="{Binding Title}">
     <ScrollView >
         <StackLayout Spacing="20" Padding="15">
-            <Label Text="Text:" FontSize="Medium" />
-            <Label Text="{Binding ItemTitle}" FontSize="Small"/>
-            <Label Text="Description:" FontSize="Medium" />
-            <Editor Text="{Binding Description}" FontSize="Small"/>
-            <Label Text="UserName:" FontSize="Medium" />
-            <Editor Text="{Binding UserName}" FontSize="Small"/>
-            <Label Text="Email:" FontSize="Medium" />
-            <Editor Text="{Binding Email}" FontSize="Small"/>
-            <Label Text="Password:" FontSize="Medium" />
-            <Editor Text="{Binding Password}" FontSize="Small"/>
-            <Label Text="Phone:" FontSize="Medium" />
-            <Editor Text="{Binding Phone}" FontSize="Small"/>
-            <Label Text="AdditionalInfo:" FontSize="Medium" />
-            <Editor Text="{Binding AdditionalInfo}" FontSize="Small"/>
+            <Label Text="Text:" FontSize="Medium" TextColor="Black"/>
+            <Label Text="{Binding ItemTitle}" FontSize="Small" TextColor="Black"/>
+            <Label Text="Description:" FontSize="Medium" TextColor="Black"/>
+            <Editor Text="{Binding Description}" FontSize="Small" TextColor="Black"/>
+            <Label Text="UserName:" FontSize="Medium" TextColor="Black"/>
+            <Editor Text="{Binding UserName}" FontSize="Small" TextColor="Black"/>
+            <Label Text="Email:" FontSize="Medium"  TextColor="Black"/>
+            <Editor Text="{Binding Email}" FontSize="Small" TextColor="Black"/>
+            <Label Text="Password:" FontSize="Medium" TextColor="Black"/>
+            <Editor Text="{Binding Password}" FontSize="Small" TextColor="Black"/>
+            <Label Text="Phone:" FontSize="Medium" TextColor="Black"/>
+            <Editor Text="{Binding Phone}" FontSize="Small" TextColor="Black"/>
+            <Label Text="AdditionalInfo:" FontSize="Medium" TextColor="Black"/>
+            <Editor Text="{Binding AdditionalInfo}" FontSize="Small" TextColor="Black"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>
