@@ -5,6 +5,7 @@ using System.Text;
 using CommonForCryptPasswordLibrary.WorkWithJson;
 using CryptLibrary;
 using Newtonsoft.Json;
+using System.Linq;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.Exceptions;
 using System.IO;
@@ -34,10 +35,30 @@ namespace CommonForCryptPasswordLibrary.Services
             EncryptAndSaveData();
         }
 
+        private void CalculateHashSHA512ForGroupsAndBlocks()
+        {
+            var groups = CryptFileModel.DecryptInfoContent.Where(i => string.IsNullOrEmpty(i.HashSha512)).ToArray();
+            var blocks = CryptFileModel.DecryptInfoContent.Where(j => j.CryptBlockModels.Any(b => string.IsNullOrEmpty(b.HashSha512)))
+                .Select(i=>i.CryptBlockModels).ToArray();
+            for (int i = 0; i < groups.Length; i++)
+            {
+                groups[i].HashSha512 = CryptoWithoutTry.GetHashSHA512(groups[i].ToString());
+            }
+
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                for (int j = 0; j < blocks[i].Count; j++)
+                {
+                    blocks[i][j].HashSha512 = CryptoWithoutTry.GetHashSHA512(blocks[i][j].ToString());
+                }
+            }
+        }
+
         public void EncryptAndSaveData()
         {
             if (String.IsNullOrEmpty(_settings.Path))
                 throw new ValidationException("path is null");
+            CalculateHashSHA512ForGroupsAndBlocks();
             string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
             CryptFileModel.Hash = CryptoWithoutTry.GetHashSHA512(jsonData);
             string json = cryptFileModel.Serialize(CryptFileModel);
