@@ -63,7 +63,7 @@ namespace CryptApp.Services
                     encryptDecryptService.LoadData(
                   new EncryptDecryptSettings()
                   {
-                      Path = settings.SelectedCryptFile.Path,
+                      EncryptPath = settings.SelectedCryptFile.Path,
                       Key = key
                   });
                 }
