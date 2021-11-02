@@ -10,5 +10,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         CryptFileModel CryptFileModel { get; set; }
         void LoadData(EncryptDecryptSettings settings);
         void SaveChanges();
+        void DecryptDataAndSaveToFile(EncryptDecryptSettings settings);
+        void EncryptDataAndSaveToFile(EncryptDecryptSettings settings);
     }
 }

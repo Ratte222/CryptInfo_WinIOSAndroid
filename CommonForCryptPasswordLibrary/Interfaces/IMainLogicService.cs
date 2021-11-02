@@ -37,7 +37,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
         List<BlockModel> GetBlockDatas(Filter filterShow);
         string InitCryptFile(string key);
         string InitCryptFiles(string key);
-        void DecryptFile();
-        void EncryptFile(string key);
+        //void DecryptFile();
+        //void EncryptFile(string key);
     }
 }

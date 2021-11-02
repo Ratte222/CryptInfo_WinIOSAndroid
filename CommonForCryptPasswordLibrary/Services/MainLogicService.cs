@@ -149,7 +149,7 @@ namespace CommonForCryptPasswordLibrary.Services
                 if (!Directory.Exists(Path.GetDirectoryName(_appSettings.SelectedCryptFile.Path)))
                     Directory.CreateDirectory(Path.GetDirectoryName(_appSettings.SelectedCryptFile.Path));
                 EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
-                    new EncryptDecryptSettings() { Key = key, Path = _appSettings.SelectedCryptFile.Path });
+                    new EncryptDecryptSettings() { Key = key, EncryptPath = _appSettings.SelectedCryptFile.Path });
                 cryptDecrypt.GetInitData();
                 cryptDecrypt.EncryptAndSaveData();
                 return $"Init file - {_appSettings.SelectedCryptFile.Path}";
@@ -170,7 +170,7 @@ namespace CommonForCryptPasswordLibrary.Services
                     if (!Directory.Exists(Path.GetDirectoryName(path.Path)))
                         Directory.CreateDirectory(Path.GetDirectoryName(path.Path));
                     EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
-                        new EncryptDecryptSettings() { Key = key, Path = path.Path });
+                        new EncryptDecryptSettings() { Key = key, EncryptPath = path.Path });
                     cryptDecrypt.GetInitData();
                     cryptDecrypt.EncryptAndSaveData();
                     stringBuilder.AppendLine($"Init file - {_appSettings.SelectedCryptFile.Path}");
@@ -183,25 +183,25 @@ namespace CommonForCryptPasswordLibrary.Services
             return stringBuilder.ToString();
         }
 
-        public void DecryptFile()
-        {
-            SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
-                    = new SerializeDeserializeJson<List<GroupModel>>();
-            serializeDeserializeJson.SerializeToFile(_cryptGroup.GetAll_List(), _appSettings.SelectedDecryptFile.Path);
-        }
+        //public void DecryptFile()
+        //{
+        //    SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
+        //            = new SerializeDeserializeJson<List<GroupModel>>();
+        //    serializeDeserializeJson.SerializeToFile(_cryptGroup.GetAll_List(), _appSettings.SelectedDecryptFile.Path);
+        //}
 
-        public void EncryptFile(string key)
-        {
-            SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
-                    = new SerializeDeserializeJson<List<GroupModel>>();
-            EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
-                        new EncryptDecryptSettings() { Key = key, Path = _appSettings.SelectedCryptFile.Path });
-            cryptDecrypt.CryptFileModel= new CryptFileModel()
-            {
-                DecryptInfoContent = serializeDeserializeJson
-                .DeserializeFromFile(_appSettings.SelectedDecryptFile.Path)
-            };
-            cryptDecrypt.EncryptAndSaveData();
-        }
+        //public void EncryptFile(string key)
+        //{
+        //    SerializeDeserializeJson<List<GroupModel>> serializeDeserializeJson 
+        //            = new SerializeDeserializeJson<List<GroupModel>>();
+        //    EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
+        //                new EncryptDecryptSettings() { Key = key, Path = _appSettings.SelectedCryptFile.Path });
+        //    cryptDecrypt.CryptFileModel= new CryptFileModel()
+        //    {
+        //        DecryptInfoContent = serializeDeserializeJson
+        //        .DeserializeFromFile(_appSettings.SelectedDecryptFile.Path)
+        //    };
+        //    cryptDecrypt.EncryptAndSaveData();
+        //}
     }
 }

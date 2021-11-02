@@ -55,7 +55,8 @@ namespace ConsoleCrypt
                 return new CommandInterpreter(provider.GetService<IMainLogicService>(),
                     provider.GetService<ImyIO_Console>(), provider.GetService<IAppSettingsConsole>(),
                     provider.GetService<ISearchSettings>(), provider.GetService<IMapper>(),
-                    provider.GetService<IBlockService>(), provider.GetService<IGroupService>());
+                    provider.GetService<IBlockService>(), provider.GetService<IGroupService>(),
+                    provider.GetService<IEncryptDecryptService>());
             });
             //serviceCollection.AddSingleton<FluentCommandLineParser<>>
             services = serviceCollection.BuildServiceProvider();

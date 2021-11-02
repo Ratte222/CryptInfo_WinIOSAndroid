@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,7 +11,9 @@ namespace CommonForCryptPasswordLibrary.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime DateTimeCreate { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime DateTimeUpdate { get; set; }
         public string HashSha512 { get; set; }
         public List<BlockModel> CryptBlockModels { get; set; } = new List<BlockModel>();

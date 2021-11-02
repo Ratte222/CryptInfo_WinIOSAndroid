@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,7 +19,9 @@ namespace CommonForCryptPasswordLibrary.Model
         public string Phone { get; set; }
         public string AdditionalInfo { get; set; }
         public string HashSha512 { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime DateTimeCreate { get; set; }
+        [JsonConverter(typeof(IsoDateTimeConverter))]
         public DateTime DateTimeUpdate { get; set; }
         public override string ToString()
         {

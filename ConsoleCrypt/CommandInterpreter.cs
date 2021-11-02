@@ -47,9 +47,10 @@ namespace ConsoleCrypt
         IMapper _mapper;
         IBlockService _cryptBlock;
         IGroupService _cryptGroup;
+        IEncryptDecryptService _encryptDecryptService;
         public CommandInterpreter(IMainLogicService _InputOutputFile, ImyIO_Console _console_IO,
             IAppSettingsConsole appSettings, ISearchSettings searchSettings, IMapper mapper,
-            IBlockService cryptBlock, IGroupService cryptGroup)
+            IBlockService cryptBlock, IGroupService cryptGroup, IEncryptDecryptService encryptDecryptService)
         {
             _inputOutputFile = _InputOutputFile;
             this._console_IO = _console_IO;
@@ -58,6 +59,7 @@ namespace ConsoleCrypt
             _mapper = mapper;
             _cryptBlock = cryptBlock;
             _cryptGroup = cryptGroup;
+            _encryptDecryptService = encryptDecryptService;
         }
         public void Start()
         {
@@ -452,9 +454,7 @@ namespace ConsoleCrypt
                         return;
                     }
                     BlockModel cryptBlockModel = AddBlock();
-                    cryptBlockModel.GroupId = cryptGroupModel.Id;
-                    cryptBlockModel.DateTimeCreate = DateTime.UtcNow;
-                    cryptBlockModel.DateTimeUpdate = DateTime.UtcNow;
+                    cryptBlockModel.GroupId = cryptGroupModel.Id;                    
                     if (this.QuestionAgreeOrDissagry($"Add a block to group?"))
                     {
                         _cryptBlock.Add(cryptBlockModel);
@@ -467,8 +467,6 @@ namespace ConsoleCrypt
                 GroupModel cryptGroupModel = AddGroup();
                 if (this.QuestionAgreeOrDissagry($"Add a group?"))
                 {
-                    cryptGroupModel.DateTimeCreate = DateTime.UtcNow;
-                    cryptGroupModel.DateTimeUpdate = DateTime.UtcNow;
                     _cryptGroup.Add(cryptGroupModel);
                     _console_IO.WriteLine($"Group \"{cryptGroupModel.Name}\" created successfully");
                 }
@@ -554,8 +552,15 @@ namespace ConsoleCrypt
             if (command.File)
             {
                 CheckPassword(command.Password);
-                LoadTheDatabaseIfNeeded();
-                _inputOutputFile.DecryptFile();
+                //LoadTheDatabaseIfNeeded();
+                _encryptDecryptService.DecryptDataAndSaveToFile(new
+                    EncryptDecryptSettings()
+                {
+                    Key = Password,
+                    EncryptPath = _appSettings.SelectedCryptFile.Path,
+                    DecryptPath = _appSettings.SelectedDecryptFile.Path,
+                    DecryptWithoutDeserialize = command.WithoutDeserialize
+                });                
                 _console_IO.WriteLine($"File decrypted successfully! " +
                     $"From {_appSettings.SelectedCryptFile.Path} to {_appSettings.SelectedDecryptFile.Path}\r\n");
             }
@@ -566,7 +571,13 @@ namespace ConsoleCrypt
             if (command.File)
             {
                 CheckPassword(command.Password);
-                _inputOutputFile.EncryptFile(Password);
+                _encryptDecryptService.EncryptDataAndSaveToFile(new
+                    EncryptDecryptSettings()
+                {
+                    Key = Password,
+                    EncryptPath = _appSettings.SelectedCryptFile.Path,
+                    DecryptPath = _appSettings.SelectedDecryptFile.Path,
+                });
                 _console_IO.WriteLine($"File encrypted successfully! " +
                     $"From {_appSettings.SelectedDecryptFile.Path} to {_appSettings.SelectedCryptFile.Path}");
             }
@@ -609,8 +620,7 @@ namespace ConsoleCrypt
                         _console_IO.WriteLine(blockModel.ToString());
                         UpdateBlock(ref blockModel);
                         if (QuestionAgreeOrDissagry("Save this block? "))
-                        {
-                            blockModel.DateTimeUpdate = DateTime.UtcNow;
+                        {                            
                             _cryptBlock.Update(blockModel);
                             _console_IO.WriteLine($"Block \"{blockModel.Title}\" updated successfully");
                         }
@@ -631,12 +641,9 @@ namespace ConsoleCrypt
                 {
                     _console_IO.WriteLine(groupModel.ToString());
                     _console_IO.WriteLine("");
-                    var temp = AddGroup();                    
+                    UpdateGroup(ref groupModel);                    
                     if (QuestionAgreeOrDissagry("Save this group? "))
-                    {
-                        groupModel.Name = temp.Name;
-                        groupModel.Description = temp.Description;
-                        groupModel.DateTimeUpdate = DateTime.UtcNow;
+                    {                        
                         _cryptGroup.Update(groupModel);
                         _console_IO.WriteLine($"Group \"{groupModel.Name}\" updated successfully");
                     }
@@ -662,6 +669,8 @@ namespace ConsoleCrypt
             cryptBlockModel.Phone = _console_IO.ReadLine();            
             Console.Write($"Fill {nameof(cryptBlockModel.AdditionalInfo)} ");
             cryptBlockModel.AdditionalInfo = _console_IO.ConsoleReadMultiline();
+            cryptBlockModel.DateTimeCreate = DateTime.UtcNow;
+            cryptBlockModel.DateTimeUpdate = DateTime.UtcNow;
             return cryptBlockModel;
         }
 
@@ -670,12 +679,30 @@ namespace ConsoleCrypt
             GroupModel cryptGroupModel = new GroupModel();
             _console_IO.WriteLine($"Fill {nameof(cryptGroupModel.Name)} and press \"Enter\"");
             cryptGroupModel.Name = _console_IO.ReadLine();
-            _console_IO.WriteLine($"Fill {nameof(cryptGroupModel.Description)} and press \"Enter\"");
-            cryptGroupModel.Description = _console_IO.ReadLine();
+            _console_IO.WriteLine($"Fill {nameof(cryptGroupModel.Description)} ");
+            cryptGroupModel.Description = _console_IO.ConsoleReadMultiline();
+            cryptGroupModel.DateTimeCreate = DateTime.UtcNow;
+            cryptGroupModel.DateTimeUpdate = DateTime.UtcNow;
             return cryptGroupModel;
         }
 
-        private BlockModel UpdateBlock(ref BlockModel blockModel)
+        private void UpdateGroup(ref GroupModel groupModel)
+        {
+            if (QuestionAgreeOrDissagry($"Update field {nameof(groupModel.Name)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(groupModel.Name)} and press \"Enter\"");
+                groupModel.Name = _console_IO.ReadLine();
+            }
+            if (QuestionAgreeOrDissagry($"Update field {nameof(groupModel.Description)}?"))
+            {
+                _console_IO.WriteLine($"Fill {nameof(groupModel.Description)} ");
+                groupModel.Description = _console_IO.ConsoleReadMultiline();
+            }
+            groupModel.DateTimeUpdate = DateTime.UtcNow;
+            groupModel.HashSha512 = null;
+        }
+
+        private void UpdateBlock(ref BlockModel blockModel)
         {
             if(QuestionAgreeOrDissagry($"Update field {nameof(blockModel.Title)}?"))
             {
@@ -712,7 +739,9 @@ namespace ConsoleCrypt
                 Console.Write($"Fill {nameof(blockModel.AdditionalInfo)} ");
                 blockModel.AdditionalInfo = _console_IO.ConsoleReadMultiline();
             }
-            return blockModel;
+            blockModel.DateTimeUpdate = DateTime.UtcNow;
+            blockModel.HashSha512 = null;
+            
         }
 
         public bool QuestionAgreeOrDissagry(string question)
@@ -751,7 +780,7 @@ namespace ConsoleCrypt
             var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
             {
                 Key = Password,
-                Path = _appSettings.SelectedCryptFile.Path
+                EncryptPath = _appSettings.SelectedCryptFile.Path
             };
             if (!_cryptBlock.DataExist)
             {
@@ -768,7 +797,7 @@ namespace ConsoleCrypt
             var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
             {
                 Key = Password,
-                Path = _appSettings.SelectedCryptFile.Path
+                EncryptPath = _appSettings.SelectedCryptFile.Path
             };
             _cryptBlock.LoadData(settings);
             //if (!_cryptGroup.DataExist)

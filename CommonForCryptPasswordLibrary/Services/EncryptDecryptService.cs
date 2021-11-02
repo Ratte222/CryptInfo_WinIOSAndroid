@@ -35,47 +35,110 @@ namespace CommonForCryptPasswordLibrary.Services
             EncryptAndSaveData();
         }
 
-        private void CalculateHashSHA512ForGroupsAndBlocks()
+        private void CalculateHashSHA512ForGroupsAndBlocks(bool calculateAllHash = false)
         {
-            var groups = CryptFileModel.DecryptInfoContent.Where(i => string.IsNullOrEmpty(i.HashSha512)).ToArray();
-            var blocks = CryptFileModel.DecryptInfoContent.Where(j => j.CryptBlockModels.Any(b => string.IsNullOrEmpty(b.HashSha512)))
-                .Select(i=>i.CryptBlockModels).ToArray();
-            for (int i = 0; i < groups.Length; i++)
+            if(calculateAllHash)
             {
-                groups[i].HashSha512 = CryptoWithoutTry.GetHashSHA512(groups[i].ToString());
+                CryptFileModel.DecryptInfoContent.ForEach(i => i.HashSha512 = CryptoWithoutTry.GetHashSHA512(i.ToString()));
+                CryptFileModel.DecryptInfoContent.ForEach(i => i.CryptBlockModels.ForEach(
+                    j=>j.HashSha512 = CryptoWithoutTry.GetHashSHA512(j.ToString())));
             }
-
-            for (int i = 0; i < blocks.Length; i++)
+            else
             {
-                for (int j = 0; j < blocks[i].Count; j++)
+                var groups = CryptFileModel.DecryptInfoContent.Where(i => string.IsNullOrEmpty(i.HashSha512)).ToArray();
+                var blocks = CryptFileModel.DecryptInfoContent.Select(i => i.CryptBlockModels)
+                    .Select(j => j.FindAll(b => { return string.IsNullOrEmpty(b.HashSha512); }))
+                    .ToArray();
+                for (int i = 0; i < groups.Length; i++)
                 {
-                    blocks[i][j].HashSha512 = CryptoWithoutTry.GetHashSHA512(blocks[i][j].ToString());
+                    groups[i].HashSha512 = CryptoWithoutTry.GetHashSHA512(groups[i].ToString());
                 }
-            }
+
+                for (int i = 0; i < blocks.Length; i++)
+                {
+                    for (int j = 0; j < blocks[i].Count; j++)
+                    {
+                        blocks[i][j].HashSha512 = CryptoWithoutTry.GetHashSHA512(blocks[i][j].ToString());
+                    }
+                }
+            }            
+        }
+        /// <summary>
+        /// Take data from a encrypted file and puts it in an decrypted file
+        /// </summary>
+        public void DecryptDataAndSaveToFile(EncryptDecryptSettings settings)
+        {
+            _settings = settings;
+            if (string.IsNullOrEmpty(settings.DecryptPath))
+                throw new ValidationException($"Path to decrypt file is null or empty");            
+            if (!Directory.Exists(Path.GetDirectoryName(_settings.DecryptPath)))
+                Directory.CreateDirectory(Path.GetDirectoryName(_settings.DecryptPath));
+            using(StreamWriter sw = new StreamWriter(_settings.DecryptPath))
+            {
+                sw.Write(DecryptData());
+                sw.Flush();
+            }         
         }
 
-        public void EncryptAndSaveData()
+
+        /// <summary>
+        /// Take data from a decrypted file and puts it in an encrypted file
+        /// </summary>
+        public void EncryptDataAndSaveToFile(EncryptDecryptSettings settings)
         {
-            if (String.IsNullOrEmpty(_settings.Path))
-                throw new ValidationException("path is null");
-            CalculateHashSHA512ForGroupsAndBlocks();
+            _settings = settings;
+            if(string.IsNullOrEmpty(_settings.DecryptPath))
+                throw new ValidationException($"Path to decrypted file is null or empty");
+            string decryptData = null;
+            using(StreamReader sr = new StreamReader(_settings.DecryptPath))
+            {
+                decryptData = sr.ReadToEnd();
+            }
+            try
+            {
+                CryptFileModel = cryptFileModel.Deserialize(decryptData);
+            }
+            catch (Exception ex)
+            {
+                if ((ex.HResult == -2146233088) && ex.Source == "Newtonsoft.Json")
+                {
+                    throw new TheFileIsDamagedException($"The file {_settings.DecryptPath} is damaged.\r\n" +
+                        $"Check valid json. \r\n Message: {ex.Message}.");
+                }
+                else
+                    throw ex;
+            }
+            EncryptAndSaveData(true);
+        }
+
+
+        /// <summary>
+        /// Take data from <see cref="CryptFileModel"/see> calculate hash, enrcypt and
+        /// puts it in the encrypted file.
+        /// </summary>
+        /// <param name="calculateAllHash">calculate hash for all entity</param>
+        public void EncryptAndSaveData(bool calculateAllHash = false)
+        {
+            if (String.IsNullOrEmpty(_settings.EncryptPath))
+                throw new ValidationException($"Path to encrypted file is null or empty");
+            CalculateHashSHA512ForGroupsAndBlocks(calculateAllHash);
             string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
             CryptFileModel.Hash = CryptoWithoutTry.GetHashSHA512(jsonData);
             string json = cryptFileModel.Serialize(CryptFileModel);
             string encryptData = CryptoWithoutTry.Encrypt(json, _settings.Key);
-            using (StreamWriter sw = new StreamWriter(_settings.Path, false, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(_settings.EncryptPath, false, Encoding.UTF8))
             {
                 sw.Write(encryptData);
                 sw.Flush();
             }
         }
 
-        public void DecryptData()
+        public string DecryptData()
         {
             string encryptData = "";
-            if (!File.Exists(_settings.Path))
-                throw new ValidationException($"The encrypted file does not exist. Path to file: {_settings.Path}");
-            using(StreamReader sr = new StreamReader(_settings.Path, Encoding.UTF8))
+            if (!File.Exists(_settings.EncryptPath))
+                throw new ValidationException($"The encrypted file does not exist. Path to file: {_settings.EncryptPath}");
+            using(StreamReader sr = new StreamReader(_settings.EncryptPath, Encoding.UTF8))
             {
                 encryptData = sr.ReadToEnd();
             }
@@ -91,11 +154,48 @@ namespace CommonForCryptPasswordLibrary.Services
                     throw new ReadFromCryptFileException("Faled to decrypt data. Check password.");
                 }
             }
-            CryptFileModel = cryptFileModel.Deserialize(decryptData);
-            string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
-            string hash = CryptoWithoutTry.GetHashSHA512(tempJson);
-            if (CryptFileModel.Hash != hash)
-                throw new TheFileIsDamagedException($"The file {_settings.Path} is damaged");
+            if (!_settings.DecryptWithoutDeserialize)
+            {
+                try
+                {
+                    CryptFileModel = cryptFileModel.Deserialize(decryptData);
+                }
+                catch (Exception ex)
+                {
+                    if ((ex.HResult == -2146233088) && ex.Source == "Newtonsoft.Json")
+                    {
+                        throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged.\r\n" +
+                            $"Message: {ex.Message}.\r\n To decrypt the file, use the command: decrypt -f --withoutDeserialize");
+                    }
+                    else
+                        throw ex;
+                }
+                string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
+                string hash = CryptoWithoutTry.GetHashSHA512(tempJson);
+                if (CryptFileModel.Hash != hash)
+                    FindDamagedBlocksAndGroups();
+            }
+            return decryptData;
+        }
+
+        private void FindDamagedBlocksAndGroups()
+        {
+            StringBuilder damaged = new StringBuilder();
+            foreach (var group in CryptFileModel.DecryptInfoContent)
+            {
+                if(group.HashSha512 != CryptoWithoutTry.GetHashSHA512(group.ToString()))
+                {
+                    damaged.AppendLine($"Group {group.Name} (groupId: {group.Id}) is damaged");
+                }
+                foreach(var block in group.CryptBlockModels)
+                {
+                    if (block.HashSha512 != CryptoWithoutTry.GetHashSHA512(block.ToString()))
+                    {
+                        damaged.AppendLine($"Block {block.Title} (blockId: {block.Id}, groupId: {block.GroupId}) is damaged");
+                    }
+                }
+            }            
+            throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged\r\n{damaged}");
         }
 
         public void GetInitData()
