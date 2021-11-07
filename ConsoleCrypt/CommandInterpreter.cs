@@ -608,7 +608,7 @@ namespace ConsoleCrypt
                         return;
                     }
                     BlockModel blockModel = groupModel.CryptBlockModels.Find(i => i.Title.ToLower()
-                        .Contains(command.Block));
+                        .Contains(command.Block.ToLower()));
                     if (blockModel == null)
                     {
                         _console_IO.WriteLine("Block not found");
