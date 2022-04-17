@@ -7,6 +7,7 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.WorkWithJson
 {
+    //ToDo: use AuxiliaryLib 
     public class SerializeDeserializeJson<T>
     {
         public T DeserializeFromFile(string path)
