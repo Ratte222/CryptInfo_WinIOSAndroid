@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Services;
 using ConsoleCrypt.AutoMapper;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 using CommonForCryptPasswordLibrary.Interfaces;
-using CommonForCryptPasswordLibrary.WorkWithJson;
+using AuxiliaryLib.WorkWithJson;
 using System.Reflection;
 
 namespace ConsoleCrypt.Helpers

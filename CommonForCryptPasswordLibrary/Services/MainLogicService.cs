@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
-using CryptLibrary;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.Filters;
 using System.Runtime.InteropServices;
-using CommonForCryptPasswordLibrary.WorkWithJson;
 
 namespace CommonForCryptPasswordLibrary.Services
 {

@@ -1,14 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Xml.Serialization;
-using CommonForCryptPasswordLibrary;
-using CommonForCryptPasswordLibrary.Interfaces;
-using CommonForCryptPasswordLibrary.Model;
-using CommonForCryptPasswordLibrary.Services;
-using ConsoleCrypt.Helpers;
-using CommonForCryptPasswordLibrary.WorkWithJson;
-using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsoleCrypt
 {

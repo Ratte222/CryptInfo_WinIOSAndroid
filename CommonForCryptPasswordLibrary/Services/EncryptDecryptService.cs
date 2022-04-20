@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using CommonForCryptPasswordLibrary.WorkWithJson;
-using CryptLibrary;
+using AuxiliaryLib.WorkWithJson;
+using CryptLibraryStandart.SymmetricCryptography;
 using Newtonsoft.Json;
 using System.Linq;
 using CommonForCryptPasswordLibrary.Model;

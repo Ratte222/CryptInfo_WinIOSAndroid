@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
-using CommonForCryptPasswordLibrary.WorkWithJson;
+using AuxiliaryLib.WorkWithJson;
 using ConsoleCrypt.Contracts;
 using Newtonsoft.Json;
 
