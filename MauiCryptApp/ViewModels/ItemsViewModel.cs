@@ -16,6 +16,17 @@ namespace MauiCryptApp.ViewModels
     public class ItemsViewModel:BaseViewModel
     {
         
+        public string SearchText
+        {
+            get { return _searchText; }
+            set
+            {
+                _searchText = value;
+                ExecuteSearchItemsCommand().GetAwaiter();
+            }
+        }
+
+        private string _searchText = "";
         public string Password
         {
             get { return _password; }
@@ -33,19 +44,40 @@ namespace MauiCryptApp.ViewModels
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
-        
+        public Command SearchCommand { get; }
         public ItemsViewModel()
         {
             Title = "Browse";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-
+            SearchCommand = new Command(async () => await ExecuteSearchItemsCommand());
             ItemTapped = new Command<Item>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
         }
 
+        async Task ExecuteSearchItemsCommand()
+        {
+            IsBusy = true;
 
+            try
+            {
+                Items.Clear();
+                var items = await DataStore.Search(_searchText);
+                foreach (var item in items)
+                {
+                    Items.Add(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
         
         async Task ExecuteLoadItemsCommand()
         {
@@ -97,7 +129,7 @@ namespace MauiCryptApp.ViewModels
             if (item == null)
                 return;
 
-            // This will push the ItemDetailPage onto the navigation stack
+            https://docs.microsoft.com/en-us/dotnet/maui/fundamentals/shell/navigation
             string route = $"//{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}";
             Routing.RegisterRoute(route, typeof(ItemDetailPage));
             await Shell.Current.GoToAsync(route);

@@ -3,12 +3,18 @@
     x:Class="MauiCryptApp.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:MauiCryptApp.Views"
+    xmlns:views="clr-namespace:MauiCryptApp.Views"
     Shell.FlyoutBehavior="Disabled">
-
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:LoginPage}"
-        Route="MainPage" />
+    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
+        <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        Route="LoginPage" />
+        <ShellContent
+        Title="File"
+        ContentTemplate="{DataTemplate views:FilePage}"
+        Route="FilePage" />
+    </FlyoutItem>
+    
 
 </Shell>

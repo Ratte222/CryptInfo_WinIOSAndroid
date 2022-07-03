@@ -1,4 +1,9 @@
-﻿using MauiCryptApp.Interfaces;
+﻿using CommonForCryptPasswordLibrary.Filters;
+using CommonForCryptPasswordLibrary.Interfaces;
+using CommonForCryptPasswordLibrary.Model;
+using CommonForCryptPasswordLibrary.Services;
+using MauiCryptApp.Helpers;
+using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
 using System;
 using System.Collections.Generic;
@@ -10,13 +15,27 @@ namespace MauiCryptApp.Services
 {
     public class DataStoreService : IDataStore<Item>
     {
-        readonly List<Item> items;
-        //protected SettingAndroid settings;
-        //protected MyIOAndroid myIOAndroid;
-        //InputOutputFile inputOutputFile;
+        List<Item> items;
+        IMainLogicService _inputOutputFile;
+        IBlockService _cryptBlock;
+        IGroupService _cryptGroup;
+        IEncryptDecryptService _encryptDecryptService;
+        IAppSettings _appSettings;
+        ISearchSettings _searchSettings;
         string key = "";
         public DataStoreService()
         {
+            _appSettings = DependencyService.Get<IAppSettings>();
+            _searchSettings = DependencyService.Get<ISearchSettings>();
+            //string path = Path.Combine(FileSystem.Current.AppDataDirectory, "Crypt");
+            
+            _encryptDecryptService = new EncryptDecryptService();
+            
+            _cryptBlock = new BlockService(_encryptDecryptService);
+            _cryptGroup = new GroupService(_encryptDecryptService);
+            var io = new Maui_IO_Service();
+            _inputOutputFile = new MainLogicService(io, _appSettings, _searchSettings, _cryptGroup, _cryptBlock);
+            
             //myIOAndroid = new MyIOAndroid();
             //settings = new SettingAndroid(myIOAndroid);
             //Helpers.AppSettings appSettings = DependencyService.Get
@@ -39,64 +58,63 @@ namespace MauiCryptApp.Services
             //}
 
             items = new List<Item>(
-                new[]{
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description = "This is an item description." },
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description = "This is an item description." },
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description = "This is an item description." },
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description = "This is an item description." },
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description = "This is an item description." },
-                    new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description = "This is an item description." }
-                }
+                //new[]{
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description = "This is an item description." },
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description = "This is an item description." },
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description = "This is an item description." },
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description = "This is an item description." },
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description = "This is an item description." },
+                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description = "This is an item description." }
+                //}
                 );
-            //myIOAndroid.Output = "";
-            //try
-            //{
-            //    int[] vs;
-            //    int blockCount = inputOutputFile.GetCountBlock(key);
-            //    if (blockCount >= 1)
-            //        for (int i = 0; i < blockCount; i++)
-            //        {
-            //            try
-            //            {
-            //                string content = inputOutputFile.GetBlockData(out vs, key, i);
-            //                string[] splitContent = content.Split('\n');
-            //                items.Add(new Item
-            //                {
-            //                    Id = Guid.NewGuid().ToString(),
-            //                    StartBlockLine = vs[0],
-            //                    EndBlockLine = vs[1],
-            //                    Text = splitContent[0].TrimEnd(new char[] { '\r', '\n' }),
-            //                    Description = content.Substring(splitContent[0].Length + 1)
-            //                });
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                items.Add(new Item
-            //                {
-            //                    Id = Guid.NewGuid().ToString(),
-            //                    Text = $"Block number {i}",
-            //                    Description = $"message: {ex.Message}\r\n" +
-            //                    $"InnerException: {ex?.InnerException}" +
-            //                    $"StackTrace: {ex?.StackTrace}" +
-            //                    $"HResult: {ex?.HResult}"
-            //                });
-            //            }
-
-            //        }
-            //}
-            //catch (Exception ex)
-            //{
-
-            //}
+            
 
 
 
+        }
+
+        private Item Map(BlockModel blockModel)
+        {
+            return new Item()
+            {
+                Id = blockModel.Id.ToString(),
+                Text = blockModel.Title,
+                Description = blockModel.ToString()
+            };
         }
 
         public void SetKey(string key)
         {
             this.key = key;
+            InitData();
         }
+        private void InitData()
+        {
+            var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
+            {
+                Key = key,
+                EncryptPath = _appSettings.SelectedCryptFile.Path
+            };
+            _encryptDecryptService.LoadData(settings);
+            foreach (var block in _cryptBlock.GetAll_Enumerable())
+            {
+                items.Add(Map(block));
+            }
+        }
+        public async Task<IEnumerable<Item>> Search(string search)
+        {
+            var filter = new Filter()
+            {
+                BlockName = search
+            };
+            items = new List<Item>();
+            foreach(var item in _inputOutputFile.GetBlockDatas(filter))
+            {
+                items.Add(Map(item));
+            }
+            return items;
+        }
+
         public async Task<bool> AddItemAsync(Item item)
         {
             items.Add(item);
