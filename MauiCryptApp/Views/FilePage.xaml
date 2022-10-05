@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiCryptApp.Views.FilePage"
+             Title="FilePage">
+    <VerticalStackLayout Padding="10,0,10,0">
+        <Label 
+                Text=""
+                SemanticProperties.HeadingLevel="Level1"
+                FontSize="32"
+                HorizontalOptions="Center" 
+                x:Name="StateLabel"/>
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <Button 
+                x:Name="Read"
+                Text="Read from file"
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnReadFromFileClicked"
+                 />
+            <Button 
+                x:Name="Write"
+                Text="Save to file"
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnWriteToFileClicked"
+                 />
+        </HorizontalStackLayout>
+        
+        <Editor Text="Empty"
+                AutoSize="TextChanges"
+                HorizontalOptions="CenterAndExpand"
+                
+                x:Name="Input"
+            />
+        
+    </VerticalStackLayout>
+</ContentPage>
