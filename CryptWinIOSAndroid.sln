@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleCrypt", "ConsoleCryp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonForCryptPasswordLibrary", "CommonForCryptPasswordLibrary\CommonForCryptPasswordLibrary.csproj", "{93791F1B-0204-426D-B8BA-312D298371FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiCryptApp", "MauiCryptApp\MauiCryptApp.csproj", "{06F13A12-A3A6-4D6F-B5D5-F85DF0753DCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiCryptApp", "MauiCryptApp\MauiCryptApp.csproj", "{06F13A12-A3A6-4D6F-B5D5-F85DF0753DCA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsoleCrypt", "TestConsoleCrypt\TestConsoleCrypt.csproj", "{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +111,30 @@ Global
 		{06F13A12-A3A6-4D6F-B5D5-F85DF0753DCA}.Release|x86.ActiveCfg = Release|Any CPU
 		{06F13A12-A3A6-4D6F-B5D5-F85DF0753DCA}.Release|x86.Build.0 = Release|Any CPU
 		{06F13A12-A3A6-4D6F-B5D5-F85DF0753DCA}.Release|x86.Deploy.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|ARM.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|x64.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Debug|x86.Build.0 = Debug|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|ARM.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|ARM.Build.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|iPhone.Build.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|x64.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|x64.Build.0 = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|x86.ActiveCfg = Release|Any CPU
+		{524E0B8D-A0E9-42F0-97C7-57E0D71D3DCB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
