@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <Reference Include="CommonForCryptPasswordLibrary">
-      <HintPath>..\CommonForCryptPasswordLibrary\bin\Release\netstandard2.1\CommonForCryptPasswordLibrary.dll</HintPath>
+      <HintPath>..\CommonForCryptPasswordLibrary\bin\Release\net6.0\CommonForCryptPasswordLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
 

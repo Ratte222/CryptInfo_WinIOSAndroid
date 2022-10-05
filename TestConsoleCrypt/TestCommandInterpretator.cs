@@ -19,17 +19,17 @@ namespace TestConsoleCrypt
             //MyIO_Console console_IO = new MyIO_Console();
             //Settings settings = new Settings(console_IO);
             
-            var mockSettings = new Mock<ISettings>();
-            mockSettings.Setup(setDef => setDef.GetDirCryptFile() == "D:\\Temp" 
-            /*&& setDef.Get_caseSensitive() == true 
-            && setDef.Get_searchInTegs() == true
-            && setDef.Get_searchInHeader() == false
-            && setDef.Get_searchUntilFirstMatch() == true
-            && setDef.Get_viewServiceInformation() == true
-            && setDef.Get_charStartAttributes() == "#^"*/);
-            //var mockInputOutputFile = new Mock<I_InputOutput>();
+            //var mockSettings = new Mock<ISettings>();
+            //mockSettings.Setup(setDef => setDef.GetDirCryptFile() == "D:\\Temp" 
+            ///*&& setDef.Get_caseSensitive() == true 
+            //&& setDef.Get_searchInTegs() == true
+            //&& setDef.Get_searchInHeader() == false
+            //&& setDef.Get_searchUntilFirstMatch() == true
+            //&& setDef.Get_viewServiceInformation() == true
+            //&& setDef.Get_charStartAttributes() == "#^"*/);
+            ////var mockInputOutputFile = new Mock<I_InputOutput>();
 
-            C_InputOutputFile InputOutputFile = new C_InputOutputFile(mockConsole_IO.Object, mockSettings.Object);
+            //C_InputOutputFile InputOutputFile = new C_InputOutputFile(mockConsole_IO.Object, mockSettings.Object);
             //CommandInterpreter consoleInterpreter = new CommandInterpreter(mockInputOutputFile.Object,
             //    mockConsole_IO.Object, mockSettings.Object);
             //string[] command = new string[] { "help" };
