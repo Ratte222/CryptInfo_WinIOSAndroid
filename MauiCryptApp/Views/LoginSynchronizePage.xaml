@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiCryptApp.Views.LoginSynchronizePage"
+             Title="LoginSynchronizePage">
+    
+    
+    <ContentPage.Content>
+        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+            <Entry Placeholder="Password" VerticalOptions="Center" AutomationId="true" x:Name="PasswordEntry" 
+                   IsPassword="True" Text="{Binding PasswordFromEntry}"/>
+            <!--https://docs.microsoft.com/ru-ru/xamarin/xamarin-forms/user-interface/layouts/grid-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label Text="View password" Grid.Column="0" Grid.Row="0"/>
+                <CheckBox x:Name="CB_ViwePassword" Grid.Column="1" Grid.Row="0" IsChecked="False" 
+                          CheckedChanged="CB_ViewPassword_CheckedChange"/>
+            </Grid>
+
+
+            <Button VerticalOptions="Center" Text="Enter to synchronize page" Command="{Binding LoginCommand}"/>
+            <!--Clicked="BT_Login_Click"-->
+            <!--Command="{Binding LoginCommand}"-->
+
+            <!--CommandParameter="{Binding Source=PasswordEntry,  Path=Text}"-->
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

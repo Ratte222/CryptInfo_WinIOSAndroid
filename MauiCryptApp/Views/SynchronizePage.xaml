@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiCryptApp.Views.SynchronizePage"
+             xmlns:model="clr-namespace:MauiCryptApp.Models"
+             xmlns:stringModel="clr-namespace:MauiCryptApp.ViewModels"
+             Title="SynchronizePage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <HorizontalStackLayout HorizontalOptions="Center">
+            <Label FontSize="24" Text="Synchronize page" TextColor="Black" Grid.Row="0"/>
+        </HorizontalStackLayout>
+        <ScrollView Grid.Row="1">
+        <CollectionView ItemsSource="{Binding BackupSettingsJson}" >
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout x:DataType="stringModel:StringModel" Orientation="Vertical">
+                        <Editor FontSize="14" 
+                                Text="{Binding Content}" 
+                                Grid.Row="1"
+                                VerticalOptions="StartAndExpand"/>
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        </ScrollView>
+
+        <Grid HorizontalOptions="Center" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Text="Synchronize"
+                    Grid.Column="0"
+                Padding="16"
+                CornerRadius="10"
+                Command="{Binding SynchronizeCommand}"
+                />
+            <Button Text="Save settings"
+                    Grid.Column="1"
+                Padding="16"
+                CornerRadius="10"
+                Command="{Binding SaveBackupSettingsCommand}"
+                />
+            <Button Text="Load settings"
+                    Grid.Column="2"
+                Padding="16"
+                CornerRadius="10"
+                Command="{Binding LoadBackupSettingsCommand}"
+                />
+        </Grid>
+        
+
+        <CollectionView ItemsSource="{Binding LogsStorage}" Grid.Row="3" BackgroundColor="CadetBlue">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                <DataTemplate>
+                        <StackLayout x:DataType="model:LogModel" Orientation="Vertical">
+                            <!--<Label Text="{Binding Level}"/>-->
+                            <Label Text="{Binding Description}"/>
+                        </StackLayout>
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

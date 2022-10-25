@@ -23,6 +23,12 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnWriteToFileClicked"
                  />
+            <Button 
+                x:Name="Synchronize"
+                Text="Synchronize with aws"
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnSynchronizeWithAWSClicked"
+                 />
         </HorizontalStackLayout>
         
         <Editor Text="Empty"

@@ -146,7 +146,8 @@ namespace CommonForCryptPasswordLibrary.Services
                 if (!Directory.Exists(Path.GetDirectoryName(_appSettings.SelectedCryptFile.Path)))
                     Directory.CreateDirectory(Path.GetDirectoryName(_appSettings.SelectedCryptFile.Path));
                 EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
-                    new EncryptDecryptSettings() { Key = key, EncryptPath = _appSettings.SelectedCryptFile.Path });
+                    new EncryptDecryptSettings() { Key = key, EncryptPath = _appSettings.SelectedCryptFile.Path },
+                    new CryptService_Windows());
                 cryptDecrypt.GetInitData();
                 cryptDecrypt.EncryptAndSaveData();
                 return $"Init file - {_appSettings.SelectedCryptFile.Path}";
@@ -167,7 +168,8 @@ namespace CommonForCryptPasswordLibrary.Services
                     if (!Directory.Exists(Path.GetDirectoryName(path.Path)))
                         Directory.CreateDirectory(Path.GetDirectoryName(path.Path));
                     EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
-                        new EncryptDecryptSettings() { Key = key, EncryptPath = path.Path });
+                        new EncryptDecryptSettings() { Key = key, EncryptPath = path.Path },
+                        new CryptService_Windows());
                     cryptDecrypt.GetInitData();
                     cryptDecrypt.EncryptAndSaveData();
                     stringBuilder.AppendLine($"Init file - {_appSettings.SelectedCryptFile.Path}");

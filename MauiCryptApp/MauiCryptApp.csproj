@@ -49,8 +49,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Backuper-Core" Version="1.0.1" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\CommonForCryptPasswordLibrary\CommonForCryptPasswordLibrary.csproj" />
 	</ItemGroup>
+
+	
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\AboutPage.xaml">
@@ -68,7 +76,13 @@
 	  <MauiXaml Update="Views\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\LoginSynchronizePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\MainPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SynchronizePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

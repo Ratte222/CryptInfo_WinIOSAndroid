@@ -1,4 +1,5 @@
-﻿using CommonForCryptPasswordLibrary.Interfaces;
+﻿using Backuper_Core.Services;
+using CommonForCryptPasswordLibrary.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace MauiCryptApp.ViewModels
 {
 
-    public class FileViewModel:BaseViewModel
+    public class FileViewModel:BaseViewModel//does not use!!!
     {
         public string FileContent
         {
@@ -20,12 +21,14 @@ namespace MauiCryptApp.ViewModels
         IAppSettings _appSettings;
         public Command ExecuteReadCommand { get; }
         public Command ExecuteWriteCommand { get; }
+        public Command ExecuteSynchronizeWithAWS { get; }
 
         public FileViewModel()
         {
-            _appSettings = DependencyService.Get<IAppSettings>();
+            _appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
             ExecuteReadCommand = new Command(ReadFromFile);
             ExecuteWriteCommand = new Command(WriteToFile);
+            ExecuteSynchronizeWithAWS = new Command(SynchronizeWithAWS);
         }
 
         private void ReadFromFile()
@@ -38,6 +41,11 @@ namespace MauiCryptApp.ViewModels
         {
             File.WriteAllText(_appSettings.SelectedCryptFile.Path, FileContent);
             StateText = "Saved";
+        }
+
+        private void SynchronizeWithAWS()
+        {
+            
         }
     }
 }

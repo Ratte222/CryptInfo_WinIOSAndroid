@@ -25,11 +25,11 @@ namespace MauiCryptApp.Services
         string key = "";
         public DataStoreService()
         {
-            _appSettings = DependencyService.Get<IAppSettings>();
-            _searchSettings = DependencyService.Get<ISearchSettings>();
+            _appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
+            _searchSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ISearchSettings>();
             //string path = Path.Combine(FileSystem.Current.AppDataDirectory, "Crypt");
             
-            _encryptDecryptService = new EncryptDecryptService();
+            _encryptDecryptService = new EncryptDecryptService(new CryptService_Windows());
             
             _cryptBlock = new BlockService(_encryptDecryptService);
             _cryptGroup = new GroupService(_encryptDecryptService);
@@ -95,7 +95,12 @@ namespace MauiCryptApp.Services
                 Key = key,
                 EncryptPath = _appSettings.SelectedCryptFile.Path
             };
-            _encryptDecryptService.LoadData(settings);
+            try//for android. exception with calculate sha
+            {
+                _encryptDecryptService.LoadData(settings);
+            }
+            catch
+            { }
             foreach (var block in _cryptBlock.GetAll_Enumerable())
             {
                 items.Add(Map(block));

@@ -18,10 +18,15 @@ namespace CommonForCryptPasswordLibrary.Services
         private SerializeDeserializeJson<List<GroupModel>> listCryptGroupModel = new SerializeDeserializeJson<List<GroupModel>>();
         private SerializeDeserializeJson<CryptFileModel> cryptFileModel = new SerializeDeserializeJson<CryptFileModel>();
         private EncryptDecryptSettings _settings;
-        public EncryptDecryptService() { }
-        public EncryptDecryptService(EncryptDecryptSettings settings)
+        private readonly ICryptService _cryptService;
+        public EncryptDecryptService(ICryptService cryptService)
+        {
+            _cryptService = cryptService;
+        }
+        public EncryptDecryptService(EncryptDecryptSettings settings, ICryptService cryptService)
         {
             _settings = settings;
+            _cryptService = cryptService;
         }
 
         public void LoadData(EncryptDecryptSettings settings)
@@ -39,9 +44,9 @@ namespace CommonForCryptPasswordLibrary.Services
         {
             if(calculateAllHash)
             {
-                CryptFileModel.DecryptInfoContent.ForEach(i => i.HashSha512 = CryptoWithoutTry.GetHashSHA512(i.ToString()));
+                CryptFileModel.DecryptInfoContent.ForEach(i => i.HashSha512 = _cryptService.GetHashSHA512(i.ToString()));
                 CryptFileModel.DecryptInfoContent.ForEach(i => i.CryptBlockModels.ForEach(
-                    j=>j.HashSha512 = CryptoWithoutTry.GetHashSHA512(j.ToString())));
+                    j=>j.HashSha512 = _cryptService.GetHashSHA512(j.ToString())));
             }
             else
             {
@@ -51,14 +56,14 @@ namespace CommonForCryptPasswordLibrary.Services
                     .ToArray();
                 for (int i = 0; i < groups.Length; i++)
                 {
-                    groups[i].HashSha512 = CryptoWithoutTry.GetHashSHA512(groups[i].ToString());
+                    groups[i].HashSha512 = _cryptService.GetHashSHA512(groups[i].ToString());
                 }
 
                 for (int i = 0; i < blocks.Length; i++)
                 {
                     for (int j = 0; j < blocks[i].Count; j++)
                     {
-                        blocks[i][j].HashSha512 = CryptoWithoutTry.GetHashSHA512(blocks[i][j].ToString());
+                        blocks[i][j].HashSha512 = _cryptService.GetHashSHA512(blocks[i][j].ToString());
                     }
                 }
             }            
@@ -123,16 +128,22 @@ namespace CommonForCryptPasswordLibrary.Services
                 throw new ValidationException($"Path to encrypted file is null or empty");
             CalculateHashSHA512ForGroupsAndBlocks(calculateAllHash);
             string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
-            CryptFileModel.Hash = CryptoWithoutTry.GetHashSHA512(jsonData);
+            CryptFileModel.Hash = _cryptService.GetHashSHA512(jsonData);
             string json = cryptFileModel.Serialize(CryptFileModel);
-            string encryptData = CryptoWithoutTry.Encrypt(json, _settings.Key);
+            string encryptData = _cryptService.Encrypt(json, _settings.Key);
             using (StreamWriter sw = new StreamWriter(_settings.EncryptPath, false, Encoding.UTF8))
             {
                 sw.Write(encryptData);
                 sw.Flush();
             }
         }
-
+        /// <summary>
+        /// This method used in common library for crypted data
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ValidationException"></exception>
+        /// <exception cref="ReadFromCryptFileException"></exception>
+        /// <exception cref="TheFileIsDamagedException"></exception>
         public string DecryptData()
         {
             string encryptData = "";
@@ -145,7 +156,7 @@ namespace CommonForCryptPasswordLibrary.Services
             string decryptData = "";
             try
             {
-                decryptData = CryptoWithoutTry.Decrypt(encryptData, _settings.Key);
+                decryptData = _cryptService.Decrypt(encryptData, _settings.Key);
             }
             catch(Exception ex)
             {
@@ -165,15 +176,15 @@ namespace CommonForCryptPasswordLibrary.Services
                     if ((ex.HResult == -2146233088) && ex.Source == "Newtonsoft.Json")
                     {
                         throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged.\r\n" +
-                            $"Message: {ex.Message}.\r\n To decrypt the file, use the command: decrypt -f --withoutDeserialize");
+                            $"Message: {ex.Message}.\r\n To decrypt the file, use the command: decrypt -f --withoutDeserialize");//ToDo: move this command description in Console Application
                     }
                     else
                         throw ex;
                 }
                 string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
-                string hash = CryptoWithoutTry.GetHashSHA512(tempJson);
+                string hash = _cryptService.GetHashSHA512(tempJson);
                 if (CryptFileModel.Hash != hash)
-                    FindDamagedBlocksAndGroups();
+                   FindDamagedBlocksAndGroups();
             }
             return decryptData;
         }
@@ -183,19 +194,19 @@ namespace CommonForCryptPasswordLibrary.Services
             StringBuilder damaged = new StringBuilder();
             foreach (var group in CryptFileModel.DecryptInfoContent)
             {
-                if(group.HashSha512 != CryptoWithoutTry.GetHashSHA512(group.ToString()))
+                if(group.HashSha512 != _cryptService.GetHashSHA512(group.ToString()))
                 {
                     damaged.AppendLine($"Group {group.Name} (groupId: {group.Id}) is damaged");
                 }
                 foreach(var block in group.CryptBlockModels)
                 {
-                    if (block.HashSha512 != CryptoWithoutTry.GetHashSHA512(block.ToString()))
+                    if (block.HashSha512 != _cryptService.GetHashSHA512(block.ToString()))
                     {
                         damaged.AppendLine($"Block {block.Title} (blockId: {block.Id}, groupId: {block.GroupId}) is damaged");
                     }
                 }
             }            
-            throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged\r\n{damaged}");
+            throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged\r\n{damaged.ToString()}");
         }
 
         public void GetInitData()

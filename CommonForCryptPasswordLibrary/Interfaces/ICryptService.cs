@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace CommonForCryptPasswordLibrary.Interfaces
 {
-    public interface ISynchronizeService
+    public interface ICryptService
     {
+        string Encrypt(string content, string key);
+        string Decrypt(string content, string key);
+        string GetHashSHA512(string content);
     }
 }

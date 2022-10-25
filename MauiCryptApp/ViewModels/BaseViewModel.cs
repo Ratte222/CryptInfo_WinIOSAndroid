@@ -12,7 +12,8 @@ namespace MauiCryptApp.ViewModels
 {
     public class BaseViewModel : /*ObservableObject,*/ INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        //public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public IDataStore<Item> DataStore => MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IDataStore<Item>>();
         bool isBusy = false;
         public bool IsBusy
         {
