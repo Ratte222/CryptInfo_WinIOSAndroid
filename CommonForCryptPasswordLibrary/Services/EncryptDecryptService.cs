@@ -160,10 +160,12 @@ namespace CommonForCryptPasswordLibrary.Services
             }
             catch(Exception ex)
             {
-                if(ex.HResult == -2146233087)
+                if (ex.HResult == -2146233087)
                 {
                     throw new ReadFromCryptFileException("Faled to decrypt data. Check password.");
                 }
+                else
+                    throw ex;
             }
             if (!_settings.DecryptWithoutDeserialize)
             {
