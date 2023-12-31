@@ -2,6 +2,7 @@
 using Backuper_Core.Helpers;
 using Backuper_Core.Services;
 using Backuper_Core.Services.ServiceBuilders;
+using Backuper_Mega.Helpers;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Services;
 using MauiCryptApp.Helpers;
@@ -11,6 +12,7 @@ using MauiCryptApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace MauiCryptApp
 {
@@ -66,15 +68,24 @@ namespace MauiCryptApp
             savedFilePath.Add("0", appSettings.SelectedCryptFile.Path);
             string fileInfosFileFullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileInfosFileName);
 
-            var dictionaryFileBuilders = new ConcurrentDictionary<string, Type>();//BuildersDIHelper.GetDictionaryForFileServiceBuilders();
-            dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalFileServiceBuilder));
-            dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3FileServiceBuilder));
-            var dictionaryDirectoryBuilders = new ConcurrentDictionary<string, Type>(); //BuildersDIHelper.GetDictionaryForDirectoryServiceBuilders();
-            dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalDirectoryServiceBuilder));
-            dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3DirectoryServiceBuilder));
+            //var dictionaryFileBuilders = new ConcurrentDictionary<string, Type>();//BuildersDIHelper.GetDictionaryForFileServiceBuilders();
+            //dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalFileServiceBuilder));
+            //dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3FileServiceBuilder));
+            //var dictionaryDirectoryBuilders = new ConcurrentDictionary<string, Type>(); //BuildersDIHelper.GetDictionaryForDirectoryServiceBuilders();
+            //dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalDirectoryServiceBuilder));
+            //dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3DirectoryServiceBuilder));
             var awsCredentials = new AWSS3Configuration();
-            
-            var backuperCoreBuildOption = new Backuper_Core.Model.BackuperCoreDIOptionModel()
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //if (assemblies.Any(x=>x.FullName.Contains("Backuper-Mega")))
+            //{ 
+            //    var temp = Assembly.Load("Backuper-Mega");
+            //    assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //}
+            if (!BackuperMegaHelper.CheckAssembly(assemblies))
+            {
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+            var backuperCoreBuildOption = new Backuper_Core.Models.BackuperCoreDIOptionModel()
             {
                 aWSS3Configuration = awsCredentials,
                 backupSettings = new CBackupSettings(new BackupSetting[]
@@ -82,8 +93,8 @@ namespace MauiCryptApp
                     new BackupSetting()
                     {
                         Name = "synchronize",
-                        ProviderName_From = ConfigureServiceHelper.AWSS3ShortProviderName,
-                        ProviderName_To = ConfigureServiceHelper.LocalStorageShortProviderName,
+                        ProviderName_From = "",//ConfigureServiceHelper.AWSS3ShortProviderName,
+                        ProviderName_To = "",//ConfigureServiceHelper.LocalStorageShortProviderName,
                         WhatDoWithFile = WhatDoWithFile.CopyIfNewer,
                         RetainedFileCountLimit = 1,
                         SavedFilePaths = savedFilePath,
@@ -100,9 +111,11 @@ namespace MauiCryptApp
                 }),
                 fileInfosFullPath = fileInfosFileFullPath,
                 logger = new MockLogger(),
-                dictionaryFileBuilders = dictionaryFileBuilders,
-                dictionaryDirectoryBuilders = dictionaryDirectoryBuilders
+                //dictionaryFileBuilders = dictionaryFileBuilders,
+                //dictionaryDirectoryBuilders = dictionaryDirectoryBuilders
+                assemblies = assemblies
             };
+            
             builder.Services.RegisterBackuperCore(backuperCoreBuildOption);
             builder.Services.AddScoped<ICryptService, CryptService_Android>();
             builder.Services.AddScoped<IDataStore<Item>, DataStoreService>();

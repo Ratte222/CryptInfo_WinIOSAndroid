@@ -42,5 +42,6 @@ public partial class FilePage : ContentPage
     {
         await _backupJob.CreateBackupAsync(_backupSettings.BackupSettings.First());
         _logger.LogWarning("Synchronize");
+        //_logger.LogWarning(Backuper_Mega.Helpers.JustForLinkPackageToMainProject.FuckIt);
     }
 }
