@@ -94,13 +94,13 @@ namespace MauiCryptApp.ViewModels
         {
             try
             {
-
+                
                 string jsonContent = string.Join("\r ", backupSettingsJson.Select(x=>x.Content).ToArray());
                 List<BackupSetting> listBackupSettings = jsonContent.Deserialize<List<BackupSetting>>();
                 string cryptData = _cryptService.Encrypt(jsonContent, CryptKey);
                 File.WriteAllText(MauiProgram.BackupSettingFullPath, cryptData);
                 _fileInfos.FileInfosData = new List<Backuper_Core.Configurations.FileInfo>();
-                _fileInfos.Save();//need for correct work synchonize
+                _fileInfos.Save();//need for correct work synchronize
                 CBackupSettings backupSettings = new CBackupSettings(listBackupSettings);
                 BackupSettings = backupSettings;
                 Log("backup settings successfully saved", refreshLog: false);
