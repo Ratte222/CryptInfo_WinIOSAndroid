@@ -54,6 +54,7 @@ namespace MauiCryptApp.ViewModels
             ItemTapped = new Command<Item>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+            
         }
 
         async Task ExecuteSearchItemsCommand()
@@ -62,11 +63,15 @@ namespace MauiCryptApp.ViewModels
 
             try
             {
-                Items.Clear();
-                var items = await DataStore.Search(_searchText);
-                foreach (var item in items)
+                
+                if (DataStore.SetKey(_password))
                 {
-                    Items.Add(item);
+                    Items.Clear();
+                    var items = await DataStore.Search(_searchText);
+                    foreach (var item in items)
+                    {
+                        Items.Add(item);
+                    }
                 }
             }
             catch (Exception ex)
@@ -85,12 +90,15 @@ namespace MauiCryptApp.ViewModels
 
             try
             {
-                Items.Clear();
-                DataStore.SetKey(_password);
-                var items = await DataStore.GetItemsAsync(true);
-                foreach (var item in items)
+                
+                if(DataStore.SetKey(_password) && Items.Count == 0)
                 {
-                    Items.Add(item);
+                    Items.Clear();
+                    var items = await DataStore.GetItemsAsync(true);
+                    foreach (var item in items)
+                    {
+                        Items.Add(item);
+                    }
                 }
             }
             catch (Exception ex)

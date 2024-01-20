@@ -8,7 +8,7 @@ namespace MauiCryptApp.Interfaces
 {
     public interface IDataStore<T>
     {
-        void SetKey(string key);
+        bool SetKey(string key);
         Task<bool> AddItemAsync(T item);
         Task<bool> UpdateItemAsync(T item);
         Task<bool> DeleteItemAsync(string id);

@@ -23,6 +23,7 @@ namespace MauiCryptApp.Services
         IAppSettings _appSettings;
         ISearchSettings _searchSettings;
         string key = "";
+        private bool cryptedFileLoaded = false; 
         public DataStoreService()
         {
             _appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
@@ -36,37 +37,7 @@ namespace MauiCryptApp.Services
             var io = new Maui_IO_Service();
             _inputOutputFile = new MainLogicService(io, _appSettings, _searchSettings, _cryptGroup, _cryptBlock);
             
-            //myIOAndroid = new MyIOAndroid();
-            //settings = new SettingAndroid(myIOAndroid);
-            //Helpers.AppSettings appSettings = DependencyService.Get
-            //    <Helpers.AppSettings>(DependencyFetchTarget.GlobalInstance);
-            //key = appSettings.Key;
-            //IGetPathToFile getPathToFile = DependencyService.Get<IGetPathToFile>();
-            //if (appSettings.TestMode)
-            //    settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "CryptTest.txt"));
-            //else
-            //    settings.SetDirCryptFile(Path.Combine(getPathToFile.GetPathToCryptFile(), "Crypt.txt"));
-            //inputOutputFile = new InputOutputFile(myIOAndroid, settings);
-            //if (!File.Exists(settings.GetDirCryptFile()))
-            //{
-            //    File.Create(settings.GetDirCryptFile());
-            //    inputOutputFile.WriteToEndCryptFile(key,
-            //        "Example 1 \r\n" +
-            //        "tegs\r\n" +
-            //        "e - mail:nik@gmail.com\r\n" +
-            //        "password: secretPassword\r\n");
-            //}
-
-            items = new List<Item>(
-                //new[]{
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description = "This is an item description." },
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description = "This is an item description." },
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description = "This is an item description." },
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description = "This is an item description." },
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description = "This is an item description." },
-                //    new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description = "This is an item description." }
-                //}
-                );
+            items = new List<Item>();
             
 
 
@@ -90,27 +61,38 @@ namespace MauiCryptApp.Services
             };
         }
 
-        public void SetKey(string key)
+        public bool SetKey(string key)
         {
-            this.key = key;
-            InitData();
+            if (!string.IsNullOrEmpty(key)&&!cryptedFileLoaded)
+            {
+                this.key = key;
+                InitData();
+                
+            }
+            return cryptedFileLoaded;
         }
         private void InitData()
         {
-            var settings = new CommonForCryptPasswordLibrary.Model.EncryptDecryptSettings()
+            if (items.Count == 0 && !cryptedFileLoaded)
             {
-                Key = key,
-                EncryptPath = _appSettings.SelectedCryptFile.Path
-            };
-            try//for android. exception with calculate sha
-            {
-                _encryptDecryptService.LoadData(settings);
-            }
-            catch
-            { }
-            foreach (var block in _cryptBlock.GetAll_Enumerable())
-            {
-                items.Add(Map(block));
+                var settings = new EncryptDecryptSettings()
+                {
+                    Key = key,
+                    EncryptPath = _appSettings.SelectedCryptFile.Path
+                };
+                try//for android. exception with calculate sha
+                {
+                    _encryptDecryptService.LoadData(settings);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                cryptedFileLoaded = true;
+                foreach (var block in _cryptBlock.GetAll_Enumerable())
+                {
+                    items.Add(Map(block));
+                }
             }
         }
         public async Task<IEnumerable<Item>> Search(string search)
@@ -119,6 +101,8 @@ namespace MauiCryptApp.Services
             {
                 BlockName = search
             };
+            if (!cryptedFileLoaded)
+                return new Item[0];
             items = new List<Item>();
             foreach(var item in _inputOutputFile.GetBlockDatas(filter))
             {
