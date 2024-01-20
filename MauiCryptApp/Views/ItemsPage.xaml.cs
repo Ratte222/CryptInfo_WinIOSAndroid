@@ -19,6 +19,7 @@ public partial class ItemsPage : ContentPage
 
 	protected override bool OnBackButtonPressed()
 	{
+		var navigationStack = Navigation.NavigationStack;
 		return base.OnBackButtonPressed();
 	}
 }

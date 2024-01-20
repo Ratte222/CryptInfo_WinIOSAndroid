@@ -77,9 +77,16 @@ namespace MauiCryptApp.Services
         {
             return new Item()
             {
-                Id = blockModel.Id.ToString(),
-                Text = blockModel.Title,
-                Description = blockModel.ToString()
+                Id = blockModel.Id,
+                Title = blockModel.Title,
+                Description = blockModel.Description,
+                Email = blockModel.Email,
+                Password = blockModel.Password,
+                UserName = blockModel.UserName,
+                Phone = blockModel.Phone,
+                AdditionalInfo = blockModel.AdditionalInfo,
+                //Text = blockModel.Title,
+                //Description = blockModel.ToString()
             };
         }
 
@@ -143,10 +150,10 @@ namespace MauiCryptApp.Services
 
             return await Task.FromResult(true);
         }
-
+        //ToDo: align all id to Guide data type
         public async Task<Item> GetItemAsync(string id)
         {
-            return await Task.FromResult(items.FirstOrDefault(s => s.Id == id));
+            return await Task.FromResult(items.FirstOrDefault(s => s.Id.ToString() == id));
         }
 
         public async Task<IEnumerable<Item>> GetItemsAsync(bool forceRefresh = false)

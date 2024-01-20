@@ -12,6 +12,11 @@ public partial class ItemDetailPage : ContentPage
 
 	protected override bool OnBackButtonPressed()
 	{
-		return base.OnBackButtonPressed();
-	}
+        var navigationStack = Navigation.NavigationStack;
+
+		//return base.OnBackButtonPressed();
+		//Shell.Current.Navigation.PopAsync();
+		Shell.Current.GoToAsync("..");
+		return true;
+    }
 }

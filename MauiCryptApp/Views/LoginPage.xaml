@@ -12,7 +12,7 @@
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
             <Entry Placeholder="Password" VerticalOptions="Center" AutomationId="true" x:Name="PasswordEntry" 
-                   IsPassword="True" Text="{Binding PasswordFromEntry}"/>
+                   IsPassword="True" Text="{Binding PasswordFromEntry}" ReturnCommand="{Binding LoginCommand}"/>
             <!--https://docs.microsoft.com/ru-ru/xamarin/xamarin-forms/user-interface/layouts/grid-->
             <Grid>
                 <Grid.RowDefinitions>

@@ -130,9 +130,11 @@ namespace MauiCryptApp.ViewModels
                 return;
 
             https://docs.microsoft.com/en-us/dotnet/maui/fundamentals/shell/navigation
-            string route = $"//{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}";
-            Routing.RegisterRoute(route, typeof(ItemDetailPage));
-            await Shell.Current.GoToAsync(route);
+            //string route = $"/{nameof(ItemDetailPage)}";
+            //Routing.RegisterRoute(route, typeof(ItemDetailPage));
+            await Shell.Current.GoToAsync($"/{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
+
+        
     }
 }

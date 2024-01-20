@@ -9,7 +9,7 @@ namespace MauiCryptApp
         public App()
         {
             InitializeComponent();
-            DependencyService.RegisterSingleton(new SomeSettings());
+            //DependencyService.RegisterSingleton(new SomeSettings());
             //DependencyService.RegisterSingleton<ISearchSettings>(new SearchSettings()
             //{
             //    CaseSensitive = false,

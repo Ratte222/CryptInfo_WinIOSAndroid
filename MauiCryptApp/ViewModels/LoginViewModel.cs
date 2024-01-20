@@ -19,9 +19,7 @@ namespace MauiCryptApp.ViewModels
         }
         private async void OnLoginClicked(object obj)
         {
-            string route = $"///{nameof(ItemsPage)}?{nameof(ItemsViewModel.Password)}={PasswordFromEntry}";
-            Routing.RegisterRoute(route, typeof(ItemsPage));
-            await Shell.Current.GoToAsync(route);
+            await Shell.Current.GoToAsync($"/{nameof(ItemsPage)}?{nameof(ItemsViewModel.Password)}={PasswordFromEntry}");
         }
     }
 }
