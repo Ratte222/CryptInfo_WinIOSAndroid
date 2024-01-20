@@ -94,7 +94,7 @@ namespace MauiCryptApp.ViewModels
             OnUpdateCommand = new Command(async () => await OnUpdate());
         }
 
-        public async void LoadItemId(string itemId)
+        public async void LoadItemId(string itemId)//ToDo: add ScrollView
         {
             try
             {

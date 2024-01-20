@@ -4,7 +4,8 @@
              x:Class="MauiCryptApp.Views.ItemDetailPage"
              Title="ItemDetailPage">
     <StackLayout Padding="20">
-        <Grid>
+        <!--<ScrollView>-->
+        <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -32,7 +33,7 @@
             <Entry Text="{Binding Email}" Grid.Row="3" Grid.Column="1" />
 
             <Label Text="Password" Grid.Row="4" Grid.Column="0" />
-            <Entry Text="{Binding Password}" IsPassword="true" Grid.Row="4" Grid.Column="1" />
+            <Entry Text="{Binding Password}" Grid.Row="4" Grid.Column="1" />
 
             <Label Text="Phone" Grid.Row="5" Grid.Column="0" />
             <Entry Text="{Binding Phone}" Keyboard="Telephone" Grid.Row="5" Grid.Column="1" />
@@ -42,5 +43,6 @@
         </Grid>
 
         <Button Text="Update" Command="{Binding OnUpdateCommand}" />
+    <!--</ScrollView>-->
     </StackLayout>
 </ContentPage>
