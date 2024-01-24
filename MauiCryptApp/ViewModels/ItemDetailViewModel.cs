@@ -30,49 +30,44 @@ namespace MauiCryptApp.ViewModels
         //    get => description;
         //    set => SetProperty(ref description, value);
         //}
-        private string title;
-        public string Title { get { return title; } set { SetProperty(ref title, value); } }
-        private string description;
+        private Item _item = new Item();
+        public string Title { get { return _item.Title; } set { SetProperty(_item.Title, value); } }
         public string Description
         {
-            get { return description; }
-            set { SetProperty(ref description, value); }
+            get { return _item.Description; }
+            set { SetProperty(_item.Description, value); }
         }
 
-        private string userName;
         public string UserName
         {
-            get { return userName; }
-            set { SetProperty(ref userName, value); }
+            get { return _item.UserName; }
+            set { SetProperty(_item.UserName, value); }
         }
 
-        private string email;
         public string Email
         {
-            get { return email; }
-            set { SetProperty(ref email, value); }
+            get { return _item.Email; }
+            set { SetProperty(_item.Email, value); }
         }
 
-        private string password;
         public string Password
         {
-            get { return password; }
-            set { SetProperty(ref password, value); }
+            get { return _item.Password; }
+            set { SetProperty(_item.Password, value); }
         }
 
-        private string phone;
         public string Phone
         {
-            get { return phone; }
-            set { SetProperty(ref phone, value); }
+            get { return _item.Phone; }
+            set { SetProperty(_item.Phone, value); }
         }
 
-        private string additionalInfo;
         public string AdditionalInfo
         {
-            get { return additionalInfo; }
-            set { SetProperty(ref additionalInfo, value); }
+            get { return _item.AdditionalInfo; }
+            set { SetProperty(_item.AdditionalInfo, value); }
         }
+
 
 
         public string ItemId
@@ -98,17 +93,17 @@ namespace MauiCryptApp.ViewModels
         {
             try
             {
-                var item = await DataStore.GetItemAsync(itemId);
+                _item = await DataStore.GetItemAsync(itemId);
                 //Id = item.Id;
                 //Text = item.Text;
                 //Description = item.Description;
-                Title = item.Title; 
-                Description = item.Description;
-                UserName = item.UserName;
-                Email = item.Email;
-                Password = item.Password;
-                Phone = item.Phone;
-                AdditionalInfo = item.AdditionalInfo;
+                //Title = item.Title; 
+                //Description = item.Description;
+                //UserName = item.UserName;
+                //Email = item.Email;
+                //Password = item.Password;
+                //Phone = item.Phone;
+                //AdditionalInfo = item.AdditionalInfo;
 
             }
             catch (Exception)
