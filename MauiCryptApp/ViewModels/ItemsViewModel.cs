@@ -95,10 +95,10 @@ namespace MauiCryptApp.ViewModels
                 {
                     Items.Clear();
                     var items = await DataStore.GetItemsAsync(true);
-                    foreach (var item in items)
+                    foreach (var item in items.Take(15))
                     {
                         Items.Add(item);
-                    }
+                    }                    
                 }
             }
             catch (Exception ex)

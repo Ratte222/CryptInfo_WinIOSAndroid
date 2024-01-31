@@ -16,6 +16,8 @@ namespace MauiCryptApp.Helpers
         public List<FileModelInSettings> DirDecryptFile { get; set; }
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
         public string selected_crypr_file { get; set; }
+
+        [JsonIgnore]
         public FileModelInSettings SelectedCryptFile
         {
             get
@@ -24,7 +26,7 @@ namespace MauiCryptApp.Helpers
             }
         }
         public string selected_decrypr_file { get; set; }
-        
+        [JsonIgnore]
         public FileModelInSettings SelectedDecryptFile
         {
             get

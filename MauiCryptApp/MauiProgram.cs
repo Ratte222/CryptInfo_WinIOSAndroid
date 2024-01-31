@@ -1,4 +1,5 @@
-﻿using Backuper_Core.Configurations;
+﻿using AuxiliaryLib.Extensions;
+using Backuper_Core.Configurations;
 using Backuper_Core.Helpers;
 using Backuper_Core.Services;
 using Backuper_Core.Services.ServiceBuilders;
@@ -11,6 +12,7 @@ using MauiCryptApp.Models;
 using MauiCryptApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Reflection;
 
@@ -21,6 +23,8 @@ namespace MauiCryptApp
         public static IServiceScope ServiceScope { get; set; }
         const string mainCryptFileName = "Crypt_Main";
         const string fileInfosFileName = "FileInfos.json";
+        const string applicationSettingsFileName = "applicationSetting.json";
+        public const string applicationSettingsPreferencesKey = "ApplicationSettings";
         public const string backupSettingFileName = "backupSettings.json";
         public static string BackupSettingFullPath { 
             get { return Path.Combine(FileSystem.Current.AppDataDirectory, backupSettingFileName); } }
@@ -34,10 +38,53 @@ namespace MauiCryptApp
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+            
+            
+            string fileInfosFileFullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileInfosFileName);
+
+            var backuperSettings = InitializeSettings(builder.Services);
+
+            var awsCredentials = new AWSS3Configuration();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            
+            if (!BackuperMegaHelper.CheckAssembly(assemblies))
+            {
+                assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+            var backuperCoreBuildOption = new Backuper_Core.Models.BackuperCoreDIOptionModel()
+            {
+                aWSS3Configuration = awsCredentials,
+                backupSettings = backuperSettings,
+                fileInfosFullPath = fileInfosFileFullPath,
+                logger = new MockLogger(),
+                //dictionaryFileBuilders = dictionaryFileBuilders,
+                //dictionaryDirectoryBuilders = dictionaryDirectoryBuilders
+                assemblies = assemblies
+            };
+            
+            builder.Services.RegisterBackuperCore(backuperCoreBuildOption);
+            builder.Services.AddScoped<IBackuperWrapperService, BackuperWrapperService>();
+            builder.Services.AddScoped<ICryptService, CryptService_Android>();
+            builder.Services.AddScoped<IDataStore<Item>, DataStoreService>();
+            builder.Services.AddLogging(options =>
+            {
+                options.AddDebug();
+            });
+            
+            var result = builder.Build();
+            ServiceScope = result.Services.CreateScope();
+            //var backupJob = ServiceScope.ServiceProvider.GetRequiredService<BackupJob>();
+            //backupJob.CreateBackupWithTry(backuperCoreBuildOption.backupSettings.BackupSettings.First());
+            return result;
+            //return builder.Build();
+        }
+        private static CBackupSettings InitializeSettings(IServiceCollection services)
+        {
+            #region oldSetting
             AppSettings appSettings = new AppSettings()
             {
                 DirCryptFile = new List<CommonForCryptPasswordLibrary.Model.FileModelInSettings>(new[]
-                {
+                    {
                     new CommonForCryptPasswordLibrary.Model.FileModelInSettings()
                     {
                         Name = "Crypt",
@@ -49,9 +96,18 @@ namespace MauiCryptApp
                         Path = Path.Combine(FileSystem.Current.AppDataDirectory, "TestCrypt")
                     }
                 }),
-                selected_crypr_file = "Crypt"
+                selected_crypr_file = "Crypt",
+                DirDecryptFile = new List<CommonForCryptPasswordLibrary.Model.FileModelInSettings>(new[]
+                    {
+                    new CommonForCryptPasswordLibrary.Model.FileModelInSettings()
+                    {
+                        Name = "DecryptedCrypt",    
+                        Path = Path.Combine(FileSystem.Current.AppDataDirectory, "TestCrypt")
+                    }
+                }),
+                selected_decrypr_file = "DecryptedCrypt"
             };
-            builder.Services.AddSingleton<IAppSettings>(appSettings);
+            services.AddSingleton<IAppSettings>(appSettings);
             SearchSettings searchSettings = new SearchSettings()
             {
                 CaseSensitive = false,
@@ -61,35 +117,15 @@ namespace MauiCryptApp
                 SearchUntilFirstMatch = false,
                 ViewServiceInformation = false
             };
-            builder.Services.AddSingleton<ISearchSettings>(searchSettings);
+            services.AddSingleton<ISearchSettings>(searchSettings);
+
             Dictionary<string, string> backupsPath = new();
             backupsPath.Add("0", $"sync/{mainCryptFileName}");
             Dictionary<string, string> savedFilePath = new();
             savedFilePath.Add("0", appSettings.SelectedCryptFile.Path);
-            string fileInfosFileFullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileInfosFileName);
 
-            //var dictionaryFileBuilders = new ConcurrentDictionary<string, Type>();//BuildersDIHelper.GetDictionaryForFileServiceBuilders();
-            //dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalFileServiceBuilder));
-            //dictionaryFileBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3FileServiceBuilder));
-            //var dictionaryDirectoryBuilders = new ConcurrentDictionary<string, Type>(); //BuildersDIHelper.GetDictionaryForDirectoryServiceBuilders();
-            //dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.LocalStorageShortProviderName, typeof(LocalDirectoryServiceBuilder));
-            //dictionaryDirectoryBuilders.TryAdd(ConfigureServiceHelper.AWSS3ShortProviderName, typeof(AWSS3DirectoryServiceBuilder));
-            var awsCredentials = new AWSS3Configuration();
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            //if (assemblies.Any(x=>x.FullName.Contains("Backuper-Mega")))
-            //{ 
-            //    var temp = Assembly.Load("Backuper-Mega");
-            //    assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            //}
-            if (!BackuperMegaHelper.CheckAssembly(assemblies))
-            {
-                assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            }
-            var backuperCoreBuildOption = new Backuper_Core.Models.BackuperCoreDIOptionModel()
-            {
-                aWSS3Configuration = awsCredentials,
-                backupSettings = new CBackupSettings(new BackupSetting[]
-                {
+            var backuperSettings = new CBackupSettings(new BackupSetting[]
+                    {
                     new BackupSetting()
                     {
                         Name = "synchronize",
@@ -108,30 +144,26 @@ namespace MauiCryptApp
                         },
                         Cron = "* * * * *"
                     }
-                }),
-                fileInfosFullPath = fileInfosFileFullPath,
-                logger = new MockLogger(),
-                //dictionaryFileBuilders = dictionaryFileBuilders,
-                //dictionaryDirectoryBuilders = dictionaryDirectoryBuilders
-                assemblies = assemblies
-            };
-            
-            builder.Services.RegisterBackuperCore(backuperCoreBuildOption);
-            builder.Services.AddScoped<ICryptService, CryptService_Android>();
-            builder.Services.AddScoped<IDataStore<Item>, DataStoreService>();
-            builder.Services.AddLogging(options =>
-            {
-                options.AddDebug();
             });
+            #endregion
+            #region newSettings
+            ApplicationSettings applicationSettings = null;
+            //bool applicationSettingsExists = Preferences.Default.ContainsKey(applicationSettingsPreferencesKey);
+            string jsonContent = Preferences.Default.Get<string>(applicationSettingsPreferencesKey, new ApplicationSettings()
+            {
+                AppSettings = appSettings,
+                BackupSettings = backuperSettings,
+                SearchSettings = searchSettings
+            }.Serialize());
+            applicationSettings = JsonConvert.DeserializeObject<ApplicationSettings>(jsonContent);
+            services.AddSingleton(applicationSettings);
             
-            var result = builder.Build();
-            ServiceScope = result.Services.CreateScope();
-            //var backupJob = ServiceScope.ServiceProvider.GetRequiredService<BackupJob>();
-            //backupJob.CreateBackupWithTry(backuperCoreBuildOption.backupSettings.BackupSettings.First());
-            return result;
-            //return builder.Build();
+            #endregion
+            return backuperSettings;
         }
     }
+
+    
 
     public class MockLogger : Microsoft.Extensions.Logging.ILogger
     {

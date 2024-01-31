@@ -1,0 +1,66 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiCryptApp.Views.SettingsPage"
+             Title="SettingsPage">
+    <ScrollView>
+  <Grid Padding="20">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="250" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="250" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    
+    
+    <Label Text="Case Sensitive" Grid.Row="0" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding CaseSensitive}" Grid.Row="0" Grid.Column="1" />
+
+    <Label Text="Search In Tags" Grid.Row="1" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding SearchInTegs}" Grid.Row="1" Grid.Column="1" />
+
+    <Label Text="Search In Header" Grid.Row="2" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding SearchInHeader}" Grid.Row="2" Grid.Column="1" />
+
+    <Label Text="Search Until First Match" Grid.Row="3" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding SearchUntilFirstMatch}" Grid.Row="3" Grid.Column="1" />
+
+    <Label Text="View Service Information" Grid.Row="4" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding ViewServiceInformation}" Grid.Row="4" Grid.Column="1" />
+
+    <Label Text="Search Everywhere" Grid.Row="5" Grid.Column="0" />
+    <CheckBox IsChecked="{Binding SearchEverywhere}" Grid.Row="5" Grid.Column="1" />
+    <Label Text="App settings" Grid.Row="6" Grid.Column="0" />
+    <Editor x:Name="appSettingsEditor" Text="{Binding AppSettingsEditor}" Grid.Row="6" Grid.Column="1" />
+            <Label Text="Selected encrypted file" Grid.Row="7" Grid.Column="0"></Label>
+      <Picker Title="Select an Item" Grid.Row="7" Grid.Column="1"
+        ItemsSource="{Binding AvailableEncryptedFiles}"
+        SelectedItem="{Binding SelectedEncryptedFile}" />
+
+            <Label Text="Backup settings" Grid.Row="8" Grid.Column="0" />
+    <Editor x:Name="BackuperSettingsEditor" Text="{Binding BackuperSettingsEditor}" Grid.Row="8" Grid.Column="1" />
+    <Button Text="Reset settings"
+                    Grid.Column="0" Grid.Row="9"
+                Padding="16"
+                CornerRadius="10"
+                Command="{Binding ResetSettingsCommand}"
+                />
+    <Button Text="Save settings"
+            Grid.Column="1" Grid.Row="9"
+        Padding="16"
+        CornerRadius="10"
+        Command="{Binding SaveSettingsCommand}"
+            />
+  </Grid>
+    </ScrollView>
+</ContentPage>

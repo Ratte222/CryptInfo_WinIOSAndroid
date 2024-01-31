@@ -30,46 +30,7 @@ namespace MauiCryptApp.ViewModels
         //    get => description;
         //    set => SetProperty(ref description, value);
         //}
-        private Item _item = new Item();
-        public string Title { get { return _item.Title; } set { SetProperty(_item.Title, value); } }
-        public string Description
-        {
-            get { return _item.Description; }
-            set { SetProperty(_item.Description, value); }
-        }
-
-        public string UserName
-        {
-            get { return _item.UserName; }
-            set { SetProperty(_item.UserName, value); }
-        }
-
-        public string Email
-        {
-            get { return _item.Email; }
-            set { SetProperty(_item.Email, value); }
-        }
-
-        public string Password
-        {
-            get { return _item.Password; }
-            set { SetProperty(_item.Password, value); }
-        }
-
-        public string Phone
-        {
-            get { return _item.Phone; }
-            set { SetProperty(_item.Phone, value); }
-        }
-
-        public string AdditionalInfo
-        {
-            get { return _item.AdditionalInfo; }
-            set { SetProperty(_item.AdditionalInfo, value); }
-        }
-
-
-
+        public Item _item { get; private set; } = new Item();
         public string ItemId
         {
             get
@@ -82,11 +43,57 @@ namespace MauiCryptApp.ViewModels
                 LoadItemId(value);
             }
         }
-        public Command OnUpdateCommand { get; }
+        private string title;
+        public string Title { get { return title; } set { SetProperty(ref title, value); } }
+        private string description;
+        public string Description
+        {
+            get { return description; }
+            set { SetProperty(ref description, value); }
+        }
 
+        private string userName;
+        public string UserName
+        {
+            get { return userName; }
+            set { SetProperty(ref userName, value); }
+        }
+
+        private string email;
+        public string Email
+        {
+            get { return email; }
+            set { SetProperty(ref email, value); }
+        }
+
+        private string password;
+        public string Password
+        {
+            get { return password; }
+            set { SetProperty(ref password, value); }
+        }
+
+        private string phone;
+        public string Phone
+        {
+            get { return phone; }
+            set { SetProperty(ref phone, value); }
+        }
+
+        private string additionalInfo;
+        public string AdditionalInfo
+        {
+            get { return additionalInfo; }
+            set { SetProperty(ref additionalInfo, value); }
+        }
+        //public Command OnUpdateCommand { get; }
+        //public Command CopyPasswordToClipboard { get; }
+        //public Command CopyEmailToClipboard { get; }
         public ItemDetailViewModel()
         {
-            OnUpdateCommand = new Command(async () => await OnUpdate());
+            //OnUpdateCommand = new Command(async () => await OnUpdate());
+            //CopyEmailToClipboard = new Command(async () => await CopyPassword());
+            //CopyEmailToClipboard = new Command(async () => await CopyEmail());
         }
 
         public async void LoadItemId(string itemId)//ToDo: add ScrollView
@@ -94,17 +101,7 @@ namespace MauiCryptApp.ViewModels
             try
             {
                 _item = await DataStore.GetItemAsync(itemId);
-                //Id = item.Id;
-                //Text = item.Text;
-                //Description = item.Description;
-                //Title = item.Title; 
-                //Description = item.Description;
-                //UserName = item.UserName;
-                //Email = item.Email;
-                //Password = item.Password;
-                //Phone = item.Phone;
-                //AdditionalInfo = item.AdditionalInfo;
-
+                MapModelToFields();
             }
             catch (Exception)
             {
@@ -112,10 +109,50 @@ namespace MauiCryptApp.ViewModels
             }
         }
 
-        async Task OnUpdate()
+
+        public void MapModelToFields()
         {
-            //Routing.RegisterRoute("", typeof(ItemsPage));
-            await Shell.Current.GoToAsync("..");
+            Description = _item.Description;
+            Title = _item.Title;
+            Description = _item.Description;
+            UserName = _item.UserName;
+            Email = _item.Email;
+            Password = _item.Password;
+            Phone = _item.Phone;
+            AdditionalInfo = _item.AdditionalInfo;
         }
+        public void MapFieldsToModel()
+        {
+            _item.Title = Title;
+            _item.Description = Description;
+            _item.UserName = UserName;
+            _item.Email = Email;
+            _item.Password = Password;
+            _item.Phone = Phone;
+            _item.AdditionalInfo = AdditionalInfo;
+        }
+
+        public async Task UpdateItem()
+        {
+            MapFieldsToModel();
+            await DataStore.UpdateItemAsync(_item);
+        }
+
+        //async Task OnUpdate()
+        //{
+        //    //Routing.RegisterRoute("", typeof(ItemsPage));
+        //    await Shell.Current.GoToAsync("..");
+        //}
+
+        //async Task CopyPassword()
+        //{
+        //    await Clipboard.SetTextAsync(password);
+
+        //}
+
+        //async Task CopyEmail()
+        //{
+        //    await Clipboard.SetTextAsync(email);
+        //}
     }
 }

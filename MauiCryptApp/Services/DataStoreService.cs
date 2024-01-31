@@ -5,29 +5,27 @@ using CommonForCryptPasswordLibrary.Services;
 using MauiCryptApp.Helpers;
 using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MauiCryptApp.Services
 {
     public class DataStoreService : IDataStore<Item>
     {
         List<Item> items;
+        List<BlockModel> blocks;
         IMainLogicService _inputOutputFile;
         IBlockService _cryptBlock;
         IGroupService _cryptGroup;
         IEncryptDecryptService _encryptDecryptService;
-        IAppSettings _appSettings;
-        ISearchSettings _searchSettings;
+        //IAppSettings _appSettings;
+        //ISearchSettings _searchSettings;
+        ApplicationSettings _applicationSettings;
         string key = "";
         private bool cryptedFileLoaded = false; 
         public DataStoreService()
         {
-            _appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
-            _searchSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ISearchSettings>();
+            //_appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
+            //_searchSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ISearchSettings>();
+            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ApplicationSettings>();
             //string path = Path.Combine(FileSystem.Current.AppDataDirectory, "Crypt");
             
             _encryptDecryptService = new EncryptDecryptService(new CryptService_Windows());
@@ -35,7 +33,8 @@ namespace MauiCryptApp.Services
             _cryptBlock = new BlockService(_encryptDecryptService);
             _cryptGroup = new GroupService(_encryptDecryptService);
             var io = new Maui_IO_Service();
-            _inputOutputFile = new MainLogicService(io, _appSettings, _searchSettings, _cryptGroup, _cryptBlock);
+            //_inputOutputFile = new MainLogicService(io, _appSettings, _searchSettings, _cryptGroup, _cryptBlock);
+            _inputOutputFile = new MainLogicService(io, _applicationSettings.AppSettings, _applicationSettings.SearchSettings, _cryptGroup, _cryptBlock);
             
             items = new List<Item>();
             
@@ -44,22 +43,7 @@ namespace MauiCryptApp.Services
 
         }
 
-        private Item Map(BlockModel blockModel)
-        {
-            return new Item()
-            {
-                Id = blockModel.Id,
-                Title = blockModel.Title,
-                Description = blockModel.Description,
-                Email = blockModel.Email,
-                Password = blockModel.Password,
-                UserName = blockModel.UserName,
-                Phone = blockModel.Phone,
-                AdditionalInfo = blockModel.AdditionalInfo,
-                //Text = blockModel.Title,
-                //Description = blockModel.ToString()
-            };
-        }
+        
 
         public bool SetKey(string key)
         {
@@ -78,7 +62,7 @@ namespace MauiCryptApp.Services
                 var settings = new EncryptDecryptSettings()
                 {
                     Key = key,
-                    EncryptPath = _appSettings.SelectedCryptFile.Path
+                    EncryptPath = _applicationSettings.AppSettings.SelectedCryptFile.Path
                 };
                 try//for android. exception with calculate sha
                 {
@@ -89,10 +73,8 @@ namespace MauiCryptApp.Services
 
                 }
                 cryptedFileLoaded = true;
-                foreach (var block in _cryptBlock.GetAll_Enumerable())
-                {
-                    items.Add(Map(block));
-                }
+                blocks = _cryptBlock.GetAll_List();
+                items = blocks.Select(x => x.Map()).ToList();
             }
         }
         public async Task<IEnumerable<Item>> Search(string search)
@@ -103,27 +85,26 @@ namespace MauiCryptApp.Services
             };
             if (!cryptedFileLoaded)
                 return new Item[0];
-            items = new List<Item>();
-            foreach(var item in _inputOutputFile.GetBlockDatas(filter))
-            {
-                items.Add(Map(item));
-            }
+            blocks = _inputOutputFile.GetBlockDatas(filter);
+            items = blocks.Select(x => x.Map()).ToList();
             return items;
         }
 
         public async Task<bool> AddItemAsync(Item item)
         {
-            items.Add(item);
+            //items.Add(item);
 
             return await Task.FromResult(true);
         }
 
         public async Task<bool> UpdateItemAsync(Item item)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
-            items.Remove(oldItem);
-            items.Add(item);
-
+            //var oldItem = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
+            //items.Remove(oldItem);
+            //items.Add(item);
+            var block = blocks.First(x=>x.Id == item.Id);
+            block.UpdateBlockModel(item);
+            _cryptBlock.Update(block);
             return await Task.FromResult(true);
         }
 
