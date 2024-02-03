@@ -33,7 +33,7 @@ namespace MauiCryptApp.ViewModels
             set 
             { 
                 _password = value;
-                //LoadItemsCommand.Execute(this);
+                LoadItemsCommand.Execute(this);
             }
         }
         private string _password;
@@ -64,15 +64,16 @@ namespace MauiCryptApp.ViewModels
             try
             {
                 
-                if (DataStore.SetKey(_password))
+                if ((await BlockDataStore.GetItemsAsync()).Count() > 0)
                 {
                     Items.Clear();
-                    var items = await DataStore.Search(_searchText);
+                    var items = await BlockDataStore.Search(_searchText);
                     foreach (var item in items)
                     {
                         Items.Add(item);
                     }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -91,15 +92,16 @@ namespace MauiCryptApp.ViewModels
             try
             {
                 
-                if(DataStore.SetKey(_password) && Items.Count == 0)
+                if(BlockDataStore.SetKey(_password) && Items.Count == 0)
                 {
                     Items.Clear();
-                    var items = await DataStore.GetItemsAsync(true);
+                    var items = await BlockDataStore.GetItemsAsync(true);
                     foreach (var item in items.Take(15))
                     {
                         Items.Add(item);
                     }                    
                 }
+                GroupDataStore.SetKey(_password);
             }
             catch (Exception ex)
             {
@@ -129,7 +131,7 @@ namespace MauiCryptApp.ViewModels
 
         private async void OnAddItem(object obj)
         {
-            //await Shell.Current.GoToAsync(nameof(NewItemPage));
+            await Shell.Current.GoToAsync(nameof(AddItemPage));
         }
 
         async void OnItemSelected(Item item)

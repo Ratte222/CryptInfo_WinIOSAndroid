@@ -83,6 +83,8 @@ namespace MauiCryptApp.ViewModels
             }
         }
         public List<string> AvailableEncryptedFiles { get; set; }
+        public delegate Task DisplayAlertHandler(string title, string body, string cancel);
+        public event DisplayAlertHandler DisplayAlert;
         public Command ResetSettingsCommand { get; }
         public Command SaveSettingsCommand { get; }
 
@@ -153,6 +155,7 @@ namespace MauiCryptApp.ViewModels
             MapEditorIntoAppSettings();
             MapEditorIntoBackupSettins();
             Preferences.Default.Set(MauiProgram.applicationSettingsPreferencesKey, _settings.Serialize());
+            DisplayAlert.Invoke("Info", "Settings saved", "Ok");
         }
 
         private void ResetSettings()

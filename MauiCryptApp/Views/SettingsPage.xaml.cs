@@ -14,6 +14,7 @@ namespace MauiCryptApp.Views
         {
             InitializeComponent();
             BindingContext = viewModel = new SettingsViewModel();
+            viewModel.DisplayAlert += DisplayAlert;
         }
     }
 }

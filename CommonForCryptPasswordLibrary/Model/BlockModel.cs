@@ -6,9 +6,9 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Model
 {
-    public class BlockModel: IEquatable<BlockModel>
+    public class BlockModel: BaseModel, IEquatable<BlockModel>
     {
-        public Guid Id { get; set; }
+        
         public Guid GroupId { get; set; }
         //public long Id { get; set; }
         public string Title { get; set; }
@@ -18,11 +18,7 @@ namespace CommonForCryptPasswordLibrary.Model
         public string Password { get; set; }
         public string Phone { get; set; }
         public string AdditionalInfo { get; set; }
-        public string HashSha512 { get; set; }
-        [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime DateTimeCreate { get; set; }
-        [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime DateTimeUpdate { get; set; }
+        
         public override string ToString()
         {
             return $"{nameof(Title)}: {Title}\r\n" +

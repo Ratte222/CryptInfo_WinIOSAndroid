@@ -17,6 +17,7 @@ namespace MauiCryptApp
             Routes.Add("synchronize", typeof(SynchronizePage));
             Routes.Add($"/{nameof(ItemDetailPage)}", typeof(ItemDetailPage));
             Routes.Add($"/{nameof(ItemsPage)}", typeof(ItemsPage));
+            Routes.Add($"/{nameof(AddItemPage)}", typeof(AddItemPage));
             foreach (var item in Routes)
             {
                 Routing.RegisterRoute(item.Key, item.Value);

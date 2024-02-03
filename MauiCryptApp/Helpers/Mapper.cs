@@ -4,11 +4,12 @@ namespace MauiCryptApp.Helpers
 {
     public static class Mapper
     {
-        public static Item Map(this BlockModel blockModel)
+        public static Item MapToItem(this BlockModel blockModel)
         {
             return new Item()
             {
                 Id = blockModel.Id,
+                GroupId = blockModel.GroupId,
                 Title = blockModel.Title,
                 Description = blockModel.Description,
                 Email = blockModel.Email,
@@ -19,11 +20,12 @@ namespace MauiCryptApp.Helpers
             };
         }
 
-        public static BlockModel Map(this Item item)
+        public static BlockModel MapToBlockModel(this Item item)
         {
             return new BlockModel()
             {
                 Id = item.Id,
+                GroupId = item.GroupId,
                 Title = item.Title,
                 Description = item.Description,
                 Email = item.Email,
@@ -44,6 +46,16 @@ namespace MauiCryptApp.Helpers
             blockModel.UserName = item.UserName;
             blockModel.Phone = item.Phone;
             blockModel.AdditionalInfo = item.AdditionalInfo;
+        }
+
+        public static Group MapToGroup(this GroupModel groupModel)
+        {
+            return new Group()
+            {
+                Id = groupModel.Id,
+                Name = groupModel.Name,
+                Description = groupModel.Description,
+            };
         }
     }
 }

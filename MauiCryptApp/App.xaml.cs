@@ -37,7 +37,7 @@ namespace MauiCryptApp
             //    selected_crypr_file = "Crypt"
             //};
             //DependencyService.RegisterSingleton<IAppSettings>(appSettings);
-            DependencyService.Register<DataStoreService>();
+            DependencyService.Register<BlockStoreService>();
             MainPage = new AppShell();
         }
     }

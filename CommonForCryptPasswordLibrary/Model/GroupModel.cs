@@ -6,16 +6,11 @@ using System.Text;
 
 namespace CommonForCryptPasswordLibrary.Model
 {
-    public class GroupModel: IEquatable<GroupModel>
+    public class GroupModel: BaseModel, IEquatable<GroupModel>
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime DateTimeCreate { get; set; }
-        [JsonConverter(typeof(IsoDateTimeConverter))]
-        public DateTime DateTimeUpdate { get; set; }
-        public string HashSha512 { get; set; }
+        
         public List<BlockModel> CryptBlockModels { get; set; } = new List<BlockModel>();
         
         public override string ToString()

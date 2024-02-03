@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Models
 {
-    public class Item
+    public class Item :BaseDataModel
     {
-        //public string Id { get; set; }
-        public int StartBlockLine { get; set; }
-        public int EndBlockLine { get; set; }
-        //public string Text { get; set; }
-        //public string Description { get; set; }
-        public Guid Id { get; set; }
+        
         public Guid GroupId { get; set; }
         //public long Id { get; set; }
         public string Title { get; set; }

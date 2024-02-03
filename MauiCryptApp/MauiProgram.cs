@@ -65,7 +65,8 @@ namespace MauiCryptApp
             builder.Services.RegisterBackuperCore(backuperCoreBuildOption);
             builder.Services.AddScoped<IBackuperWrapperService, BackuperWrapperService>();
             builder.Services.AddScoped<ICryptService, CryptService_Android>();
-            builder.Services.AddScoped<IDataStore<Item>, DataStoreService>();
+            builder.Services.AddScoped<IDataStore<Item>, BlockStoreService>();
+            builder.Services.AddScoped<IDataStore<Group>, GroupStoreService>();
             builder.Services.AddLogging(options =>
             {
                 options.AddDebug();
@@ -126,6 +127,24 @@ namespace MauiCryptApp
 
             var backuperSettings = new CBackupSettings(new BackupSetting[]
                     {
+                    new BackupSetting()
+                    {
+                        Name = "synchronize",
+                        ProviderName_From = "",//ConfigureServiceHelper.AWSS3ShortProviderName,
+                        ProviderName_To = "",//ConfigureServiceHelper.LocalStorageShortProviderName,
+                        WhatDoWithFile = WhatDoWithFile.CopyIfNewer,
+                        RetainedFileCountLimit = 1,
+                        SavedFilePaths = savedFilePath,
+                        BackupPaths = backupsPath,
+                        Credentials = new BackupCredentials()
+                        {
+                            AWS_S3_BucketName = "backup name",
+                            AWS_AccessKeyId = "key id",
+                            AWS_SecretAccessKey = "key",
+                            AWS_Region = "region"
+                        },
+                        Cron = "* * * * *"
+                    },
                     new BackupSetting()
                     {
                         Name = "synchronize",

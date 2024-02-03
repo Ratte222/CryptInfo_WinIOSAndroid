@@ -100,7 +100,7 @@ namespace MauiCryptApp.ViewModels
         {
             try
             {
-                _item = await DataStore.GetItemAsync(itemId);
+                _item = await BlockDataStore.GetItemAsync(itemId);
                 MapModelToFields();
             }
             catch (Exception)
@@ -135,7 +135,7 @@ namespace MauiCryptApp.ViewModels
         public async Task UpdateItem()
         {
             MapFieldsToModel();
-            await DataStore.UpdateItemAsync(_item);
+            await BlockDataStore.UpdateItemAsync(_item);
         }
 
         //async Task OnUpdate()

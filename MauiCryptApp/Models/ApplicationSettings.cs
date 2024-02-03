@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Models
 {
-    internal class ApplicationSettings
+    public class ApplicationSettings
     {
         public CBackupSettings BackupSettings { get;set; }
         public SearchSettings SearchSettings { get;set; }
