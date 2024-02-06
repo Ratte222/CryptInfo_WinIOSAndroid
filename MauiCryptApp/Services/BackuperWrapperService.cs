@@ -18,10 +18,10 @@ namespace MauiCryptApp.Services
         private readonly BackupJob _backupJob;
         private readonly MockLoggerForSynchronize _loggerMock;
         public List<LogModel> LogsStorage { get; private set; } = new();
-        public BackuperWrapperService(ApplicationSettings applicationSettings, 
+        public BackuperWrapperService(IApplicationSettingsManagment applicationSettingsManagement, 
             BackupJob backupJob)
         {
-            _applicationSettings = applicationSettings;
+            _applicationSettings = applicationSettingsManagement.ApplicationSettings;
             _backupJob = backupJob;
 
             var bacokuperJobLogger = _backupJob.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -41,12 +41,16 @@ namespace MauiCryptApp.Services
 
         public async Task MakeBackupBeforeUpdate()
         {
-            await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == "backupBeforeSave"));
+            await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == MauiProgram.BEFORE_UPDATE_BACKUPER_SETTING_NAME));
         }
 
-        public async Task Synchronize()
+        public async Task Synchronize_Upload()
         {
-            await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == "synchronize"));
+            await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == MauiProgram.SYNCHRONIZE_UPLOAD_BACKUPER_SETTING_NAME));
+        }
+        public async Task Synchronize_Download()
+        {
+            await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == MauiProgram.SYNCHRONIZE_DOWNLOAD_BACKUPER_SETTING_NAME));
         }
     }
 }

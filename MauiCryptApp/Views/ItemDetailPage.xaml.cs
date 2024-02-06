@@ -1,6 +1,5 @@
 using MauiCryptApp.Interfaces;
 using MauiCryptApp.ViewModels;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MauiCryptApp.Views;
 
@@ -15,15 +14,15 @@ public partial class ItemDetailPage : ContentPage
         BindingContext = itemDetailViewModel = new ItemDetailViewModel();
 	}
 
-	protected override bool OnBackButtonPressed()
-	{
-        var navigationStack = Navigation.NavigationStack;
+	//protected override bool OnBackButtonPressed()
+	//{
+ //       var navigationStack = Navigation.NavigationStack;
 
-		//return base.OnBackButtonPressed();
-		//Shell.Current.Navigation.PopAsync();
-		Shell.Current.GoToAsync("..");
-		return true;
-    }
+	//	//return base.OnBackButtonPressed();
+	//	//Shell.Current.Navigation.PopAsync();
+	//	Shell.Current.GoToAsync("..");
+	//	return true;
+ //   }
 
 	async void OnPasswordLabelTapped(object sender, EventArgs e)
 	{

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Helpers
 {
-    public class AppSettings:IAppSettings
+    public class AppSettings: IAppSettings//ToDo: move class to models namespace
     {
         public List<FileModelInSettings> DirCryptFile { get; set; }
         public List<FileModelInSettings> DirDecryptFile { get; set; }

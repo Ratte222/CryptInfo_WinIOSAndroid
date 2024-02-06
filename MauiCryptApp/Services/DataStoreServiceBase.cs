@@ -1,6 +1,8 @@
-﻿using CommonForCryptPasswordLibrary.Interfaces;
+﻿using CommonForCryptPasswordLibrary.Exceptions;
+using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Model;
 using CommonForCryptPasswordLibrary.Services;
+using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
 using System;
 using System.Collections.Generic;
@@ -22,16 +24,16 @@ namespace MauiCryptApp.Services
         protected private bool encryptedFileLoaded = false;
         public DataStoreServiceBase()
         {
-            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ApplicationSettings>();
-            //string path = Path.Combine(FileSystem.Current.AppDataDirectory, "Crypt");
+            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>().ApplicationSettings;
+            ICryptService cryptService = MauiProgram.ServiceScope.ServiceProvider.GetService<ICryptService>();
 
-            _encryptDecryptService = new EncryptDecryptService(new CryptService_Windows());
+            _encryptDecryptService = new EncryptDecryptService(cryptService);
 
             _cryptBlock = new BlockService(_encryptDecryptService);
             _cryptGroup = new GroupService(_encryptDecryptService);
             var io = new Maui_IO_Service();
             //_inputOutputFile = new MainLogicService(io, _appSettings, _searchSettings, _cryptGroup, _cryptBlock);
-            _inputOutputFile = new MainLogicService(io, _applicationSettings.AppSettings, _applicationSettings.SearchSettings, _cryptGroup, _cryptBlock);
+            _inputOutputFile = new MainLogicService(io, _applicationSettings.AppSettings, _applicationSettings.SearchSettings, _cryptGroup, _cryptBlock, cryptService);
             items = new List<T>();
         }
 
@@ -49,14 +51,9 @@ namespace MauiCryptApp.Services
                 Key = key,
                 EncryptPath = _applicationSettings.AppSettings.SelectedCryptFile.Path
             };
-            try//for android. exception with calculate sha
-            {
-                _encryptDecryptService.LoadData(settings);
-            }
-            catch (Exception ex)
-            {
-
-            }
+            try
+            { _encryptDecryptService.LoadData(settings); }
+            catch (TheFileIsDamagedException ex) { }
             encryptedFileLoaded = true;    
         }
 

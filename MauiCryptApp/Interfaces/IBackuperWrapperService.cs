@@ -10,7 +10,8 @@ namespace MauiCryptApp.Interfaces
 {
     interface IBackuperWrapperService
     {
-        public Task Synchronize();
+        public Task Synchronize_Upload();
+        public Task Synchronize_Download();
         public Task MakeBackupBeforeUpdate();
         public Task MakeBackup(string backupName);
         public Task MakeBackup(BackupSetting backupSetting);

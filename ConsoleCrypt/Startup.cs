@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CommonForCryptPasswordLibrary.Helpers;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommonForCryptPasswordLibrary.Services;
 using ConsoleCrypt.AutoMapper;
@@ -22,56 +23,24 @@ namespace ConsoleCrypt
                 //.AddSingleton<ImyIO_Console, MyIO_Console>()
                 //.AddSingleton<I_InputOutput, InputOutputFile>()
                 .AddAutoMapper(typeof(AutoMapperProfile));
-            serviceCollection.AddScoped<ImyIO_Console, MyIO_Console>();
+            
             serviceCollection.AddSingleton<IAppSettingsConsole>(provider => {
                 AppSettings appSettings = new AppSettings();
                 return appSettings.DeserializeFromFile(appSettings.PathToSettings);
             });
-            serviceCollection.AddSingleton<IEncryptDecryptService, EncryptDecryptService>();
             serviceCollection.AddSingleton<ISearchSettings>(provider =>
             {
                 SearchSettings searchSettings = new SearchSettings();
                 return searchSettings.DeserializeFromFile(searchSettings.pathToSettings);
             });
-            serviceCollection.AddSingleton<IBlockService>(provider =>
-            {
-                return new BlockService(provider.GetService<IEncryptDecryptService>());
-            });
-            serviceCollection.AddSingleton<IGroupService>(provider =>
-            {
-                return new GroupService(provider.GetService<IEncryptDecryptService>());
-            });
-            serviceCollection.AddSingleton<IMainLogicService>(provider =>
-            {
-                return new MainLogicService(provider.GetService<ImyIO_Console>(),
-                    provider.GetService<IAppSettingsConsole>(), provider.GetService<ISearchSettings>(),
-                    provider.GetService<IGroupService>(), provider.GetService<IBlockService>());
-            });
-            serviceCollection.AddSingleton<CommandInterpreter>(provider =>
-            {
-                return new CommandInterpreter(provider.GetService<IMainLogicService>(),
-                    provider.GetService<ImyIO_Console>(), provider.GetService<IAppSettingsConsole>(),
-                    provider.GetService<ISearchSettings>(), provider.GetService<IMapper>(),
-                    provider.GetService<IBlockService>(), provider.GetService<IGroupService>(),
-                    provider.GetService<IEncryptDecryptService>());
-            });
-            //serviceCollection.AddSingleton<FluentCommandLineParser<>>
+            serviceCollection.AddSingleton<IAppSettings>(provider => provider.GetRequiredService<IAppSettingsConsole>());
+            serviceCollection.AddScoped<ImyIO_Console, MyIO_Console>();
+            serviceCollection.AddSingleton<CommandInterpreter>();
+
+            serviceCollection.RegisterCryptographyPasswordLibrary(new CommonForCryptPasswordLibrary.Model.RegisterCryptographyPasswordLibraryOptions() { IMyIO_ImplementationType = typeof(MyIO_Console) });
+            
             services = serviceCollection.BuildServiceProvider();
-            //configure console logging
-            //serviceProvider
-            //    .GetService<ILoggerFactory>()
-            //    .AddConsole(LogLevel.Debug);
-
-            //var logger = serviceProvider.GetService<ILoggerFactory>()
-            //    .CreateLogger<Program>();
-            //logger.LogDebug("Starting application");
-
-            //do the actual work here
-            //var bar = serviceProvider.GetService<IBarService>();
-            //bar.DoSomeRealWork();
-
-            //logger.LogDebug("All done!");
-
+            
         }
     }
 }

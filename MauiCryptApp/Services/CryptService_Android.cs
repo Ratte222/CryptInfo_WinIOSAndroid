@@ -1,4 +1,5 @@
 ﻿using CommonForCryptPasswordLibrary.Interfaces;
+using CommonForCryptPasswordLibrary.Services;
 using CryptLibraryStandart.SymmetricCryptography;
 using System;
 using System.Collections.Generic;
@@ -8,21 +9,8 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Services
 {
-    public class CryptService_Android : ICryptService
+    public class CryptService_Android : CryptService_Windows, ICryptService
     {
-        public string Decrypt(string content, string key)
-        {
-            return CryptoWithoutTry.Decrypt(content, key);
-        }
-
-        public string Encrypt(string content, string key)
-        {
-            return CryptoWithoutTry.Encrypt(content, key);
-        }
-
-        public string GetHashSHA512(string content)
-        {
-            return CryptoWithoutTry.GetHashSHA512(content);
-        }
+        
     }
 }

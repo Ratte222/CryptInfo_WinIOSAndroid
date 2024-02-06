@@ -13,12 +13,13 @@ namespace CommonForCryptPasswordLibrary.Services
     [StructLayout(LayoutKind.Auto)]//default StructLayout = LayoutKind.Auto. This added for example
     public class MainLogicService:IMainLogicService
     {
-        IMyIO console_IO;
+        IMyIO _console_IO;
         Encoding _encoding = Encoding.UTF8;
         IAppSettings _appSettings;
         ISearchSettings _searchSettings;
         IGroupService _cryptGroup;
         IBlockService _cryptBlock;
+        ICryptService _cryptService;
         public E_INPUTOUTPUTMESSAGE lastProblem { get; protected set; } = E_INPUTOUTPUTMESSAGE.Ok;
         
         
@@ -29,16 +30,18 @@ namespace CommonForCryptPasswordLibrary.Services
             viewServiceInformation = false,
             showAllFromCryptFile = false,
             searchEverywhere = false;
-
-        public MainLogicService(IMyIO _console_IO, IAppSettings appSettings,
-            ISearchSettings searchSettings, IGroupService cryptGroup, IBlockService cryptoBlock)
+        public bool SearchUntilFirstMach { get { return searchUntilFirstMatch; } }
+        public MainLogicService(IMyIO console_IO, IAppSettings appSettings,
+            ISearchSettings searchSettings, IGroupService cryptGroup, IBlockService cryptoBlock, ICryptService cryptService)
         {
-            console_IO = _console_IO;
+            this._console_IO = console_IO;
             _appSettings = appSettings;
             _searchSettings = searchSettings;
             _cryptGroup = cryptGroup;
             _cryptBlock = cryptoBlock;
+            _cryptService = cryptService;
             LoadDefaultParams();
+            
         }
 
         public E_INPUTOUTPUTMESSAGE LoadDefaultParams()
@@ -147,7 +150,7 @@ namespace CommonForCryptPasswordLibrary.Services
                     Directory.CreateDirectory(Path.GetDirectoryName(_appSettings.SelectedCryptFile.Path));
                 EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
                     new EncryptDecryptSettings() { Key = key, EncryptPath = _appSettings.SelectedCryptFile.Path },
-                    new CryptService_Windows());
+                    _cryptService);
                 cryptDecrypt.GetInitData();
                 cryptDecrypt.EncryptAndSaveData();
                 return $"Init file - {_appSettings.SelectedCryptFile.Path}";
@@ -169,7 +172,7 @@ namespace CommonForCryptPasswordLibrary.Services
                         Directory.CreateDirectory(Path.GetDirectoryName(path.Path));
                     EncryptDecryptService cryptDecrypt = new EncryptDecryptService(
                         new EncryptDecryptSettings() { Key = key, EncryptPath = path.Path },
-                        new CryptService_Windows());
+                        _cryptService);
                     cryptDecrypt.GetInitData();
                     cryptDecrypt.EncryptAndSaveData();
                     stringBuilder.AppendLine($"Init file - {_appSettings.SelectedCryptFile.Path}");

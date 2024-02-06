@@ -74,11 +74,14 @@ namespace MauiCryptApp.ViewModels
         public Command SaveNewItemCommand { get; }
         public delegate Task DisplayAlertHandler(string title, string body);
         public event DisplayAlertHandler DisplayAlert; 
+
+        private readonly IBackuperWrapperService _backuper;
         public AddItemViewModel()
         {
             SaveNewItemCommand = new Command(async () => { await SaveNewItem(); });
             groups = GroupDataStore.GetItemsAsync().GetAwaiter().GetResult().ToArray();
             AvailableGroups = groups.Select(x => x.Name).ToList();
+            _backuper = MauiProgram.ServiceScope.ServiceProvider.GetService<IBackuperWrapperService>(); 
         }
 
         public void MapFieldsToModel()
@@ -101,8 +104,10 @@ namespace MauiCryptApp.ViewModels
             }
             MapFieldsToModel();
             _item.GroupId = groups.Single(x => x.Name == SelectedGroup).Id;
+            await _backuper.MakeBackupBeforeUpdate();
             await BlockDataStore.AddItemAsync(_item);
             await DisplayAlert.Invoke("Info", "Item added successfully");
+            await _backuper.Synchronize_Upload();
             await Shell.Current.GoToAsync("..");
         }
 

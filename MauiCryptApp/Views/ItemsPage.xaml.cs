@@ -9,6 +9,7 @@ public partial class ItemsPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = itemsViewModel = new ItemsViewModel();
+		itemsViewModel.DisplayAlert += DisplayAlert;
 	}
 
 	protected override void OnAppearing()

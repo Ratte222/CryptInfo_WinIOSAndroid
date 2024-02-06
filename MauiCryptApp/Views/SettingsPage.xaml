@@ -7,9 +7,9 @@
     <ScrollView>
   <Grid Padding="20">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="200" />
       <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
@@ -20,6 +20,9 @@
       <RowDefinition Height="250" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="250" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
@@ -47,22 +50,32 @@
             <Label Text="Selected encrypted file" Grid.Row="7" Grid.Column="0"></Label>
       <Picker Title="Select an Item" Grid.Row="7" Grid.Column="1"
         ItemsSource="{Binding AvailableEncryptedFiles}"
-        SelectedItem="{Binding SelectedEncryptedFile}" />
+        SelectedItem="{Binding SelectedEncryptedFile}" 
+       />
 
-            <Label Text="Backup settings" Grid.Row="8" Grid.Column="0" />
-    <Editor x:Name="BackuperSettingsEditor" Text="{Binding BackuperSettingsEditor}" Grid.Row="8" Grid.Column="1" />
-    <Button Text="Reset settings"
-                    Grid.Column="0" Grid.Row="9"
+     <Label Text="Backup settings" Grid.Row="8" Grid.Column="0" />
+     <Editor x:Name="BackuperSettingsEditor" Text="{Binding BackuperSettingsEditor}" Grid.Row="8" Grid.Column="1" />
+            <Label Text="Limit the number of items when search" Grid.Row="9" Grid.Column="0" /><CheckBox IsChecked="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="9" Grid.Column="1" />
+            <Label Text="Backup settings" Grid.Row="10" Grid.Column="0" /><Entry x:Name="NumericEntry" TextChanged="OnTextChanged"
+                   Text="{Binding NumberOfItemsInSearchResult}" IsEnabled="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="10" Grid.Column="1"/>
+            <Button Text="Reset settings"
+                    Grid.Row="11" Grid.Column="0" 
                 Padding="16"
                 CornerRadius="10"
                 Command="{Binding ResetSettingsCommand}"
                 />
     <Button Text="Save settings"
-            Grid.Column="1" Grid.Row="9"
+            Grid.Row="11" Grid.Column="1" 
         Padding="16"
         CornerRadius="10"
         Command="{Binding SaveSettingsCommand}"
             />
-  </Grid>
+            <Button Text="Reset fileInfos"
+        Grid.Row="12" Grid.Column="0" 
+    Padding="16"
+    CornerRadius="10"
+    Command="{Binding ResetFileInfosCommand}"
+    />
+        </Grid>
     </ScrollView>
 </ContentPage>

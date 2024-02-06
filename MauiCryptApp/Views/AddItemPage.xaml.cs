@@ -7,7 +7,7 @@ public partial class AddItemPage : ContentPage
 	private AddItemViewModel _addItemViewModel;
 	public AddItemPage()
 	{
-		InitializeComponent();
+		 InitializeComponent();
 		BindingContext = _addItemViewModel = new AddItemViewModel();
 		_addItemViewModel.DisplayAlert += DisplayAlert;
 	}

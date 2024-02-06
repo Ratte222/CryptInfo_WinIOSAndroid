@@ -1,4 +1,5 @@
-﻿using MauiCryptApp.Models;
+﻿using MauiCryptApp.Interfaces;
+using MauiCryptApp.Models;
 using MauiCryptApp.Views;
 using Microsoft.Maui.Controls;
 using System;
@@ -17,13 +18,16 @@ namespace MauiCryptApp.ViewModels
         private string encryptedFileName;
         public string EncryptedFileName { get { return encryptedFileName; } set { SetProperty(ref encryptedFileName, value); } }
         private readonly ApplicationSettings _settings;
+        private readonly IBackuperWrapperService _backuper;
         public LoginViewModel()
         {
             LoginCommand = new Command(OnLoginClicked);
-            _settings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ApplicationSettings>();           
+            _settings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>().ApplicationSettings;           
+            _backuper = MauiProgram.ServiceScope.ServiceProvider.GetService<IBackuperWrapperService>();
         }
         private async void OnLoginClicked(object obj)
         {
+            await _backuper.Synchronize_Download();
             await Shell.Current.GoToAsync($"/{nameof(ItemsPage)}?{nameof(ItemsViewModel.Password)}={PasswordFromEntry}");
         }
 

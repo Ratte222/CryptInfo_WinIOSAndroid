@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Helpers
 {
-    public class SearchSettings:ISearchSettings
+    public class SearchSettings:ISearchSettings//ToDo: move class to models namespace
     {
         public bool CaseSensitive { get; set; }
         public bool SearchInTegs { get; set; }

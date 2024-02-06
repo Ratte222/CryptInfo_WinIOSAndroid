@@ -16,5 +16,15 @@ namespace MauiCryptApp.Views
             BindingContext = viewModel = new SettingsViewModel();
             viewModel.DisplayAlert += DisplayAlert;
         }
+
+        void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(e.NewTextValue))
+            {
+                bool isValid = double.TryParse(e.NewTextValue, out double _);
+                ((Entry)sender).Text = isValid ? e.NewTextValue : e.OldTextValue;
+            }
+        }
+
     }
 }

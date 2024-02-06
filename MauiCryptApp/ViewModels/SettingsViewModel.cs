@@ -4,12 +4,28 @@ using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.IO;
 
 namespace MauiCryptApp.ViewModels
 {
     public class SettingsViewModel:BaseViewModel, INotifyPropertyChanged
     {
-        private ApplicationSettings _settings;
+        private IApplicationSettingsManagment _settingsManagment;
+
+        private bool limitNumbersOfItemsInSearchResult;
+        public bool LimitNumbersOfItemsInSearchResult
+        {
+            get { return limitNumbersOfItemsInSearchResult; }
+            set { SetProperty(ref limitNumbersOfItemsInSearchResult, value); }
+        }
+
+        private int numberOfItemsInSearchResult;
+        public int NumberOfItemsInSearchResult
+        {
+            get { return numberOfItemsInSearchResult; }
+            set { SetProperty(ref numberOfItemsInSearchResult, value); }
+        }
+
         private bool caseSensitive;
         public bool CaseSensitive
         {
@@ -82,84 +98,104 @@ namespace MauiCryptApp.ViewModels
                 }
             }
         }
-        public List<string> AvailableEncryptedFiles { get; set; }
+        private List<string> availableEncryptedFiles;
+        public List<string> AvailableEncryptedFiles
+        {
+            get { return availableEncryptedFiles; }
+            set { SetProperty(ref availableEncryptedFiles, value); }
+        }
         public delegate Task DisplayAlertHandler(string title, string body, string cancel);
         public event DisplayAlertHandler DisplayAlert;
         public Command ResetSettingsCommand { get; }
         public Command SaveSettingsCommand { get; }
+        public Command ResetFileInfosCommand { get; }
 
-        
+        private FileInfos _fileInfos;
 
         public SettingsViewModel()
         {
             
-            _settings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ApplicationSettings>();
+            _settingsManagment = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>();
+            _fileInfos = MauiProgram.ServiceScope.ServiceProvider.GetService<FileInfos>();
             ResetSettingsCommand = new Command(ResetSettings);
             SaveSettingsCommand = new Command(SaveSettings);
-            AvailableEncryptedFiles = _settings.AppSettings.DirCryptFile.Select(x=>StringConverterForPicker.FileModelInSettingToString(x.Name,x.Path)).ToList();
-            SelectedEncryptedFile = StringConverterForPicker.FileModelInSettingToString(_settings.AppSettings.SelectedCryptFile.Name, _settings.AppSettings.SelectedCryptFile.Path);
+            ResetFileInfosCommand = new Command(ResetFileInfos);
+            SelectedEncryptedFile = StringConverterForPicker.FileModelInSettingToString(_settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Name, _settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Path);
             ResetSettings();
         }
 
         private void MapSearchSettingsIntoFields()
         {
-            CaseSensitive = _settings.SearchSettings.CaseSensitive;
-            SearchInTegs = _settings.SearchSettings.SearchInTegs;
-            SearchInHeader = _settings.SearchSettings.SearchInHeader;
-            SearchUntilFirstMatch = _settings.SearchSettings.SearchUntilFirstMatch;
-            ViewServiceInformation = _settings.SearchSettings.ViewServiceInformation;
-            SearchEverywhere = _settings.SearchSettings.SearchEverywhere;
+            CaseSensitive = _settingsManagment.ApplicationSettings.SearchSettings.CaseSensitive;
+            SearchInTegs = _settingsManagment.ApplicationSettings.SearchSettings.SearchInTegs;
+            SearchInHeader = _settingsManagment.ApplicationSettings.SearchSettings.SearchInHeader;
+            SearchUntilFirstMatch = _settingsManagment.ApplicationSettings.SearchSettings.SearchUntilFirstMatch;
+            ViewServiceInformation = _settingsManagment.ApplicationSettings.SearchSettings.ViewServiceInformation;
+            SearchEverywhere = _settingsManagment.ApplicationSettings.SearchSettings.SearchEverywhere;
         }
-
+        private void MapApplicationSettingsIntoFields()
+        {
+            LimitNumbersOfItemsInSearchResult = _settingsManagment.ApplicationSettings.LimitNumbersOfItemsInSearchResult;
+            NumberOfItemsInSearchResult = _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult;
+        }
         private void MapAppSettingsIntoEditor()
         {
-            AppSettingsEditor = _settings.AppSettings.Serialize();
+            availableEncryptedFiles = _settingsManagment.ApplicationSettings.AppSettings.DirCryptFile.Select(x => StringConverterForPicker.FileModelInSettingToString(x.Name, x.Path)).ToList();
+            AppSettingsEditor = _settingsManagment.ApplicationSettings.AppSettings.Serialize();
         }
 
         private void MapBackupSettingsIntoEditor()
         {
-            BackuperSettingsEditor = _settings.BackupSettings.Serialize();
+            BackuperSettingsEditor = _settingsManagment.ApplicationSettings.BackupSettings.Serialize();
         }
 
         private void MapEditorIntoBackupSettins()
         {
             if (!string.IsNullOrEmpty(backuperSettingsEditor))
-            { _settings.BackupSettings = JsonConvert.DeserializeObject<CBackupSettings>(backuperSettingsEditor); }
+            { _settingsManagment.ApplicationSettings.BackupSettings = JsonConvert.DeserializeObject<CBackupSettings>(backuperSettingsEditor); }
         }
-
+        private void MapFieldsIntoApplicationSettings()
+        {
+            _settingsManagment.ApplicationSettings.LimitNumbersOfItemsInSearchResult = LimitNumbersOfItemsInSearchResult;
+            _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult = NumberOfItemsInSearchResult;
+        }
         private void MapEditorIntoAppSettings()
         {
             //_settings.AppSettings = null;
             //var temp = JsonConvert.DeserializeObject<MauiCryptApp.Helpers.AppSettings>(appSettingsEditor);
             if (!string.IsNullOrEmpty(appSettingsEditor))
             {
-                _settings.AppSettings = JsonConvert.DeserializeObject<MauiCryptApp.Helpers.AppSettings>(appSettingsEditor);
+                availableEncryptedFiles = _settingsManagment.ApplicationSettings.AppSettings.DirCryptFile.Select(x => StringConverterForPicker.FileModelInSettingToString(x.Name, x.Path)).ToList();
+                _settingsManagment.ApplicationSettings.AppSettings = JsonConvert.DeserializeObject<MauiCryptApp.Helpers.AppSettings>(appSettingsEditor);
             }
             
         }
 
         private void MapFieldsIntoSearchSettings()
         {
-            _settings.SearchSettings.CaseSensitive = caseSensitive;
-            _settings.SearchSettings.SearchInTegs = searchInTegs;
-            _settings.SearchSettings.SearchInHeader = searchInHeader;
-            _settings.SearchSettings.SearchUntilFirstMatch = searchUntilFirstMatch;
-            _settings.SearchSettings.ViewServiceInformation = viewServiceInformation;
-            _settings.SearchSettings.SearchEverywhere = searchEverywhere;
+            _settingsManagment.ApplicationSettings.SearchSettings.CaseSensitive = caseSensitive;
+            _settingsManagment.ApplicationSettings.SearchSettings.SearchInTegs = searchInTegs;
+            _settingsManagment.ApplicationSettings.SearchSettings.SearchInHeader = searchInHeader;
+            _settingsManagment.ApplicationSettings.SearchSettings.SearchUntilFirstMatch = searchUntilFirstMatch;
+            _settingsManagment.ApplicationSettings.SearchSettings.ViewServiceInformation = viewServiceInformation;
+            _settingsManagment.ApplicationSettings.SearchSettings.SearchEverywhere = searchEverywhere;
         }
 
 
         private void SaveSettings()
         {
+            MapFieldsIntoApplicationSettings();
             MapFieldsIntoSearchSettings();
             MapEditorIntoAppSettings();
             MapEditorIntoBackupSettins();
-            Preferences.Default.Set(MauiProgram.applicationSettingsPreferencesKey, _settings.Serialize());
+            _settingsManagment.Save();
+            //Preferences.Default.Set(MauiProgram.APPLICATION_SETTINGS_PREFERENCES_KEY, _settingsManagment.ApplicationSettings.Serialize());
             DisplayAlert.Invoke("Info", "Settings saved", "Ok");
         }
 
         private void ResetSettings()
         {
+            MapApplicationSettingsIntoFields();
             MapSearchSettingsIntoFields();
             MapAppSettingsIntoEditor();
             MapBackupSettingsIntoEditor();
@@ -168,10 +204,16 @@ namespace MauiCryptApp.ViewModels
         private void HandleUpdateCurrentCryptedFile()
         {
             MapEditorIntoAppSettings();
-            _settings.AppSettings.selected_crypr_file = StringConverterForPicker.GetName(SelectedEncryptedFile);
+            _settingsManagment.ApplicationSettings.AppSettings.selected_crypr_file = StringConverterForPicker.GetName(SelectedEncryptedFile);
             MapAppSettingsIntoEditor();
         }
 
+        private void ResetFileInfos()
+        {
+            _fileInfos.FileInfosData = new List<Backuper_Core.Configurations.FileInfo>();
+            _fileInfos.Save();//need for correct work synchronize
+            DisplayAlert.Invoke("Info", "FileInfos reset successfully", "Ok");
+        }
 
         static class StringConverterForPicker
         {

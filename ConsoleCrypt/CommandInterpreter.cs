@@ -310,8 +310,9 @@ namespace ConsoleCrypt
             LoadTheDatabaseIfNeeded();
             Filter filterShow = new Filter();
             filterShow.BlockName = command.KeyWord;
-            command.SearchUntilFirstMatch = !command.SearchUntilFirstMatch;
-            if (command.SearchUntilFirstMatch)
+            if (command.SearchUntilFirstMatch) _inputOutputFile.Toggle_searchUntilFirstMatch();
+            //command.SearchUntilFirstMatch = !command.SearchUntilFirstMatch;
+            if (_inputOutputFile.SearchUntilFirstMach)
             {
                 var res = _inputOutputFile.GetBlockData(filterShow);
                 if (res == null)

@@ -10,6 +10,8 @@ namespace MauiCryptApp.Models
 {
     public class ApplicationSettings
     {
+        public bool LimitNumbersOfItemsInSearchResult { get; set; } = true;
+        public int NumberOfItemsInSearchResult { get; set; } = 15;
         public CBackupSettings BackupSettings { get;set; }
         public SearchSettings SearchSettings { get;set; }
         /// <summary>

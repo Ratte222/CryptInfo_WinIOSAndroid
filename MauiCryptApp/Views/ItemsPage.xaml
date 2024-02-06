@@ -17,7 +17,7 @@
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
         <Entry Placeholder="Search" VerticalOptions="Center" AutomationId="true" x:Name="SearchEntry" 
                     Text="{Binding SearchText}"/>
-        <!--<RefreshView Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=OneTime}">-->
+        <!--<RefreshView Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">-->
 
             <CollectionView x:Name="ItemsListView"
                 ItemsSource="{Binding Items}"

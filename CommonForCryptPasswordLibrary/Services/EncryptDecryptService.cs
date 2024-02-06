@@ -186,7 +186,7 @@ namespace CommonForCryptPasswordLibrary.Services
                 string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
                 string hash = _cryptService.GetHashSHA512(tempJson);
                 if (CryptFileModel.Hash != hash)
-                   FindDamagedBlocksAndGroups();
+                    FindDamagedBlocksAndGroups();
             }
             return decryptData;
         }
@@ -194,6 +194,7 @@ namespace CommonForCryptPasswordLibrary.Services
         private void FindDamagedBlocksAndGroups()
         {
             StringBuilder damaged = new StringBuilder();
+            damaged.AppendLine($"Hash for whole file does not equal");
             foreach (var group in CryptFileModel.DecryptInfoContent)
             {
                 if(group.HashSha512 != _cryptService.GetHashSHA512(group.ToString()))
@@ -208,7 +209,7 @@ namespace CommonForCryptPasswordLibrary.Services
                     }
                 }
             }            
-            throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged\r\n{damaged.ToString()}");
+            throw new TheFileIsDamagedException($"The file {_settings.EncryptPath} is damaged. Damaged blocks/groups:\r\n{damaged.ToString()}");
         }
 
         public void GetInitData()

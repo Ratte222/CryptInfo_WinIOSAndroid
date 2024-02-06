@@ -45,6 +45,11 @@ namespace MauiCryptApp.ViewModels
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
         public Command SearchCommand { get; }
+
+        public delegate Task DisplayAlertHandler(string title, string body, string cancel);
+        public event DisplayAlertHandler DisplayAlert;
+
+        private readonly ApplicationSettings _applicationSettings;
         public ItemsViewModel()
         {
             Title = "Browse";
@@ -55,6 +60,7 @@ namespace MauiCryptApp.ViewModels
 
             AddItemCommand = new Command(OnAddItem);
             
+            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetService<IApplicationSettingsManagment>().ApplicationSettings;
         }
 
         async Task ExecuteSearchItemsCommand()
@@ -64,20 +70,28 @@ namespace MauiCryptApp.ViewModels
             try
             {
                 
-                if ((await BlockDataStore.GetItemsAsync()).Count() > 0)
+                //if ((await BlockDataStore.GetItemsAsync()).Count() > 0)
+                //{
+                Items.Clear();
+                IEnumerable<Item> items = null;
+                if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
                 {
-                    Items.Clear();
-                    var items = await BlockDataStore.Search(_searchText);
-                    foreach (var item in items)
-                    {
-                        Items.Add(item);
-                    }
+                    items = (await BlockDataStore.Search(_searchText)).Take(_applicationSettings.NumberOfItemsInSearchResult);
                 }
-                
+                else
+                {
+                    items = (await BlockDataStore.Search(_searchText));
+                }
+                foreach (var item in items)
+                {
+                    Items.Add(item);
+                }
+                //}
+
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine(ex);
+                await DisplayAlert.Invoke("Error", $"The error occurred while searching command was executing. \r\nMessage: {ex.Message}", "ok");
             }
             finally
             {
@@ -95,17 +109,25 @@ namespace MauiCryptApp.ViewModels
                 if(BlockDataStore.SetKey(_password) && Items.Count == 0)
                 {
                     Items.Clear();
-                    var items = await BlockDataStore.GetItemsAsync(true);
-                    foreach (var item in items.Take(15))
+                    IEnumerable<Item> items = null;
+                    if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
+                    {
+                        items = (await BlockDataStore.GetItemsAsync()).Take(_applicationSettings.NumberOfItemsInSearchResult);
+                    }
+                    else
+                    {
+                        items = (await BlockDataStore.Search(_searchText));
+                    }
+                    foreach (var item in items)
                     {
                         Items.Add(item);
-                    }                    
+                    }
                 }
                 GroupDataStore.SetKey(_password);
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine(ex);
+                await DisplayAlert.Invoke("Error", $"The error occurred while the loadItems command was executing. \r\nMessage: {ex.Message}", "ok");
             }
             finally
             {
