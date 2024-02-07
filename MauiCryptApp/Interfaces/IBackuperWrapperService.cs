@@ -16,5 +16,6 @@ namespace MauiCryptApp.Interfaces
         public Task MakeBackup(string backupName);
         public Task MakeBackup(BackupSetting backupSetting);
         public List<LogModel> LogsStorage { get; }
+        public string PrettyLogs { get; }
     }
 }

@@ -19,9 +19,16 @@ namespace CommonForCryptPasswordLibrary.Services
         private SerializeDeserializeJson<CryptFileModel> cryptFileModel = new SerializeDeserializeJson<CryptFileModel>();
         private EncryptDecryptSettings _settings;
         private readonly ICryptService _cryptService;
+        private JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.None,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
         public EncryptDecryptService(ICryptService cryptService)
         {
             _cryptService = cryptService;
+            
         }
         public EncryptDecryptService(EncryptDecryptSettings settings, ICryptService cryptService)
         {
@@ -101,7 +108,7 @@ namespace CommonForCryptPasswordLibrary.Services
             }
             try
             {
-                CryptFileModel = cryptFileModel.Deserialize(decryptData);
+                CryptFileModel = cryptFileModel.Deserialize(decryptData, serializerSettings);
             }
             catch (Exception ex)
             {
@@ -127,9 +134,9 @@ namespace CommonForCryptPasswordLibrary.Services
             if (String.IsNullOrEmpty(_settings.EncryptPath))
                 throw new ValidationException($"Path to encrypted file is null or empty");
             CalculateHashSHA512ForGroupsAndBlocks(calculateAllHash);
-            string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
+            string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent, serializerSettings);
             CryptFileModel.Hash = _cryptService.GetHashSHA512(jsonData);
-            string json = cryptFileModel.Serialize(CryptFileModel);
+            string json = cryptFileModel.Serialize(CryptFileModel, serializerSettings);
             string encryptData = _cryptService.Encrypt(json, _settings.Key);
             using (StreamWriter sw = new StreamWriter(_settings.EncryptPath, false, Encoding.UTF8))
             {
@@ -171,7 +178,7 @@ namespace CommonForCryptPasswordLibrary.Services
             {
                 try
                 {
-                    CryptFileModel = cryptFileModel.Deserialize(decryptData);
+                    CryptFileModel = cryptFileModel.Deserialize(decryptData, serializerSettings);
                 }
                 catch (Exception ex)
                 {
@@ -183,7 +190,7 @@ namespace CommonForCryptPasswordLibrary.Services
                     else
                         throw ex;
                 }
-                string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent);
+                string tempJson = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent, serializerSettings);
                 string hash = _cryptService.GetHashSHA512(tempJson);
                 if (CryptFileModel.Hash != hash)
                     FindDamagedBlocksAndGroups();

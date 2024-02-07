@@ -1,5 +1,4 @@
 ﻿using CommonForCryptPasswordLibrary.Interfaces;
-using CryptLibraryStandart.SymmetricCryptography;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,15 +41,29 @@ namespace CommonForCryptPasswordLibrary.Services
 
         public string Decrypt(string content, string key)
         {
-            return CryptoWithoutTry.Decrypt(content, key);
+            CryptoStream cryptoStream = InternalDecrypt(Convert.FromBase64String(content), key);
+            StreamReader streamReader = new StreamReader(cryptoStream);
+            string result = streamReader.ReadToEnd();
+            cryptoStream.Close();
+            streamReader.Close();
+            cryptoStream.Dispose();
+            streamReader.Dispose();
+            return result;
         }
-
+        private static CryptoStream InternalDecrypt(byte[] key, string value)
+        {
+            using SymmetricAlgorithm symmetricAlgorithm = Rijndael.Create();
+            ICryptoTransform transform = symmetricAlgorithm.CreateDecryptor(new PasswordDeriveBytes(value, null).GetBytes(16), new byte[16]);
+            return new CryptoStream(new MemoryStream(key), transform, CryptoStreamMode.Read);
+        }
         public string GetHashSHA512(string content)
         {
             var sha512 = SHA512.Create();
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
             byte[] hash = sha512.ComputeHash(contentBytes);
-            return Convert.ToBase64String(hash);
+            //var temp = string.Join("; ", hash.Select(x => x.ToString()).ToArray());
+            //var temp2 = string.Join("; ", contentBytes.Select(x => x.ToString()).ToArray());
+            return Convert.ToBase64String(hash); 
             //return CryptoWithoutTry.GetHashSHA512(content);
         }
     }

@@ -11,7 +11,7 @@ namespace MauiCryptApp.ViewModels
     public class SettingsViewModel:BaseViewModel, INotifyPropertyChanged
     {
         private IApplicationSettingsManagment _settingsManagment;
-
+        #region applicationSettings
         private bool limitNumbersOfItemsInSearchResult;
         public bool LimitNumbersOfItemsInSearchResult
         {
@@ -25,6 +25,29 @@ namespace MauiCryptApp.ViewModels
             get { return numberOfItemsInSearchResult; }
             set { SetProperty(ref numberOfItemsInSearchResult, value); }
         }
+
+        private bool syncBeforeDecryptFile = true;
+        public bool SyncBeforeDecryptFile
+        {
+            get { return syncBeforeDecryptFile; }
+            set { SetProperty(ref syncBeforeDecryptFile, value); }
+        }
+
+        private bool syncAfterUpdateCreateItem = true;
+        public bool SyncAfterUpdateCreateItem
+        {
+            get { return syncAfterUpdateCreateItem; }
+            set { SetProperty(ref syncAfterUpdateCreateItem, value); }
+        }
+
+        private bool createBackupBeforeUpdateOrCreateItem = true;
+        public bool CreateBackupBeforeUpdateOrCreateItem
+        {
+            get { return createBackupBeforeUpdateOrCreateItem; }
+            set { SetProperty(ref createBackupBeforeUpdateOrCreateItem, value); }
+        }
+        #endregion
+        #region SearchSettings
 
         private bool caseSensitive;
         public bool CaseSensitive
@@ -67,21 +90,14 @@ namespace MauiCryptApp.ViewModels
             get { return searchEverywhere; }
             set { SetProperty(ref searchEverywhere, value); }
         }
-
+        #endregion
+        #region appSettings
         private string appSettingsEditor;
         public string AppSettingsEditor
         {
             get { return appSettingsEditor;}
             set { SetProperty(ref appSettingsEditor, value);}
         }
-        private string backuperSettingsEditor;
-        public string BackuperSettingsEditor
-        {
-            get { return backuperSettingsEditor; }
-            set { SetProperty(ref backuperSettingsEditor, value); }
-        }
-
-        //public event PropertyChangedEventHandler PropertyChanged;
 
         private string _selectedEncryptFile;
         public string SelectedEncryptedFile
@@ -104,22 +120,59 @@ namespace MauiCryptApp.ViewModels
             get { return availableEncryptedFiles; }
             set { SetProperty(ref availableEncryptedFiles, value); }
         }
+        #endregion
+        #region BackuperSettings
+        private string backuperSettingsEditor;
+        public string BackuperSettingsEditor
+        {
+            get { return backuperSettingsEditor; }
+            set { SetProperty(ref backuperSettingsEditor, value); }
+        }
+
+        private string _selectedBackuperProfile;
+        public string SelectedBackuperProfile
+        {
+            get { return _selectedBackuperProfile; }
+            set
+            {
+                if (_selectedBackuperProfile != value)
+                {
+                    _selectedBackuperProfile = value;
+                    OnPropertyChanged(nameof(SelectedBackuperProfile));
+                    // Handle the update here
+                    //HandleUpdateCurrentCryptedFile();
+                }
+            }
+        }
+        private List<string> availableBacuperProfiles;
+        public List<string> AvailableBacuperProfiles
+        {
+            get { return availableBacuperProfiles; }
+            set { SetProperty(ref availableBacuperProfiles, value); }
+        }
+
+        #endregion
+        //public event PropertyChangedEventHandler PropertyChanged;
+
+
         public delegate Task DisplayAlertHandler(string title, string body, string cancel);
         public event DisplayAlertHandler DisplayAlert;
         public Command ResetSettingsCommand { get; }
         public Command SaveSettingsCommand { get; }
         public Command ResetFileInfosCommand { get; }
+        public Command ExecuteBackuperProfileCommand { get; }
 
         private FileInfos _fileInfos;
-
+        private readonly IBackuperWrapperService _backuperWrapperService;
         public SettingsViewModel()
         {
-            
+            _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetService<IBackuperWrapperService>();
             _settingsManagment = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>();
             _fileInfos = MauiProgram.ServiceScope.ServiceProvider.GetService<FileInfos>();
             ResetSettingsCommand = new Command(ResetSettings);
             SaveSettingsCommand = new Command(SaveSettings);
             ResetFileInfosCommand = new Command(ResetFileInfos);
+            ExecuteBackuperProfileCommand = new Command(async () => await ExecuteBackuperProfile());
             SelectedEncryptedFile = StringConverterForPicker.FileModelInSettingToString(_settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Name, _settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Path);
             ResetSettings();
         }
@@ -137,6 +190,9 @@ namespace MauiCryptApp.ViewModels
         {
             LimitNumbersOfItemsInSearchResult = _settingsManagment.ApplicationSettings.LimitNumbersOfItemsInSearchResult;
             NumberOfItemsInSearchResult = _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult;
+            SyncBeforeDecryptFile = _settingsManagment.ApplicationSettings.SyncBeforeDecryptFile;
+            SyncAfterUpdateCreateItem = _settingsManagment.ApplicationSettings.SyncAfterUpdateCreateItem;
+            CreateBackupBeforeUpdateOrCreateItem = _settingsManagment.ApplicationSettings.CreateBackupBeforeUpdateOrCreateItem;
         }
         private void MapAppSettingsIntoEditor()
         {
@@ -146,6 +202,7 @@ namespace MauiCryptApp.ViewModels
 
         private void MapBackupSettingsIntoEditor()
         {
+            AvailableBacuperProfiles = _settingsManagment.ApplicationSettings.BackupSettings.BackupSettings.Select(x=>x.Name).ToList();
             BackuperSettingsEditor = _settingsManagment.ApplicationSettings.BackupSettings.Serialize();
         }
 
@@ -158,6 +215,9 @@ namespace MauiCryptApp.ViewModels
         {
             _settingsManagment.ApplicationSettings.LimitNumbersOfItemsInSearchResult = LimitNumbersOfItemsInSearchResult;
             _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult = NumberOfItemsInSearchResult;
+            _settingsManagment.ApplicationSettings.SyncBeforeDecryptFile = SyncBeforeDecryptFile;
+            _settingsManagment.ApplicationSettings.SyncAfterUpdateCreateItem = SyncAfterUpdateCreateItem;
+            _settingsManagment.ApplicationSettings.CreateBackupBeforeUpdateOrCreateItem = CreateBackupBeforeUpdateOrCreateItem;
         }
         private void MapEditorIntoAppSettings()
         {
@@ -213,6 +273,17 @@ namespace MauiCryptApp.ViewModels
             _fileInfos.FileInfosData = new List<Backuper_Core.Configurations.FileInfo>();
             _fileInfos.Save();//need for correct work synchronize
             DisplayAlert.Invoke("Info", "FileInfos reset successfully", "Ok");
+        }
+
+        private async Task ExecuteBackuperProfile()
+        {
+            if (string.IsNullOrEmpty(SelectedBackuperProfile))
+            {
+                await DisplayAlert.Invoke("Info", "Please, select backuper profile", "ok");
+                return;
+            }
+            await _backuperWrapperService.MakeBackup(SelectedBackuperProfile);
+            await DisplayAlert.Invoke("Info", $"Backuper profile ({SelectedBackuperProfile}) successfully executed. Logs:{_backuperWrapperService.PrettyLogs}", "Ok");
         }
 
         static class StringConverterForPicker

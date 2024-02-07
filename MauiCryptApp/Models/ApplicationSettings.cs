@@ -12,6 +12,9 @@ namespace MauiCryptApp.Models
     {
         public bool LimitNumbersOfItemsInSearchResult { get; set; } = true;
         public int NumberOfItemsInSearchResult { get; set; } = 15;
+        public bool SyncBeforeDecryptFile { get; set; } = true;
+        public bool SyncAfterUpdateCreateItem { get; set; } = true;
+        public bool CreateBackupBeforeUpdateOrCreateItem { get; set; } = true;
         public CBackupSettings BackupSettings { get;set; }
         public SearchSettings SearchSettings { get;set; }
         /// <summary>
