@@ -33,7 +33,7 @@ namespace MauiCryptApp.ViewModels
             set 
             { 
                 _password = value;
-                //LoadItemsCommand.Execute(this);
+                LoadItemsCommand.Execute(this);
             }
         }
         private string _password;
@@ -45,6 +45,11 @@ namespace MauiCryptApp.ViewModels
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
         public Command SearchCommand { get; }
+
+        public delegate Task DisplayAlertHandler(string title, string body, string cancel);
+        public event DisplayAlertHandler DisplayAlert;
+
+        private readonly ApplicationSettings _applicationSettings;
         public ItemsViewModel()
         {
             Title = "Browse";
@@ -54,6 +59,8 @@ namespace MauiCryptApp.ViewModels
             ItemTapped = new Command<Item>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+            
+            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetService<IApplicationSettingsManagment>().ApplicationSettings;
         }
 
         async Task ExecuteSearchItemsCommand()
@@ -62,16 +69,29 @@ namespace MauiCryptApp.ViewModels
 
             try
             {
+                
+                //if ((await BlockDataStore.GetItemsAsync()).Count() > 0)
+                //{
                 Items.Clear();
-                var items = await DataStore.Search(_searchText);
+                IEnumerable<Item> items = null;
+                if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
+                {
+                    items = (await BlockDataStore.Search(_searchText)).Take(_applicationSettings.NumberOfItemsInSearchResult);
+                }
+                else
+                {
+                    items = (await BlockDataStore.Search(_searchText));
+                }
                 foreach (var item in items)
                 {
                     Items.Add(item);
                 }
+                //}
+
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine(ex);
+                await DisplayAlert.Invoke("Error", $"The error occurred while searching command was executing. \r\nMessage: {ex.Message}", "ok");
             }
             finally
             {
@@ -85,17 +105,29 @@ namespace MauiCryptApp.ViewModels
 
             try
             {
-                Items.Clear();
-                DataStore.SetKey(_password);
-                var items = await DataStore.GetItemsAsync(true);
-                foreach (var item in items)
+                
+                if(BlockDataStore.SetKey(_password) && Items.Count == 0)
                 {
-                    Items.Add(item);
+                    Items.Clear();
+                    IEnumerable<Item> items = null;
+                    if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
+                    {
+                        items = (await BlockDataStore.GetItemsAsync()).Take(_applicationSettings.NumberOfItemsInSearchResult);
+                    }
+                    else
+                    {
+                        items = (await BlockDataStore.Search(_searchText));
+                    }
+                    foreach (var item in items)
+                    {
+                        Items.Add(item);
+                    }
                 }
+                GroupDataStore.SetKey(_password);
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine(ex);
+                await DisplayAlert.Invoke("Error", $"The error occurred while the loadItems command was executing. \r\nMessage: {ex.Message}", "ok");
             }
             finally
             {
@@ -121,7 +153,7 @@ namespace MauiCryptApp.ViewModels
 
         private async void OnAddItem(object obj)
         {
-            //await Shell.Current.GoToAsync(nameof(NewItemPage));
+            await Shell.Current.GoToAsync(nameof(AddItemPage));
         }
 
         async void OnItemSelected(Item item)
@@ -130,9 +162,11 @@ namespace MauiCryptApp.ViewModels
                 return;
 
             https://docs.microsoft.com/en-us/dotnet/maui/fundamentals/shell/navigation
-            string route = $"//{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}";
-            Routing.RegisterRoute(route, typeof(ItemDetailPage));
-            await Shell.Current.GoToAsync(route);
+            //string route = $"/{nameof(ItemDetailPage)}";
+            //Routing.RegisterRoute(route, typeof(ItemDetailPage));
+            await Shell.Current.GoToAsync($"/{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
+
+        
     }
 }

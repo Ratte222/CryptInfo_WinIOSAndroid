@@ -18,6 +18,10 @@
         Title="Synchonize"
         ContentTemplate="{DataTemplate views:LoginSynchronizePage}"
         Route="SynchronizePage" />
+        <ShellContent
+        Title="Settings"
+        ContentTemplate="{DataTemplate views:SettingsPage}"
+        Route="SettingsPage" />
     </FlyoutItem>
     
 

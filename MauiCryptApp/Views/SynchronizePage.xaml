@@ -4,6 +4,8 @@
              x:Class="MauiCryptApp.Views.SynchronizePage"
              xmlns:model="clr-namespace:MauiCryptApp.Models"
              xmlns:stringModel="clr-namespace:MauiCryptApp.ViewModels"
+             xmlns:local="clr-namespace:MauiCryptApp.ViewModels"
+             x:DataType="local:SynchronizeViewModel"
              Title="SynchronizePage">
     <Grid>
         <Grid.RowDefinitions>

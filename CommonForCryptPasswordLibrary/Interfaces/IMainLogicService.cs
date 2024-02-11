@@ -27,6 +27,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
     public interface IMainLogicService
     {
         E_INPUTOUTPUTMESSAGE LoadDefaultParams();
+        bool SearchUntilFirstMach { get; }
         void Toggle_caseSensitive();
         void Toggle_searchInTegs();
         void Toggle_searchInHeader();

@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 
 namespace MauiCryptApp.Helpers
 {
-    public class AppSettings:IAppSettings
+    public class AppSettings: IAppSettings//ToDo: move class to models namespace
     {
         public List<FileModelInSettings> DirCryptFile { get; set; }
         public List<FileModelInSettings> DirDecryptFile { get; set; }
         public List<FileModelInSettings> KeysForEncryptedFiles { get; set; }
         public string selected_crypr_file { get; set; }
+
+        [JsonIgnore]
         public FileModelInSettings SelectedCryptFile
         {
             get
@@ -24,7 +26,7 @@ namespace MauiCryptApp.Helpers
             }
         }
         public string selected_decrypr_file { get; set; }
-        
+        [JsonIgnore]
         public FileModelInSettings SelectedDecryptFile
         {
             get

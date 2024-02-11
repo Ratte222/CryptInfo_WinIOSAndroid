@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MauiCryptApp.Helpers
+namespace MauiCryptApp.Models
 {
-    public class SomeSettings
+    public class BaseDataModel
     {
-        
+        public Guid Id { get; set; }
     }
 }

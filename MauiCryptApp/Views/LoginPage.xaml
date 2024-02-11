@@ -2,6 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiCryptApp.Views.LoginPage"
+             xmlns:local="clr-namespace:MauiCryptApp.ViewModels"
+             x:DataType="local:LoginViewModel"
              Title="LoginPage">
     <!--<VerticalStackLayout>
         <Label 
@@ -11,8 +13,9 @@
     </VerticalStackLayout>-->
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+            <Label Text="{Binding EncryptedFileName}"></Label>
             <Entry Placeholder="Password" VerticalOptions="Center" AutomationId="true" x:Name="PasswordEntry" 
-                   IsPassword="True" Text="{Binding PasswordFromEntry}"/>
+                   IsPassword="True" Text="{Binding PasswordFromEntry}" ReturnCommand="{Binding LoginCommand}"/>
             <!--https://docs.microsoft.com/ru-ru/xamarin/xamarin-forms/user-interface/layouts/grid-->
             <Grid>
                 <Grid.RowDefinitions>

@@ -9,6 +9,7 @@ public partial class ItemsPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = itemsViewModel = new ItemsViewModel();
+		itemsViewModel.DisplayAlert += DisplayAlert;
 	}
 
 	protected override void OnAppearing()
@@ -19,6 +20,7 @@ public partial class ItemsPage : ContentPage
 
 	protected override bool OnBackButtonPressed()
 	{
+		var navigationStack = Navigation.NavigationStack;
 		return base.OnBackButtonPressed();
 	}
 }

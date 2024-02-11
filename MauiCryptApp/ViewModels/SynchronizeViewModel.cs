@@ -4,6 +4,7 @@ using Backuper_Core.Services;
 using CommonForCryptPasswordLibrary.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MauiCryptApp.Helpers;
+using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
 using MauiCryptApp.Views;
 using Microsoft.Extensions.Logging;
@@ -30,8 +31,8 @@ namespace MauiCryptApp.ViewModels
         [ObservableProperty]
         public List<StringModel> backupSettingsJson = new ();
         public string CryptKey { get; set; }
-        private readonly IAppSettings _appSettings;
-        private readonly BackupJob _backupJob;
+        //private readonly IAppSettings _appSettings;
+        //private readonly BackupJob _backupJob;
         private FileInfos _fileInfos;
         public IBackupSettings BackupSettings
         {
@@ -48,28 +49,37 @@ namespace MauiCryptApp.ViewModels
             }
         }
         private IBackupSettings _backupSettings; 
-        private readonly Microsoft.Extensions.Logging.ILogger<FilePage> _logger;
+        //private readonly Microsoft.Extensions.Logging.ILogger<FilePage> _logger;
         private readonly ICryptService _cryptService;
-        private readonly MockLoggerForSynchronize _loggerMock;
+        //private readonly MockLoggerForSynchronize _loggerMock;
+
+        private readonly IBackuperWrapperService _backuperWrapperService;
         public Command SynchronizeCommand { get; }
         public Command SaveBackupSettingsCommand { get; }
         public Command LoadBackupSettingsCommand { get; }
         public SynchronizeViewModel()
         {
-            _appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
+            #region old
+            //_appSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IAppSettings>();
             _fileInfos = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<FileInfos>();
             BackupSettings = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackupSettings>();
             _cryptService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<ICryptService>();
-            _logger = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<FilePage>>();
+            //_logger = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<FilePage>>();
             //dances with logger substitution
-            _backupJob = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<BackupJob>();
-            var bacokuperJobLogger = _backupJob.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
-            _loggerMock = new MockLoggerForSynchronize(LogsStorage);
-            bacokuperJobLogger.SetValue(_backupJob, _loggerMock);
-
+            //_backupJob = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<BackupJob>();
+            //var bacokuperJobLogger = _backupJob.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+            //_loggerMock = new MockLoggerForSynchronize(LogsStorage);
+            //bacokuperJobLogger.SetValue(_backupJob, _loggerMock);
+            #endregion
             SynchronizeCommand = new Command(async () => await ExecuteSynchronizeCommand());
             SaveBackupSettingsCommand = new Command(() => ExecuteSaveBackupSettingsFileCommand());
             LoadBackupSettingsCommand = new Command(() => ExecuteLoadBackupSettingsFileCommand());
+
+            #region new
+            _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackuperWrapperService>();
+
+            #endregion
+
         }
 
 
@@ -77,7 +87,8 @@ namespace MauiCryptApp.ViewModels
         {
             try
             {
-                await _backupJob.CreateBackupAsync(_backupSettings.BackupSettings.First());
+                await _backuperWrapperService.Synchronize_Upload();
+                //await _backupJob.CreateBackupAsync(_backupSettings.BackupSettings.First());
             }
             catch(Exception ex)
             {
@@ -107,7 +118,7 @@ namespace MauiCryptApp.ViewModels
             }
             catch(Exception ex)
             {
-                Log(ex.Serialize(), "Eroor", false);
+                Log(ex.Serialize(), "Error", false);
             }
             finally
             {
@@ -144,15 +155,15 @@ namespace MauiCryptApp.ViewModels
         }
         private void PRefreshLogs()
         {
-            LogsStorage = new List<LogModel>(_loggerMock._logs.ToArray());
+            LogsStorage.AddRange(_backuperWrapperService.LogsStorage);
             //OnPropertyChanged("LogsStorage");
 
         }
-
+        
         private void Log(string description, string level = null, bool refreshLog = true)
         {
-            //LogsStorage.Add(new LogModel(description, level));
-            _loggerMock.Log(LogLevel.Information, description);
+            LogsStorage.Add(new LogModel(description, level));
+            //_loggerMock.Log(LogLevel.Information, description);
             if(refreshLog)
                 PRefreshLogs();
         }

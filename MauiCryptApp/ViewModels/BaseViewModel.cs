@@ -13,7 +13,8 @@ namespace MauiCryptApp.ViewModels
     public class BaseViewModel : /*ObservableObject,*/ INotifyPropertyChanged
     {
         //public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-        public IDataStore<Item> DataStore => MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IDataStore<Item>>();
+        public IDataStore<Item> BlockDataStore => MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IDataStore<Item>>();
+        public IDataStore<Group> GroupDataStore => MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IDataStore<Group>>();
         bool isBusy = false;
         public bool IsBusy
         {
@@ -28,6 +29,19 @@ namespace MauiCryptApp.ViewModels
             set { SetProperty(ref title, value); }
         }
         protected bool SetProperty<T>(ref T backingStore, T value,
+            [CallerMemberName] string propertyName = "",
+            Action onChanged = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+                return false;
+
+            backingStore = value;
+            onChanged?.Invoke();
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        protected bool SetProperty<T>(T backingStore, T value,
             [CallerMemberName] string propertyName = "",
             Action onChanged = null)
         {

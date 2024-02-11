@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiCryptApp.Views.ItemDetailPage"
-             Title="ItemDetailPage"
+             x:Class="MauiCryptApp.Views.AddItemPage"
+             Title="AddItemPage"
              xmlns:local="clr-namespace:MauiCryptApp.ViewModels"
-             x:DataType="local:ItemDetailViewModel"
+             x:DataType="local:AddItemViewModel"
              >
-    <!--<StackLayout Padding="20">-->
-        <ScrollView>
+    <ScrollView>
         <Grid Padding="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -34,17 +34,17 @@
             <Entry Text="{Binding UserName}" Grid.Row="2" Grid.Column="1" />
 
             <Label Text="Email" Grid.Row="3" Grid.Column="0" >
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding CopyEmailToClipboardCommand}" />
-                </Label.GestureRecognizers>
+                <!--<Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnEmailLabelTapped" />
+                </Label.GestureRecognizers>-->
             </Label>
-            
+
             <Entry x:Name="EmailEntry" Text="{Binding Email}" Grid.Row="3" Grid.Column="1" />
 
             <Label Text="Password" Grid.Row="4" Grid.Column="0" >
-                <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CopyPasswordToClipboardCommand}" />
-                </Label.GestureRecognizers>
+                <!--<Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnPasswordLabelTapped" />
+                </Label.GestureRecognizers>-->
             </Label>
             <Entry x:Name="PasswordEntry" Text="{Binding Password}" Grid.Row="4" Grid.Column="1" />
 
@@ -53,10 +53,13 @@
 
             <Label Text="Additional Info" Grid.Row="6" Grid.Column="0" />
             <Editor Text="{Binding AdditionalInfo}" Grid.Row="6" Grid.Column="1" />
-            <Button Text="Update" Command="{Binding OnUpdateCommand}" Grid.Row="7" Grid.Column="1"/>
+            <Label Text="Selected encrypted file" Grid.Row="7" Grid.Column="0"></Label>
+            <Picker Title="Select an Item" Grid.Row="7" Grid.Column="1"
+              ItemsSource="{Binding AvailableGroups}"
+              SelectedItem="{Binding SelectedGroup}" />
+            <Button Text="Save" Command="{Binding SaveNewItemCommand}" Grid.Row="8" Grid.Column="1"/>
         </Grid>
 
-        
+
     </ScrollView>
-    <!--</StackLayout>-->
 </ContentPage>
