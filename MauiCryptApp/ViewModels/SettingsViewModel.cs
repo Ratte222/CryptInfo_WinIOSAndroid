@@ -5,6 +5,7 @@ using MauiCryptApp.Models;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Input;
 
 namespace MauiCryptApp.ViewModels
 {
@@ -161,6 +162,11 @@ namespace MauiCryptApp.ViewModels
         public Command SaveSettingsCommand { get; }
         public Command ResetFileInfosCommand { get; }
         public Command ExecuteBackuperProfileCommand { get; }
+        public ICommand ImportAppSettingsCommand { get; }
+        public ICommand ExportAppSettingsCommand { get; }
+        public ICommand ImportBackuperSettingsCommand { get; }
+        public ICommand ExportBackuperSettingsCommand { get; }
+        public ICommand CreateCredentialsCommand { get; }
 
         private FileInfos _fileInfos;
         private readonly IBackuperWrapperService _backuperWrapperService;
@@ -173,6 +179,12 @@ namespace MauiCryptApp.ViewModels
             SaveSettingsCommand = new Command(SaveSettings);
             ResetFileInfosCommand = new Command(ResetFileInfos);
             ExecuteBackuperProfileCommand = new Command(async () => await ExecuteBackuperProfile());
+
+            ImportAppSettingsCommand = new Command(OnImportAppSettings);
+            ExportAppSettingsCommand = new Command(OnExportAppSettings);
+            ImportBackuperSettingsCommand = new Command(OnImportBackuperSettings);
+            ExportBackuperSettingsCommand = new Command(OnExportBackuperSettings);
+
             SelectedEncryptedFile = StringConverterForPicker.FileModelInSettingToString(_settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Name, _settingsManagment.ApplicationSettings.AppSettings.SelectedCryptFile.Path);
             ResetSettings();
         }
@@ -286,6 +298,30 @@ namespace MauiCryptApp.ViewModels
             await DisplayAlert.Invoke("Info", $"Backuper profile ({SelectedBackuperProfile}) successfully executed. Logs:{_backuperWrapperService.PrettyLogs}", "Ok");
         }
 
+        private void OnImportAppSettings()
+        {
+            // Implement your logic to import app settings here
+        }
+
+        private void OnExportAppSettings()
+        {
+            // Implement your logic to export app settings here
+        }
+
+        private void OnImportBackuperSettings()
+        {
+            // Implement your logic to import backuper settings here
+        }
+
+        private void OnExportBackuperSettings()
+        {
+            // Implement your logic to export backuper settings here
+        }
+
+        private async Task CreateCredentials()
+        {
+
+        }
         static class StringConverterForPicker
         {
             const string SEPARATOR = ";(";

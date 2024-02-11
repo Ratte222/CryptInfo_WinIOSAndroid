@@ -7,10 +7,14 @@
     <ScrollView>
         <Grid Padding="20">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="170" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -57,57 +61,86 @@
                     ItemsSource="{Binding AvailableEncryptedFiles}"
                     SelectedItem="{Binding SelectedEncryptedFile}" 
             />
+            <Button Text="Import App Settings"
+                    Grid.Row="8" Grid.Column="0" 
+                    Padding="16"
+                    CornerRadius="10"
+                    Command="{Binding ImportAppSettingsCommand}"
+                    IsEnabled="False"
+            />
+            <Button Text="Export App Settings"
+                    Grid.Row="9" Grid.Column="0" 
+                    Padding="16"
+                    CornerRadius="10"
+                    Command="{Binding ExportAppSettingsCommand}"
+                    IsEnabled="False"
+            />
 
-            <Label Text="Backup settings" Grid.Row="8" Grid.Column="0" />
-            <Editor x:Name="BackuperSettingsEditor" Text="{Binding BackuperSettingsEditor}" Grid.Row="8" Grid.Column="1" />
+            <Label Text="Backup settings" Grid.Row="10" Grid.Column="0" />
+            <Editor x:Name="BackuperSettingsEditor" Text="{Binding BackuperSettingsEditor}" Grid.Row="10" Grid.Column="1" />
 
-            <Label Text="Selected Backuper Profile" Grid.Row="9" Grid.Column="0" />
-            <Picker Title="Select a Backuper Profile" Grid.Row="9" Grid.Column="1"
+            <Label Text="Selected Backuper Profile" Grid.Row="11" Grid.Column="0" />
+            <Picker Title="Select a Backuper Profile" Grid.Row="11" Grid.Column="1"
                     ItemsSource="{Binding AvailableBacuperProfiles}"
                     SelectedItem="{Binding SelectedBackuperProfile}" 
             />
-
             <Button Text="Execute Backuper Profile Command"
-                    Grid.Row="10" Grid.Column="0" 
+                Grid.Row="12" Grid.Column="0" 
+                Padding="16"
+                CornerRadius="10"
+                Command="{Binding ExecuteBackuperProfileCommand}"
+            />
+            <Button Text="Import Backuper Settings"
+                    Grid.Row="13" Grid.Column="0" 
                     Padding="16"
                     CornerRadius="10"
-                    Command="{Binding ExecuteBackuperProfileCommand}"
+                    Command="{Binding ImportBackuperSettingsCommand}"
+                    IsEnabled="False"
+            />
+            <Button Text="Export Backuper Settings"
+                    Grid.Row="14" Grid.Column="0" 
+                    Padding="16"
+                    CornerRadius="10"
+                    Command="{Binding ExportBackuperSettingsCommand}"
+                    IsEnabled="False"
             />
 
-            <Label Text="Limit the number of items when search" Grid.Row="11" Grid.Column="0" />
-            <CheckBox IsChecked="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="11" Grid.Column="1" />
+            
 
-            <Label Text="Backup settings" Grid.Row="12" Grid.Column="0" />
+            <Label Text="Limit the number of items when search" Grid.Row="15" Grid.Column="0" />
+            <CheckBox IsChecked="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="15" Grid.Column="1" />
+
+            <Label Text="Backup settings" Grid.Row="16" Grid.Column="0" />
             <Entry x:Name="NumericEntry" TextChanged="OnTextChanged"
-       Text="{Binding NumberOfItemsInSearchResult}" IsEnabled="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="12" Grid.Column="1"/>
+       Text="{Binding NumberOfItemsInSearchResult}" IsEnabled="{Binding LimitNumbersOfItemsInSearchResult}" Grid.Row="16" Grid.Column="1"/>
 
-            <Label Text="Sync Before Decrypt File" Grid.Row="13" Grid.Column="0" />
-            <CheckBox IsChecked="{Binding SyncBeforeDecryptFile}" Grid.Row="13" Grid.Column="1" />
+            <Label Text="Sync Before Decrypt File" Grid.Row="17" Grid.Column="0" />
+            <CheckBox IsChecked="{Binding SyncBeforeDecryptFile}" Grid.Row="17" Grid.Column="1" />
 
-            <Label Text="Sync After Update Create Item" Grid.Row="14" Grid.Column="0" />
-            <CheckBox IsChecked="{Binding SyncAfterUpdateCreateItem}" Grid.Row="14" Grid.Column="1" />
+            <Label Text="Sync After Update Create Item" Grid.Row="18" Grid.Column="0" />
+            <CheckBox IsChecked="{Binding SyncAfterUpdateCreateItem}" Grid.Row="18" Grid.Column="1" />
 
-            <Label Text="Create Backup Before Update Or Create Item" Grid.Row="15" Grid.Column="0" />
-            <CheckBox IsChecked="{Binding CreateBackupBeforeUpdateOrCreateItem}" Grid.Row="15" Grid.Column="1" />
+            <Label Text="Create Backup Before Update Or Create Item" Grid.Row="19" Grid.Column="0" />
+            <CheckBox IsChecked="{Binding CreateBackupBeforeUpdateOrCreateItem}" Grid.Row="19" Grid.Column="1" />
 
             
 
             <Button Text="Reset settings"
-                    Grid.Row="16" Grid.Column="0" 
+                    Grid.Row="20" Grid.Column="0" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding ResetSettingsCommand}"
             />
 
             <Button Text="Save settings"
-                    Grid.Row="16" Grid.Column="1" 
+                    Grid.Row="20" Grid.Column="1" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding SaveSettingsCommand}"
             />
 
             <Button Text="Reset fileInfos"
-                    Grid.Row="17" Grid.Column="0" 
+                    Grid.Row="21" Grid.Column="0" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding ResetFileInfosCommand}"

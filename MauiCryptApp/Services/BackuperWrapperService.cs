@@ -56,5 +56,10 @@ namespace MauiCryptApp.Services
             if(_applicationSettings.SyncBeforeDecryptFile)
                 await MakeBackup(_applicationSettings.BackupSettings.BackupSettings.First(x => x.Name == MauiProgram.SYNCHRONIZE_DOWNLOAD_BACKUPER_SETTING_NAME));
         }
+
+        public void CleanLogs()
+        {
+            LogsStorage.Clear();
+        }
     }
 }

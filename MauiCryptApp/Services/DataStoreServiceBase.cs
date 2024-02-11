@@ -51,9 +51,7 @@ namespace MauiCryptApp.Services
                 Key = key,
                 EncryptPath = _applicationSettings.AppSettings.SelectedCryptFile.Path
             };
-            try
-            { _encryptDecryptService.LoadData(settings); }
-            catch (TheFileIsDamagedException ex) { }
+            _encryptDecryptService.LoadData(settings);
             encryptedFileLoaded = true;    
         }
 

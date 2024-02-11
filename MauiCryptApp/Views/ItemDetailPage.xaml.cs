@@ -5,13 +5,15 @@ namespace MauiCryptApp.Views;
 
 public partial class ItemDetailPage : ContentPage
 {
-    private readonly IBackuperWrapperService _backuperWrapperService;
+    
 	ItemDetailViewModel itemDetailViewModel;
     public ItemDetailPage()
 	{
 		InitializeComponent();
-        _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackuperWrapperService>();
+        
         BindingContext = itemDetailViewModel = new ItemDetailViewModel();
+		itemDetailViewModel.DisplayAlert += DisplayAlert;
+		itemDetailViewModel.DisplayAlert_ += DisplayAlert;
 	}
 
 	//protected override bool OnBackButtonPressed()
@@ -40,12 +42,6 @@ public partial class ItemDetailPage : ContentPage
 
 	async void OnUpdate(object sender, EventArgs e)
 	{
-		await _backuperWrapperService.MakeBackupBeforeUpdate();
-		//string logs = string.Join("\r\n", _backuperWrapperService.LogsStorage);
-		var result = await DisplayAlert("Backup logs", _backuperWrapperService.PrettyLogs, "ok", "cancel");
-		if(result)//do updating of instance
-		{
-			await itemDetailViewModel.UpdateItem();
-		}
+		
 	}
 }

@@ -15,6 +15,7 @@ namespace MauiCryptApp.Interfaces
         public Task MakeBackupBeforeUpdate();
         public Task MakeBackup(string backupName);
         public Task MakeBackup(BackupSetting backupSetting);
+        public void CleanLogs();
         public List<LogModel> LogsStorage { get; }
         public string PrettyLogs { get; }
     }

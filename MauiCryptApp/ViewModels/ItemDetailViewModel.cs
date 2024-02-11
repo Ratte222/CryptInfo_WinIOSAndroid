@@ -1,5 +1,6 @@
 ﻿using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
+using MauiCryptApp.Services;
 using MauiCryptApp.Views;
 using System;
 using System.Collections.Generic;
@@ -86,14 +87,21 @@ namespace MauiCryptApp.ViewModels
             get { return additionalInfo; }
             set { SetProperty(ref additionalInfo, value); }
         }
-        //public Command OnUpdateCommand { get; }
-        //public Command CopyPasswordToClipboard { get; }
-        //public Command CopyEmailToClipboard { get; }
+
+        public delegate Task DisplayAlertHandler(string title, string body, string cancel);
+        public event DisplayAlertHandler DisplayAlert;
+        public delegate Task<bool> DisplayAlertHandler_(string title, string body, string ok, string cancel);
+        public event DisplayAlertHandler_ DisplayAlert_;
+        public Command OnUpdateCommand { get; }
+        public Command CopyPasswordToClipboardCommand { get; }
+        public Command CopyEmailToClipboardCommand { get; }
+        private readonly IBackuperWrapperService _backuperWrapperService;
         public ItemDetailViewModel()
         {
-            //OnUpdateCommand = new Command(async () => await OnUpdate());
-            //CopyEmailToClipboard = new Command(async () => await CopyPassword());
-            //CopyEmailToClipboard = new Command(async () => await CopyEmail());
+            OnUpdateCommand = new Command(async () => await UpdateItem());
+            CopyEmailToClipboardCommand = new Command(async () => await CopyPassword());
+            CopyEmailToClipboardCommand = new Command(async () => await CopyEmail());
+            _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackuperWrapperService>();
         }
 
         public async void LoadItemId(string itemId)//ToDo: add ScrollView
@@ -129,13 +137,22 @@ namespace MauiCryptApp.ViewModels
             _item.Email = Email;
             _item.Password = Password;
             _item.Phone = Phone;
-            _item.AdditionalInfo = AdditionalInfo;
+            _item.AdditionalInfo = string.Join(" \r\n ", AdditionalInfo.Split('\r').Select(x=>x.Trim()));
         }
 
         public async Task UpdateItem()
         {
-            MapFieldsToModel();
-            await BlockDataStore.UpdateItemAsync(_item);
+            await _backuperWrapperService.MakeBackupBeforeUpdate();
+            var result = await DisplayAlert_.Invoke("Info", "Logs create backup before update: "+Environment.NewLine+_backuperWrapperService.PrettyLogs, "ok", "cancel");
+            if (result)//do updating of instance
+            {
+                MapFieldsToModel();
+                await BlockDataStore.UpdateItemAsync(_item);
+                _backuperWrapperService.CleanLogs();
+                await _backuperWrapperService.Synchronize_Upload();
+                await DisplayAlert.Invoke("Info", "Synchronization logs:"+Environment.NewLine+_backuperWrapperService.PrettyLogs, "ok");
+            }
+            
         }
 
         //async Task OnUpdate()
@@ -144,15 +161,16 @@ namespace MauiCryptApp.ViewModels
         //    await Shell.Current.GoToAsync("..");
         //}
 
-        //async Task CopyPassword()
-        //{
-        //    await Clipboard.SetTextAsync(password);
+        async Task CopyPassword()
+        {
+            await Clipboard.SetTextAsync(password);
+            await DisplayAlert.Invoke("Info", "Password copied to clipboard", "Ok");
+        }
 
-        //}
-
-        //async Task CopyEmail()
-        //{
-        //    await Clipboard.SetTextAsync(email);
-        //}
+        async Task CopyEmail()
+        {
+            await Clipboard.SetTextAsync(email);
+            await DisplayAlert.Invoke("Info", "Email copied to clipboard", "Ok");
+        }
     }
 }

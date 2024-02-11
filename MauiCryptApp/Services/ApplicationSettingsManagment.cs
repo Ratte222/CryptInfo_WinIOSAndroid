@@ -74,11 +74,11 @@ namespace MauiCryptApp.Services
             Dictionary<string, string> backupsPath_syncronize = new();//to
             backupsPath_syncronize.Add("0", $"Synchronize/{MauiProgram.MAIN_CRYPT_FILE_NAME}");
             Dictionary<string, string> backupsPath_beforeUpdate = new();//to
-            backupsPath_beforeUpdate.Add("0", "AppBackups/" + Path.GetFileName(appSettings.SelectedCryptFile.Path) + "{{dateTime%&%Format:yyyy-MM-dd_hh-mm}}");
+            backupsPath_beforeUpdate.Add("0", appSettings.SelectedCryptFile.Path);
             Dictionary<string, string> savedFilePath_synchronize = new();//from
             savedFilePath_synchronize.Add("0", appSettings.SelectedCryptFile.Path);
             Dictionary<string, string> savedFilePath_beforeUpdate = new();//from
-            savedFilePath_beforeUpdate.Add("0", appSettings.SelectedCryptFile.Path);
+            savedFilePath_beforeUpdate.Add("0", "AppBackups/" + Path.GetFileName(appSettings.SelectedCryptFile.Path) + "{{dateTime%&%Format:yyyy-MM-dd_hh-mm}}");
 
             var backuperSettings = new CBackupSettings(new BackupSetting[]
                     {
