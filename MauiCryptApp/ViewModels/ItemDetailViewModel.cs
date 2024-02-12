@@ -99,7 +99,7 @@ namespace MauiCryptApp.ViewModels
         public ItemDetailViewModel()
         {
             OnUpdateCommand = new Command(async () => await UpdateItem());
-            CopyEmailToClipboardCommand = new Command(async () => await CopyPassword());
+            CopyPasswordToClipboardCommand = new Command(async () => await CopyPassword());
             CopyEmailToClipboardCommand = new Command(async () => await CopyEmail());
             _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackuperWrapperService>();
         }
