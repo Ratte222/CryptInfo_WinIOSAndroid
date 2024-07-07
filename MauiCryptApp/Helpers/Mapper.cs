@@ -17,6 +17,8 @@ namespace MauiCryptApp.Helpers
                 UserName = blockModel.UserName,
                 Phone = blockModel.Phone,
                 AdditionalInfo = blockModel.AdditionalInfo,
+                CreatedAt = blockModel.DateTimeCreate,
+                LastModifiedAt = blockModel.DateTimeUpdate,
             };
         }
 
@@ -33,6 +35,8 @@ namespace MauiCryptApp.Helpers
                 UserName = item.UserName,
                 Phone = item.Phone,
                 AdditionalInfo = item.AdditionalInfo,
+                DateTimeCreate = item.CreatedAt,
+                DateTimeUpdate = item.LastModifiedAt,
             };
         }
 
@@ -46,6 +50,8 @@ namespace MauiCryptApp.Helpers
             blockModel.UserName = item.UserName;
             blockModel.Phone = item.Phone;
             blockModel.AdditionalInfo = item.AdditionalInfo;
+            blockModel.DateTimeCreate = item.CreatedAt;
+            blockModel.DateTimeUpdate = item.LastModifiedAt;
         }
 
         public static Group MapToGroup(this GroupModel groupModel)

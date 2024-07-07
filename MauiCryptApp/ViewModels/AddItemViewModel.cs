@@ -104,6 +104,8 @@ namespace MauiCryptApp.ViewModels
             }
             MapFieldsToModel();
             _item.GroupId = groups.Single(x => x.Name == SelectedGroup).Id;
+            _item.CreatedAt = DateTime.UtcNow;
+            _item.LastModifiedAt = _item.CreatedAt;
             await _backuper.MakeBackupBeforeUpdate();
             await BlockDataStore.AddItemAsync(_item);
             await DisplayAlert.Invoke("Info", "Item added successfully");

@@ -52,7 +52,7 @@
             <Entry Text="{Binding Phone}" Keyboard="Telephone" Grid.Row="5" Grid.Column="1" />
 
             <Label Text="Additional Info" Grid.Row="6" Grid.Column="0" />
-            <Editor Text="{Binding AdditionalInfo}" Grid.Row="6" Grid.Column="1" />
+            <Editor AutoSize="TextChanges" Text="{Binding AdditionalInfo}" Grid.Row="6" Grid.Column="1" />
             <Button Text="Update" Command="{Binding OnUpdateCommand}" Grid.Row="7" Grid.Column="1"/>
         </Grid>
 

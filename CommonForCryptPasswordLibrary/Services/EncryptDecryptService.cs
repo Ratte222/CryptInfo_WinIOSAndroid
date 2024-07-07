@@ -136,6 +136,7 @@ namespace CommonForCryptPasswordLibrary.Services
             CalculateHashSHA512ForGroupsAndBlocks(calculateAllHash);
             string jsonData = listCryptGroupModel.Serialize(CryptFileModel.DecryptInfoContent, serializerSettings);
             CryptFileModel.Hash = _cryptService.GetHashSHA512(jsonData);
+            CryptFileModel.LastModifiedAt = DateTime.UtcNow;
             string json = cryptFileModel.Serialize(CryptFileModel, serializerSettings);
             string encryptData = _cryptService.Encrypt(json, _settings.Key);
             using (StreamWriter sw = new StreamWriter(_settings.EncryptPath, false, Encoding.UTF8))

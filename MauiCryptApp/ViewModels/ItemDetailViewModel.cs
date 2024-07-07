@@ -127,7 +127,7 @@ namespace MauiCryptApp.ViewModels
             Email = _item.Email;
             Password = _item.Password;
             Phone = _item.Phone;
-            AdditionalInfo = _item.AdditionalInfo;
+            AdditionalInfo = _item.AdditionalInfo ?? "";
         }
         public void MapFieldsToModel()
         {
@@ -147,6 +147,7 @@ namespace MauiCryptApp.ViewModels
             if (result)//do updating of instance
             {
                 MapFieldsToModel();
+                _item.LastModifiedAt = DateTime.UtcNow;
                 await BlockDataStore.UpdateItemAsync(_item);
                 _backuperWrapperService.CleanLogs();
                 await _backuperWrapperService.Synchronize_Upload();

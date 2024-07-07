@@ -1,4 +1,5 @@
-﻿using AuxiliaryLib.Extensions;
+﻿using CommunityToolkit.Maui;
+using AuxiliaryLib.Extensions;
 using Backuper_Core.Configurations;
 using Backuper_Core.Helpers;
 using Backuper_Core.Services;
@@ -41,7 +42,8 @@ namespace MauiCryptApp
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+                })
+                .UseMauiCommunityToolkit();
             
             
             string fileInfosFileFullPath = Path.Combine(FileSystem.Current.AppDataDirectory, FILE_INFOS_FILE_NAME);

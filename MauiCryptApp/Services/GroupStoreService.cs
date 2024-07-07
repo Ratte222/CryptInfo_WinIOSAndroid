@@ -33,7 +33,7 @@ namespace MauiCryptApp.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Group>> Search(string search)
+        public Task<IEnumerable<Group>> Search(string search, SearchFilter filter)
         {
             throw new NotImplementedException();
         }

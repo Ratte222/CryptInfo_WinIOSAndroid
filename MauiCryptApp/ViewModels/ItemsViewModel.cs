@@ -36,6 +36,26 @@ namespace MauiCryptApp.ViewModels
                 LoadItemsCommand.Execute(this);
             }
         }
+        
+        private bool _orderByLstModifyTime = false;
+        public bool OrderByLstModifyTime
+        {
+            get { return _orderByLstModifyTime; }
+            set { 
+                _orderByLstModifyTime = value;
+                ExecuteSearchItemsCommand().GetAwaiter();
+            }
+        }
+
+        private bool _showDiagnosticInformation = false;
+        public bool ShowDiagnosticInformation
+        {
+            get { return _showDiagnosticInformation; }
+            set { 
+                _showDiagnosticInformation = value;
+            }
+        }
+
         private string _password;
 
         private Item _selectedItem;
@@ -74,18 +94,30 @@ namespace MauiCryptApp.ViewModels
                 //{
                 Items.Clear();
                 IEnumerable<Item> items = null;
+                var filter = new SearchFilter() { OrderByLastModifyDate = OrderByLstModifyTime };
                 if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
                 {
-                    items = (await BlockDataStore.Search(_searchText)).Take(_applicationSettings.NumberOfItemsInSearchResult);
+                    items = (await BlockDataStore.Search(_searchText, filter));
+                    if (OrderByLstModifyTime)
+                    {
+                        items = items.OrderByDescending(x => x.LastModifiedAt);
+                    }
+                    items = items.Take(_applicationSettings.NumberOfItemsInSearchResult);
                 }
                 else
                 {
-                    items = (await BlockDataStore.Search(_searchText));
+                    items = (await BlockDataStore.Search(_searchText, filter));
+                    if (OrderByLstModifyTime)
+                    {
+                        items = items.OrderByDescending(x => x.LastModifiedAt);
+                    }
                 }
+                
                 foreach (var item in items)
                 {
                     Items.Add(item);
                 }
+                
                 //}
 
             }
@@ -116,7 +148,7 @@ namespace MauiCryptApp.ViewModels
                     }
                     else
                     {
-                        items = (await BlockDataStore.Search(_searchText));
+                        items = (await BlockDataStore.Search(_searchText, new SearchFilter() { OrderByLastModifyDate = OrderByLstModifyTime}));
                     }
                     foreach (var item in items)
                     {

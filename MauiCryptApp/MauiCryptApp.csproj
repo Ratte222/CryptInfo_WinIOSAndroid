@@ -75,6 +75,7 @@
 	<ItemGroup>
 	  <PackageReference Include="Backuper-Core" Version="1.0.3" />
 	  <PackageReference Include="Backuper-Mega" Version="1.0.2" />
+	  <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 	</ItemGroup>
@@ -127,13 +128,12 @@
 	
 
 	<ItemGroup>
-	  <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.6" />
+	  <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.61" />
 	</ItemGroup>
 
 	
 
 	<ItemGroup>
-	  <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.6" />
+	  <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.61" />
 	</ItemGroup>
-
 </Project>

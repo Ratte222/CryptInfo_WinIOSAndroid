@@ -26,7 +26,7 @@ namespace MauiCryptApp.Services
             }
         }
 
-        public async Task<IEnumerable<Item>> Search(string search)
+        public async Task<IEnumerable<Item>> Search(string search, SearchFilter searchFilter)
         {
             var filter = new Filter()
             {
@@ -35,7 +35,12 @@ namespace MauiCryptApp.Services
             if (!encryptedFileLoaded)
                 return new Item[0];
             blocks = _inputOutputFile.GetBlockDatas(filter);
-            items = blocks.Select(x => x.MapToItem()).ToList();
+            var query = blocks.Select(x => x.MapToItem());
+            //if(searchFilter.OrderByLastModifyDate)
+            //{
+            //    query.OrderBy(x => x.LastModifiedAt);
+            //}
+            items = query.ToList();
             return items;
         }
 

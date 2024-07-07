@@ -10,6 +10,8 @@ namespace CommonForCryptPasswordLibrary.Model
         public string Hash { get; set; }
         public List<GroupModel> DecryptInfoContent { get; set; } = new List<GroupModel>();
 
+        public DateTime LastModifiedAt { get; set; }
+
         public void CommonChecksForCryptBlockModel(BlockModel item)
         {
             if (item == null)

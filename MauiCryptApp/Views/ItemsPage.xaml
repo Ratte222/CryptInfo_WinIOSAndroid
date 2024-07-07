@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MauiCryptApp.Views.ItemsPage"
              xmlns:local="clr-namespace:MauiCryptApp.ViewModels"
              xmlns:model="clr-namespace:MauiCryptApp.Models"
@@ -14,11 +15,23 @@
       https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
     -->
     <ContentPage.Content>
+        
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-        <Entry Placeholder="Search" VerticalOptions="Center" AutomationId="true" x:Name="SearchEntry" 
+            <toolkit:Expander>
+                <toolkit:Expander.Header>
+                    <Label Text="Filter Options" />
+                </toolkit:Expander.Header>
+                <StackLayout>
+                    <Label Text="Order by last modify time" />
+                    <CheckBox IsChecked="{Binding OrderByLstModifyTime}"/>
+                    <Label Text="Show diagnostic information"></Label>
+                    <CheckBox IsChecked="{Binding ShowDiagnosticInformation}"/>
+                </StackLayout>
+            </toolkit:Expander>
+            <Entry Placeholder="Search" VerticalOptions="Center" AutomationId="true" x:Name="SearchEntry" 
                     Text="{Binding SearchText}"/>
-        <!--<RefreshView Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">-->
-
+            
+            <!--<RefreshView Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">-->
             <CollectionView x:Name="ItemsListView"
                 ItemsSource="{Binding Items}"
                 SelectionMode="None">
@@ -30,6 +43,10 @@
                             Style="{DynamicResource ListItemTextStyle}" 
                             FontSize="16" />
                             <Label Text="{Binding Description}" 
+                            LineBreakMode="NoWrap"
+                            Style="{DynamicResource ListItemDetailTextStyle}"
+                            FontSize="13" />
+                            <Label Text="{Binding LastModifiedAt}" 
                             LineBreakMode="NoWrap"
                             Style="{DynamicResource ListItemDetailTextStyle}"
                             FontSize="13" />

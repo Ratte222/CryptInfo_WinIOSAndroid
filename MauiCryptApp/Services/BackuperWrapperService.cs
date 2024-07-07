@@ -17,17 +17,20 @@ namespace MauiCryptApp.Services
         private readonly ApplicationSettings _applicationSettings;
         private readonly BackupJob _backupJob;
         private readonly MockLoggerForSynchronize _loggerMock;
+        private readonly FileInfos _fileInfos;
         public List<LogModel> LogsStorage { get; private set; } = new();
         public string PrettyLogs { get => string.Join(Environment.NewLine, LogsStorage.Select(x=>x.Description).ToArray()); }
         public BackuperWrapperService(IApplicationSettingsManagment applicationSettingsManagement, 
-            BackupJob backupJob)
+            BackupJob backupJob,
+            FileInfos fileInfos)
         {
             _applicationSettings = applicationSettingsManagement.ApplicationSettings;
             _backupJob = backupJob;
+            _fileInfos = fileInfos;
 
             var bacokuperJobLogger = _backupJob.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
             _loggerMock = new MockLoggerForSynchronize(LogsStorage);
-            bacokuperJobLogger.SetValue(_backupJob, _loggerMock);
+            bacokuperJobLogger.SetValue(_backupJob, _loggerMock);            
         }
 
         public async Task MakeBackup(string backupName)
@@ -38,6 +41,9 @@ namespace MauiCryptApp.Services
         public async Task MakeBackup(BackupSetting backupSetting)
         {
             await _backupJob.CreateBackupAsync(backupSetting);
+            //ToDo: fix this crutch!
+            _fileInfos.FileInfosData = new List<Backuper_Core.Configurations.FileInfo>();
+            _fileInfos.Save();
         }
 
         public async Task MakeBackupBeforeUpdate()
