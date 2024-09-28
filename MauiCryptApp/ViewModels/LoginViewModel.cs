@@ -15,6 +15,10 @@ namespace MauiCryptApp.ViewModels
         public Command LoginCommand { get; }
         public string PasswordFromEntry { get; set; }
         public bool CB_TestMode { get; set; }
+
+        public delegate void ClearPasswordField();
+        public event ClearPasswordField OnClearPasswordField;
+
         private string encryptedFileName;
         public string EncryptedFileName { get { return encryptedFileName; } set { SetProperty(ref encryptedFileName, value); } }
         private readonly ApplicationSettings _settings;
@@ -28,7 +32,10 @@ namespace MauiCryptApp.ViewModels
         private async void OnLoginClicked(object obj)
         {
             await _backuper.Synchronize_Download();
-            await Shell.Current.GoToAsync($"/{nameof(ItemsPage)}?{nameof(ItemsViewModel.Password)}={PasswordFromEntry}");
+            string password = (string)PasswordFromEntry.Clone();
+            //PasswordFromEntry = string.Empty;
+            OnClearPasswordField.Invoke();
+            await Shell.Current.GoToAsync($"/{nameof(ItemsPage)}?{nameof(ItemsViewModel.Password)}={password}");
         }
 
         public void AppearingHandler(object sender, EventArgs args)
