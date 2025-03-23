@@ -19,8 +19,8 @@
 		<ApplicationIdGuid>327EED77-A704-4D39-AE59-518690A14A48</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
+		<ApplicationVersion>1.0.1</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -38,7 +38,7 @@
 		<Title>Password Manager</Title>
 		<Authors>Ratte222</Authors>
 		<Company>Ratte222</Company>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<AssemblyVersion>1.1.1.0</AssemblyVersion>
 		<Product>PasswordManager</Product>
 		<PackageCertificateKeyFile>MauiCryptApp_TemporaryKey.pfx</PackageCertificateKeyFile>
 		<DefaultLanguage>en</DefaultLanguage>
