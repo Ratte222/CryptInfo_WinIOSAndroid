@@ -28,6 +28,7 @@ namespace CommonForCryptPasswordLibrary.Interfaces
     {
         E_INPUTOUTPUTMESSAGE LoadDefaultParams();
         bool SearchUntilFirstMach { get; }
+        void SetSearchSettings(ISearchSettings searchSettings);
         void Toggle_caseSensitive();
         void Toggle_searchInTegs();
         void Toggle_searchInHeader();

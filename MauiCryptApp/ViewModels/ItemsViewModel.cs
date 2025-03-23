@@ -37,12 +37,11 @@ namespace MauiCryptApp.ViewModels
             }
         }
         
-        private bool _orderByLstModifyTime = false;
-        public bool OrderByLstModifyTime
+        public bool OrderByLastModifyTime
         {
-            get { return _orderByLstModifyTime; }
-            set { 
-                _orderByLstModifyTime = value;
+            get { return _applicationSettingsManager.ApplicationSettings.OrderByLastModifyTime; }
+            set {
+                _applicationSettingsManager.ApplicationSettings.OrderByLastModifyTime = value;
                 ExecuteSearchItemsCommand().GetAwaiter();
             }
         }
@@ -56,6 +55,24 @@ namespace MauiCryptApp.ViewModels
             }
         }
 
+        public bool SearchEverywhere
+        {
+            get { return _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchEverywhere; }
+            set { _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchEverywhere = value; }
+        }
+
+        public bool SearchInTags
+        {
+            get { return _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchInTegs; }
+            set { _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchInTegs = value; }
+        }
+
+        public bool SearchUntilFirstMatch
+        {
+            get { return _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchUntilFirstMatch; }
+            set { _applicationSettingsManager.ApplicationSettings.SearchSettings.SearchUntilFirstMatch = value; }
+        }
+
         private string _password;
 
         private Item _selectedItem;
@@ -65,11 +82,12 @@ namespace MauiCryptApp.ViewModels
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
         public Command SearchCommand { get; }
+        public Command ApplyFilterCommand { get; }
 
         public delegate Task DisplayAlertHandler(string title, string body, string cancel);
         public event DisplayAlertHandler DisplayAlert;
 
-        private readonly ApplicationSettings _applicationSettings;
+        private readonly IApplicationSettingsManagment _applicationSettingsManager;
         public ItemsViewModel()
         {
             Title = "Browse";
@@ -77,10 +95,16 @@ namespace MauiCryptApp.ViewModels
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
             SearchCommand = new Command(async () => await ExecuteSearchItemsCommand());
             ItemTapped = new Command<Item>(OnItemSelected);
+            ApplyFilterCommand = new Command(ApplyFilter);
 
             AddItemCommand = new Command(OnAddItem);
             
-            _applicationSettings = MauiProgram.ServiceScope.ServiceProvider.GetService<IApplicationSettingsManagment>().ApplicationSettings;
+            _applicationSettingsManager = MauiProgram.ServiceScope.ServiceProvider.GetService<IApplicationSettingsManagment>();
+        }
+
+        void ApplyFilter()
+        {
+            _applicationSettingsManager.Save();
         }
 
         async Task ExecuteSearchItemsCommand()
@@ -94,20 +118,20 @@ namespace MauiCryptApp.ViewModels
                 //{
                 Items.Clear();
                 IEnumerable<Item> items = null;
-                var filter = new SearchFilter() { OrderByLastModifyDate = OrderByLstModifyTime };
-                if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
+                var filter = new SearchFilter() { OrderByLastModifyDate = OrderByLastModifyTime };
+                if (_applicationSettingsManager.ApplicationSettings.LimitNumbersOfItemsInSearchResult)
                 {
-                    items = (await BlockDataStore.Search(_searchText, filter));
-                    if (OrderByLstModifyTime)
+                    items = await BlockDataStore.Search(_searchText, _applicationSettingsManager.ApplicationSettings.SearchSettings);
+                    if (OrderByLastModifyTime)
                     {
                         items = items.OrderByDescending(x => x.LastModifiedAt);
                     }
-                    items = items.Take(_applicationSettings.NumberOfItemsInSearchResult);
+                    items = items.Take(_applicationSettingsManager.ApplicationSettings.NumberOfItemsInSearchResult);
                 }
                 else
                 {
-                    items = (await BlockDataStore.Search(_searchText, filter));
-                    if (OrderByLstModifyTime)
+                    items = await BlockDataStore.Search(_searchText, _applicationSettingsManager.ApplicationSettings.SearchSettings);
+                    if (OrderByLastModifyTime)
                     {
                         items = items.OrderByDescending(x => x.LastModifiedAt);
                     }
@@ -142,13 +166,13 @@ namespace MauiCryptApp.ViewModels
                 {
                     Items.Clear();
                     IEnumerable<Item> items = null;
-                    if (_applicationSettings.LimitNumbersOfItemsInSearchResult)
+                    if (_applicationSettingsManager.ApplicationSettings.LimitNumbersOfItemsInSearchResult)
                     {
-                        items = (await BlockDataStore.GetItemsAsync()).Take(_applicationSettings.NumberOfItemsInSearchResult);
+                        items = (await BlockDataStore.GetItemsAsync()).Take(_applicationSettingsManager.ApplicationSettings.NumberOfItemsInSearchResult);
                     }
                     else
                     {
-                        items = (await BlockDataStore.Search(_searchText, new SearchFilter() { OrderByLastModifyDate = OrderByLstModifyTime}));
+                        items = await BlockDataStore.Search(_searchText, _applicationSettingsManager.ApplicationSettings.SearchSettings);
                     }
                     foreach (var item in items)
                     {

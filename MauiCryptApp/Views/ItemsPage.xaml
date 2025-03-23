@@ -23,9 +23,16 @@
                 </toolkit:Expander.Header>
                 <StackLayout>
                     <Label Text="Order by last modify time" />
-                    <CheckBox IsChecked="{Binding OrderByLstModifyTime}"/>
+                    <CheckBox IsChecked="{Binding OrderByLastModifyTime}"/>
                     <Label Text="Show diagnostic information"></Label>
                     <CheckBox IsChecked="{Binding ShowDiagnosticInformation}"/>
+                    <Label Text="Search everywhere" />
+                    <CheckBox IsChecked="{Binding SearchEverywhere}"/>
+                    <Label Text="Search until first match" />
+                    <CheckBox IsChecked="{Binding SearchUntilFirstMatch}"/>
+                    <Label Text="Search in tags" />
+                    <CheckBox IsChecked="{Binding SearchInTags}"/>
+                    <Button Text="Apply" Command="{Binding ApplyFilterCommand}"/>
                 </StackLayout>
             </toolkit:Expander>
             <Entry Placeholder="Search" VerticalOptions="Center" AutomationId="true" x:Name="SearchEntry" 

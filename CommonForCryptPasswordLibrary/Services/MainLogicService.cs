@@ -55,7 +55,11 @@ namespace CommonForCryptPasswordLibrary.Services
             return E_INPUTOUTPUTMESSAGE.Ok;
         }
 
-        
+        public void SetSearchSettings(ISearchSettings searchSettings)
+        {
+            _searchSettings = searchSettings;
+        }
+
         public void Toggle_caseSensitive()
         {
             caseSensitive = !caseSensitive;
