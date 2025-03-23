@@ -10,14 +10,14 @@
         Title="Login"
         ContentTemplate="{DataTemplate views:LoginPage}"
         Route="LoginPage" />
-        <ShellContent
+        <!--<ShellContent
         Title="File"
         ContentTemplate="{DataTemplate views:FilePage}"
         Route="FilePage" />
         <ShellContent
         Title="Synchonize"
         ContentTemplate="{DataTemplate views:LoginSynchronizePage}"
-        Route="SynchronizePage" />
+        Route="SynchronizePage" />-->
         <ShellContent
         Title="Settings"
         ContentTemplate="{DataTemplate views:SettingsPage}"
