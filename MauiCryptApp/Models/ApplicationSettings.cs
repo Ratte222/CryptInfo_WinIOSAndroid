@@ -15,6 +15,7 @@ namespace MauiCryptApp.Models
         public bool SyncBeforeDecryptFile { get; set; } = true;
         public bool SyncAfterUpdateCreateItem { get; set; } = true;
         public bool CreateBackupBeforeUpdateOrCreateItem { get; set; } = true;
+        public int RandomlyGeneratedPasswordLength { get; set; } = 16;
         public CBackupSettings BackupSettings { get;set; }
         public SearchSettings SearchSettings { get;set; }
         /// <summary>

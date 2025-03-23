@@ -5,6 +5,7 @@ using MauiCryptApp.Models;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace MauiCryptApp.ViewModels
@@ -121,6 +122,12 @@ namespace MauiCryptApp.ViewModels
             get { return availableEncryptedFiles; }
             set { SetProperty(ref availableEncryptedFiles, value); }
         }
+        private int randomlyGeneratedPasswordLength;
+        public int RandomlyGeneratedPasswordLength
+        {
+            get { return randomlyGeneratedPasswordLength; }
+            set { SetProperty(ref randomlyGeneratedPasswordLength, value); }
+        }
         #endregion
         #region BackuperSettings
         private string backuperSettingsEditor;
@@ -204,6 +211,7 @@ namespace MauiCryptApp.ViewModels
             NumberOfItemsInSearchResult = _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult;
             SyncBeforeDecryptFile = _settingsManagment.ApplicationSettings.SyncBeforeDecryptFile;
             SyncAfterUpdateCreateItem = _settingsManagment.ApplicationSettings.SyncAfterUpdateCreateItem;
+            RandomlyGeneratedPasswordLength = _settingsManagment.ApplicationSettings.RandomlyGeneratedPasswordLength;
             CreateBackupBeforeUpdateOrCreateItem = _settingsManagment.ApplicationSettings.CreateBackupBeforeUpdateOrCreateItem;
         }
         private void MapAppSettingsIntoEditor()
@@ -229,6 +237,7 @@ namespace MauiCryptApp.ViewModels
             _settingsManagment.ApplicationSettings.NumberOfItemsInSearchResult = NumberOfItemsInSearchResult;
             _settingsManagment.ApplicationSettings.SyncBeforeDecryptFile = SyncBeforeDecryptFile;
             _settingsManagment.ApplicationSettings.SyncAfterUpdateCreateItem = SyncAfterUpdateCreateItem;
+            _settingsManagment.ApplicationSettings.RandomlyGeneratedPasswordLength = RandomlyGeneratedPasswordLength;
             _settingsManagment.ApplicationSettings.CreateBackupBeforeUpdateOrCreateItem = CreateBackupBeforeUpdateOrCreateItem;
         }
         private void MapEditorIntoAppSettings()
