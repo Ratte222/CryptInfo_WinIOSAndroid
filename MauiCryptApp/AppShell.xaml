@@ -22,6 +22,10 @@
         Title="Settings"
         ContentTemplate="{DataTemplate views:SettingsPage}"
         Route="SettingsPage" />
+        <ShellContent
+        Title="About"
+        ContentTemplate="{DataTemplate views:AboutPage}"
+        Route="AboutPage" />
     </FlyoutItem>
     
 
