@@ -1,4 +1,5 @@
-﻿using MauiCryptApp.Interfaces;
+﻿using CryptLibraryStandart.SymmetricCryptography;
+using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
 using MauiCryptApp.Services;
 using MauiCryptApp.Views;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MauiCryptApp.ViewModels
 {
@@ -88,6 +90,9 @@ namespace MauiCryptApp.ViewModels
             set { SetProperty(ref additionalInfo, value); }
         }
 
+        private bool _isPasswordRevealed = false;
+        public bool IsPasswordRevealed => !_isPasswordRevealed;
+
         public delegate Task DisplayAlertHandler(string title, string body, string cancel);
         public event DisplayAlertHandler DisplayAlert;
         public delegate Task<bool> DisplayAlertHandler_(string title, string body, string ok, string cancel);
@@ -95,13 +100,32 @@ namespace MauiCryptApp.ViewModels
         public Command OnUpdateCommand { get; }
         public Command CopyPasswordToClipboardCommand { get; }
         public Command CopyEmailToClipboardCommand { get; }
+        public ICommand RevealPasswordCommand { get; }
+        public ICommand GeneratePasswordCommand { get; }
+
+
         private readonly IBackuperWrapperService _backuperWrapperService;
+        private readonly IApplicationSettingsManagment _applicationSettingsManagment;
         public ItemDetailViewModel()
         {
             OnUpdateCommand = new Command(async () => await UpdateItem());
             CopyPasswordToClipboardCommand = new Command(async () => await CopyPassword());
             CopyEmailToClipboardCommand = new Command(async () => await CopyEmail());
+            RevealPasswordCommand = new Command(OnRevealPassword);
+            GeneratePasswordCommand = new Command(OnGeneratePassword);
             _backuperWrapperService = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IBackuperWrapperService>();
+            _applicationSettingsManagment = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>();
+        }
+
+        private void OnRevealPassword()
+        {
+            _isPasswordRevealed = !_isPasswordRevealed;
+            OnPropertyChanged(nameof(IsPasswordRevealed));
+        }
+
+        private void OnGeneratePassword()
+        {
+            Password = CryptoWithoutTry.GeneratePassword(_applicationSettingsManagment.ApplicationSettings.RandomlyGeneratedPasswordLength);
         }
 
         public async void LoadItemId(string itemId)//ToDo: add ScrollView

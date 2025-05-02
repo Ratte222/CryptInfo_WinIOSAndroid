@@ -26,14 +26,16 @@ namespace MauiCryptApp.Services
             }
         }
 
-        public async Task<IEnumerable<Item>> Search(string search, SearchFilter searchFilter)
+        public Task<IEnumerable<Item>> Search(string search, ISearchSettings searchSettings)
         {
+            _inputOutputFile.SetSearchSettings(searchSettings);
+            _inputOutputFile.LoadDefaultParams();
             var filter = new Filter()
             {
                 BlockName = search
             };
             if (!encryptedFileLoaded)
-                return new Item[0];
+                return Task.FromResult<IEnumerable<Item>>([]);
             blocks = _inputOutputFile.GetBlockDatas(filter);
             var query = blocks.Select(x => x.MapToItem());
             //if(searchFilter.OrderByLastModifyDate)
@@ -41,7 +43,7 @@ namespace MauiCryptApp.Services
             //    query.OrderBy(x => x.LastModifiedAt);
             //}
             items = query.ToList();
-            return items;
+            return Task.FromResult<IEnumerable<Item>>(items);
         }
 
         public async Task<bool> AddItemAsync(Item item)

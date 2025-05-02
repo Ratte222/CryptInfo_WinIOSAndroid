@@ -33,6 +33,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Label Text="Case Sensitive" Grid.Row="0" Grid.Column="0" />
@@ -123,24 +124,28 @@
             <Label Text="Create Backup Before Update Or Create Item" Grid.Row="19" Grid.Column="0" />
             <CheckBox IsChecked="{Binding CreateBackupBeforeUpdateOrCreateItem}" Grid.Row="19" Grid.Column="1" />
 
-            
+
+            <Label Text="Randomly generated password length" Grid.Row="20" Grid.Column="0" />
+            <Entry TextChanged="OnTextChanged"
+                Text="{Binding RandomlyGeneratedPasswordLength}" Grid.Row="20" Grid.Column="1"/>
+
 
             <Button Text="Reset settings"
-                    Grid.Row="20" Grid.Column="0" 
+                    Grid.Row="21" Grid.Column="0" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding ResetSettingsCommand}"
             />
 
             <Button Text="Save settings"
-                    Grid.Row="20" Grid.Column="1" 
+                    Grid.Row="21" Grid.Column="1" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding SaveSettingsCommand}"
             />
 
             <Button Text="Reset fileInfos"
-                    Grid.Row="21" Grid.Column="0" 
+                    Grid.Row="22" Grid.Column="0" 
                     Padding="16"
                     CornerRadius="10"
                     Command="{Binding ResetFileInfosCommand}"

@@ -46,7 +46,20 @@
                         <TapGestureRecognizer Command="{Binding CopyPasswordToClipboardCommand}" />
                 </Label.GestureRecognizers>
             </Label>
-            <Entry x:Name="PasswordEntry" Text="{Binding Password}" Grid.Row="4" Grid.Column="1" />
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Entry x:Name="PasswordEntry" Text="{Binding Password}" Grid.Row="0" Grid.Column="0" IsPassword="{Binding IsPasswordRevealed}"/>
+                <Button Text="Reveal" Command="{Binding RevealPasswordCommand}" Grid.Row="0" Grid.Column="1" />
+                <Button Text="Generate" Command="{Binding GeneratePasswordCommand}" Grid.Row="0" Grid.Column="2" />
+            </Grid>
+            
 
             <Label Text="Phone" Grid.Row="5" Grid.Column="0" />
             <Entry Text="{Binding Phone}" Keyboard="Telephone" Grid.Row="5" Grid.Column="1" />

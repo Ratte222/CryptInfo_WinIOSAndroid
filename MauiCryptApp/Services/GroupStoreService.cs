@@ -1,4 +1,5 @@
-﻿using CommonForCryptPasswordLibrary.Model;
+﻿using CommonForCryptPasswordLibrary.Interfaces;
+using CommonForCryptPasswordLibrary.Model;
 using MauiCryptApp.Helpers;
 using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
@@ -33,7 +34,7 @@ namespace MauiCryptApp.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Group>> Search(string search, SearchFilter filter)
+        public Task<IEnumerable<Group>> Search(string search, ISearchSettings searchSettings)
         {
             throw new NotImplementedException();
         }

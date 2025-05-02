@@ -1,10 +1,13 @@
-﻿using MauiCryptApp.Interfaces;
+﻿using CryptLibraryStandart.SymmetricCryptography;
+using MauiCryptApp.Interfaces;
 using MauiCryptApp.Models;
+using MauiCryptApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MauiCryptApp.ViewModels
 {
@@ -41,6 +44,9 @@ namespace MauiCryptApp.ViewModels
             set { SetProperty(ref password, value); }
         }
 
+        private bool _isPasswordRevealed = false;
+        public bool IsPasswordRevealed => !_isPasswordRevealed;
+
         private string phone;
         public string Phone
         {
@@ -72,16 +78,33 @@ namespace MauiCryptApp.ViewModels
         private Group[] groups;
 
         public Command SaveNewItemCommand { get; }
+        public ICommand RevealPasswordCommand { get; }
+        public ICommand GeneratePasswordCommand { get; }
         public delegate Task DisplayAlertHandler(string title, string body);
         public event DisplayAlertHandler DisplayAlert; 
 
         private readonly IBackuperWrapperService _backuper;
+        private readonly IApplicationSettingsManagment _applicationSettingsManagment;
         public AddItemViewModel()
         {
             SaveNewItemCommand = new Command(async () => { await SaveNewItem(); });
+            RevealPasswordCommand = new Command(OnRevealPassword);
+            GeneratePasswordCommand = new Command(OnGeneratePassword);
             groups = GroupDataStore.GetItemsAsync().GetAwaiter().GetResult().ToArray();
             AvailableGroups = groups.Select(x => x.Name).ToList();
-            _backuper = MauiProgram.ServiceScope.ServiceProvider.GetService<IBackuperWrapperService>(); 
+            _backuper = MauiProgram.ServiceScope.ServiceProvider.GetService<IBackuperWrapperService>();
+            _applicationSettingsManagment = MauiProgram.ServiceScope.ServiceProvider.GetRequiredService<IApplicationSettingsManagment>();
+        }
+
+        private void OnRevealPassword()
+        {
+            _isPasswordRevealed = !_isPasswordRevealed;
+            OnPropertyChanged(nameof(IsPasswordRevealed));
+        }
+
+        private void OnGeneratePassword()
+        {
+            Password = CryptoWithoutTry.GeneratePassword(_applicationSettingsManagment.ApplicationSettings.RandomlyGeneratedPasswordLength);
         }
 
         public void MapFieldsToModel()
